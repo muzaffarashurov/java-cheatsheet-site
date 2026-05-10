@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java Core | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-layout">
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск по разделам...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#4f8ef7"></span>📌 Краткий конспект</a>
+    <a class="nav-link" href="#primitives"><span class="nav-dot" style="background:#4f8ef7"></span>Примитивы и Wrapper</a>
+    <a class="nav-link" href="#strings"><span class="nav-dot" style="background:#4f8ef7"></span>Строки и String Pool</a>
+    <a class="nav-link" href="#memory"><span class="nav-dot" style="background:#4f8ef7"></span>Память (Stack/Heap)</a>
+    <a class="nav-link" href="#exceptions"><span class="nav-dot" style="background:#4f8ef7"></span>Исключения</a>
+    <a class="nav-link" href="#equals"><span class="nav-dot" style="background:#4f8ef7"></span>equals / hashCode</a>
+    <a class="nav-link" href="#optional"><span class="nav-dot" style="background:#4f8ef7"></span>Optional</a>
+    <a class="nav-link" href="#practices"><span class="nav-dot" style="background:#22d3a0"></span>✅ Best Practices</a>
+    <a class="nav-link" href="#mistakes"><span class="nav-dot" style="background:#f06060"></span>⚠️ Ошибки</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#f5a623"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="oop.html"><span class="nav-dot" style="background:#5bcefa"></span>OOP Принципы</a>
+    <a class="nav-link" href="collections.html"><span class="nav-dot" style="background:#22d3a0"></span>Collections</a>
+    <a class="nav-link" href="threads.html"><span class="nav-dot" style="background:#f06060"></span>Многопоточность</a>
+    <a class="nav-link" href="spring-boot.html"><span class="nav-dot" style="background:#22d3a0"></span>Spring Boot</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">☕ Java Core</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear" onclick="document.getElementById('pageSearch').value=''">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+
+  <!-- Прогресс чтения -->
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:var(--primary);width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+    <!-- HERO -->
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#1f4fe8,#4f8ef7)">☕</div>
+        <div>
+          <h1>Java Core</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-blue">Java</span>
+            <span class="chip chip-red">Core</span>
+            <span class="chip chip-green">JVM</span>
+            <span class="chip chip-warn">Memory</span>
+          </div>
+        </div>
+      </div>
+      <p>Фундамент Java: примитивы, объекты, JVM, память, String Pool, исключения, equals/hashCode. Без этого не проходят ни одно собеседование уровня Junior+.</p>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#primitives">Примитивы</a>
+        <a class="toc-link" href="#strings">Строки</a>
+        <a class="toc-link" href="#memory">Память JVM</a>
+        <a class="toc-link" href="#exceptions">Исключения</a>
+        <a class="toc-link" href="#equals">equals/hashCode</a>
+        <a class="toc-link" href="#optional">Optional</a>
+        <a class="toc-link" href="#practices">Best Practices</a>
+        <a class="toc-link" href="#code">Примеры кода</a>
+        <a class="toc-link" href="#interview">Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КРАТКИЙ КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-blue">
+        <div class="box-label">Ключевые факты</div>
+        Java — <strong>статически типизированный</strong>, <strong>объектно-ориентированный</strong> язык. Код компилируется в <strong>байт-код</strong> (.class), который выполняет <strong>JVM</strong>. Это обеспечивает кроссплатформенность: «Write Once, Run Anywhere».
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Концепция</th><th>Суть</th><th>Пример</th></tr>
+          <tr><td><code>Примитив</code></td><td>Хранится в Stack, быстрый доступ</td><td><code>int x = 5;</code></td></tr>
+          <tr><td><code>Объект</code></td><td>Хранится в Heap, доступ по ссылке</td><td><code>String s = "hi";</code></td></tr>
+          <tr><td><code>Autoboxing</code></td><td>Авто int → Integer</td><td><code>Integer i = 42;</code></td></tr>
+          <tr><td><code>String Pool</code></td><td>JVM кэширует строковые литералы</td><td><code>"a" == "a" → true</code></td></tr>
+          <tr><td><code>GC</code></td><td>Garbage Collector — автоуборка мусора</td><td>Нет delete/free</td></tr>
+          <tr><td><code>Checked Exception</code></td><td>Обязательно обрабатывать</td><td><code>IOException</code></td></tr>
+          <tr><td><code>Unchecked Exception</code></td><td>RuntimeException — по желанию</td><td><code>NullPointerException</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. ПРИМИТИВЫ ═══ -->
+    <div class="section" id="primitives">
+      <div class="section-title"><span class="s-icon">🔢</span> Примитивы и Wrapper классы</div>
+      <div class="prose">
+        <p>Java имеет <strong>8 примитивных типов</strong>. Каждому соответствует класс-обёртка (Wrapper), нужная для работы с дженериками, коллекциями, Optional.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Примитив</th><th>Размер</th><th>Диапазон / Значение</th><th>Wrapper</th><th>Default</th></tr>
+          <tr><td><code>byte</code></td><td>1 байт</td><td>-128 … 127</td><td><code>Byte</code></td><td>0</td></tr>
+          <tr><td><code>short</code></td><td>2 байта</td><td>-32 768 … 32 767</td><td><code>Short</code></td><td>0</td></tr>
+          <tr><td><code>int</code></td><td>4 байта</td><td>≈ ±2 млрд</td><td><code>Integer</code></td><td>0</td></tr>
+          <tr><td><code>long</code></td><td>8 байт</td><td>≈ ±9.2×10¹⁸</td><td><code>Long</code></td><td>0L</td></tr>
+          <tr><td><code>float</code></td><td>4 байта</td><td>≈ 7 значимых цифр</td><td><code>Float</code></td><td>0.0f</td></tr>
+          <tr><td><code>double</code></td><td>8 байт</td><td>≈ 15 значимых цифр</td><td><code>Double</code></td><td>0.0d</td></tr>
+          <tr><td><code>char</code></td><td>2 байта</td><td>'\u0000' … '\uFFFF'</td><td><code>Character</code></td><td>'\u0000'</td></tr>
+          <tr><td><code>boolean</code></td><td>~1 бит</td><td>true / false</td><td><code>Boolean</code></td><td>false</td></tr>
+        </table>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Ловушка Integer кэша</div>
+        Integer кэширует значения от <strong>-128 до 127</strong>. Для значений вне этого диапазона <code>==</code> вернёт <code>false</code> — всегда используй <code>.equals()</code>!
+      </div>
+    </div>
+
+    <!-- ═══ 3. СТРОКИ ═══ -->
+    <div class="section" id="strings">
+      <div class="section-title"><span class="s-icon">📝</span> Строки и String Pool</div>
+      <div class="prose">
+        <p><code>String</code> в Java — <strong>immutable</strong> (неизменяемый). Любая операция создаёт новый объект. JVM хранит строковые литералы в специальной области — <strong>String Pool</strong> (часть Heap с Java 8+).</p>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ String Pool (литерал)</div>
+          <ul class="compare-list">
+            <li>Создаётся через <code>"текст"</code></li>
+            <li>JVM проверяет пул → переиспользует</li>
+            <li><code>"a" == "a"</code> → <code>true</code></li>
+            <li>Экономит память</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">❌ new String()</div>
+          <ul class="compare-list">
+            <li>Создаётся через <code>new String("текст")</code></li>
+            <li>Всегда новый объект в Heap</li>
+            <li><code>new String("a") == new String("a")</code> → <code>false</code></li>
+            <li>Избегай без нужды</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-subtitle">String vs StringBuilder vs StringBuffer</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Класс</th><th>Изменяемость</th><th>Thread-safe</th><th>Когда использовать</th></tr>
+          <tr><td><code>String</code></td><td>❌ Immutable</td><td>✅ Да</td><td>Обычные строки, ключи Map</td></tr>
+          <tr><td><code>StringBuilder</code></td><td>✅ Mutable</td><td>❌ Нет</td><td>Конкатенация в цикле (однопоточно)</td></tr>
+          <tr><td><code>StringBuffer</code></td><td>✅ Mutable</td><td>✅ Да</td><td>Многопоточная конкатенация (редко нужен)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 4. ПАМЯТЬ JVM ═══ -->
+    <div class="section" id="memory">
+      <div class="section-title"><span class="s-icon">🧠</span> Память JVM: Stack и Heap</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--primary)">Stack (Стек)</div>
+          <ul class="compare-list">
+            <li>Фреймы вызова методов</li>
+            <li>Локальные переменные и примитивы</li>
+            <li>Ссылки на объекты из Heap</li>
+            <li>Автоматически очищается при выходе из метода</li>
+            <li>Быстрый доступ (LIFO)</li>
+            <li>StackOverflowError → бесконечная рекурсия</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">Heap (Куча)</div>
+          <ul class="compare-list">
+            <li>Все объекты (new …)</li>
+            <li>String Pool (Java 8+)</li>
+            <li>Статические поля классов</li>
+            <li>Управляется Garbage Collector</li>
+            <li>Медленнее Stack, но больше</li>
+            <li>OutOfMemoryError → утечка памяти</li>
+          </ul>
+        </div>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">💡 Pass by value</div>
+        Java — <strong>всегда передаёт по значению</strong>. Для примитивов передаётся копия значения. Для объектов — копия <em>ссылки</em> (не самого объекта). Поэтому изменение полей объекта внутри метода видно снаружи, но присвоение новой ссылки — нет.
+      </div>
+    </div>
+
+    <!-- ═══ 5. ИСКЛЮЧЕНИЯ ═══ -->
+    <div class="section" id="exceptions">
+      <div class="section-title"><span class="s-icon">🚨</span> Исключения (Exceptions)</div>
+      <div class="prose">
+        <p>Иерархия: <code>Throwable</code> → <code>Error</code> + <code>Exception</code>. <code>Exception</code> делится на <strong>Checked</strong> и <strong>Unchecked (RuntimeException)</strong>.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Тип</th><th>Описание</th><th>Примеры</th><th>Обязательно ловить?</th></tr>
+          <tr><td><code>Error</code></td><td>Критические сбои JVM</td><td>OutOfMemoryError, StackOverflowError</td><td>❌ Не ловят</td></tr>
+          <tr><td><code>Checked Exception</code></td><td>Ожидаемые внешние сбои</td><td>IOException, SQLException</td><td>✅ Да, компилятор требует</td></tr>
+          <tr><td><code>Unchecked Exception</code></td><td>Ошибки программиста</td><td>NPE, IllegalArgumentException, ArrayIndexOutOfBoundsException</td><td>❌ По желанию</td></tr>
+        </table>
+      </div>
+      <div class="box box-blue">
+        <div class="box-label">Try-with-resources (Java 7+)</div>
+        Ресурсы, реализующие <code>AutoCloseable</code> (потоки, соединения, readers), автоматически закрываются — даже при исключении. Это лучше, чем <code>finally { close(); }</code>.
+      </div>
+    </div>
+
+    <!-- ═══ 6. EQUALS / HASHCODE ═══ -->
+    <div class="section" id="equals">
+      <div class="section-title"><span class="s-icon">⚖️</span> equals() и hashCode()</div>
+      <div class="prose">
+        <p><strong>Контракт</strong>: если <code>a.equals(b) == true</code>, то <code>a.hashCode() == b.hashCode()</code> <em>обязательно</em>. Обратное — не обязательно. Нарушение контракта → объекты «теряются» в <code>HashMap</code> и <code>HashSet</code>.</p>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Когда ОБЯЗАТЕЛЬНО переопределять</div>
+        Если кладёшь объект в <code>HashMap</code>, <code>HashSet</code>, <code>LinkedHashMap</code> — <strong>обязательно</strong> переопределяй оба метода. По умолчанию они сравнивают ссылки, а не содержимое.
+      </div>
+    </div>
+
+    <!-- ═══ 7. OPTIONAL ═══ -->
+    <div class="section" id="optional">
+      <div class="section-title"><span class="s-icon">🎁</span> Optional&lt;T&gt;</div>
+      <div class="prose">
+        <p><code>Optional</code> — контейнер, который может содержать значение или быть пустым. Альтернатива <code>null</code>, которая делает возможность отсутствия значения явной.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Метод</th><th>Описание</th></tr>
+          <tr><td><code>Optional.of(val)</code></td><td>Создаёт Optional с non-null значением (NPE если null)</td></tr>
+          <tr><td><code>Optional.ofNullable(val)</code></td><td>Создаёт Optional, разрешая null</td></tr>
+          <tr><td><code>Optional.empty()</code></td><td>Пустой Optional</td></tr>
+          <tr><td><code>.isPresent()</code></td><td>Есть ли значение</td></tr>
+          <tr><td><code>.get()</code></td><td>Получить значение (NoSuchElementException если пусто)</td></tr>
+          <tr><td><code>.orElse(default)</code></td><td>Значение или default</td></tr>
+          <tr><td><code>.orElseGet(() -> ...)</code></td><td>Значение или lazy-вычисленный default</td></tr>
+          <tr><td><code>.orElseThrow()</code></td><td>Значение или кидает исключение</td></tr>
+          <tr><td><code>.map(fn)</code></td><td>Преобразование значения</td></tr>
+          <tr><td><code>.filter(pred)</code></td><td>Фильтр по предикату</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 8. BEST PRACTICES ═══ -->
+    <div class="section" id="practices">
+      <div class="section-title"><span class="s-icon">✅</span> Best Practices / Bad Practices</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Best Practices</div>
+          <ul class="compare-list">
+            <li>Используй <code>try-with-resources</code> для ресурсов</li>
+            <li>Всегда переопределяй <code>equals</code> + <code>hashCode</code> вместе</li>
+            <li>Используй <code>Objects.equals()</code> и <code>Objects.hash()</code></li>
+            <li>Предпочитай <code>Optional</code> вместо возврата null</li>
+            <li>Используй <code>List.of()</code>, <code>Map.of()</code> для immutable коллекций</li>
+            <li>Предпочитай <code>record</code> (Java 16+) для DTO</li>
+            <li>Используй <code>StringBuilder</code> для конкатенации в цикле</li>
+            <li>Объявляй переменные максимально локально</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Bad Practices</div>
+          <ul class="compare-list">
+            <li>Сравнивать строки через <code>==</code></li>
+            <li><code>catch (Exception e) {}</code> — проглатывать исключения</li>
+            <li>Возвращать <code>null</code> из метода без документации</li>
+            <li>Переопределять <code>equals</code> без <code>hashCode</code></li>
+            <li>Конкатенация в цикле через <code>+</code></li>
+            <li>Использовать <code>float</code>/<code>double</code> для денег (используй <code>BigDecimal</code>)</li>
+            <li>Ловить <code>Error</code> или <code>Throwable</code></li>
+            <li>Хранить мутабельные объекты в <code>static</code> полях</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 9. ОШИБКИ ═══ -->
+    <div class="section" id="mistakes">
+      <div class="section-title"><span class="s-icon">⚠️</span> Частые ошибки и советы</div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">NullPointerException — самая частая ошибка</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>NPE возникает при попытке вызвать метод или обратиться к полю у <code>null</code> ссылки. С Java 14+ сообщение NPE стало информативным и показывает, что именно было null.</p>
+            <p><strong>Профилактика:</strong> используй <code>Optional</code>, проверки <code>Objects.requireNonNull()</code>, аннотации <code>@NonNull</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Memory Leak — утечка памяти</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>GC не может собрать объект, если на него есть хотя бы одна живая ссылка. Частые причины: незакрытые потоки/соединения, статические коллекции, которые растут без ограничений, listeners без отписки.</p>
+            <p><strong>Решение:</strong> <code>try-with-resources</code>, WeakReference для кэшей, профилировщик (VisualVM, YourKit).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Integer кэш — сюрприз со ==</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>JVM кэширует <code>Integer</code> от -128 до 127. Значит <code>Integer.valueOf(100) == Integer.valueOf(100)</code> → <code>true</code>, но <code>Integer.valueOf(200) == Integer.valueOf(200)</code> → <code>false</code>. Всегда используй <code>.equals()</code> для объектов.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 10. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <!-- Пример 1 -->
+      <div class="section-subtitle">1. Примитивы, Autoboxing и Integer кэш</div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">Java</span>
+          <button class="copy-btn">⎘ Копировать</button>
+        </div>
+        <pre><span class="cm">// ── Примитивы хранятся в Stack, доступ быстрее</span>
+<span class="kw">int</span> age = <span class="nu">25</span>;                          <span class="cm">// примитив int, 4 байта в Stack</span>
+<span class="kw">double</span> salary = <span class="nu">75_000.50</span>;             <span class="cm">// _ для читаемости (Java 7+)</span>
+<span class="kw">long</span> population = <span class="nu">8_000_000_000L</span>;     <span class="cm">// суффикс L обязателен для long</span>
+<span class="kw">boolean</span> active = <span class="kw">true</span>;               <span class="cm">// только true/false, не 0/1</span>
+
+<span class="cm">// ── Autoboxing: компилятор автоматически упаковывает int → Integer</span>
+<span class="cl">Integer</span> boxed = <span class="nu">42</span>;                   <span class="cm">// == Integer.valueOf(42), не new Integer(42)</span>
+<span class="kw">int</span> unboxed = boxed;                   <span class="cm">// Unboxing: Integer → int автоматически</span>
+<span class="cm">// Внимание: unboxing из null вызовет NullPointerException!</span>
+
+<span class="cm">// ── Integer кэш: значения -128..127 берутся из кэша JVM</span>
+<span class="cl">Integer</span> a = <span class="nu">127</span>;                       <span class="cm">// берётся из кэша Integer</span>
+<span class="cl">Integer</span> b = <span class="nu">127</span>;                       <span class="cm">// тот же объект из кэша</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(a == b);           <span class="cm">// true — один и тот же объект</span>
+
+<span class="cl">Integer</span> x = <span class="nu">200</span>;                       <span class="cm">// вне кэша, новый объект в Heap</span>
+<span class="cl">Integer</span> y = <span class="nu">200</span>;                       <span class="cm">// ещё один новый объект</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(x == y);           <span class="cm">// false — разные объекты!</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(x.<span class="fn">equals</span>(y));     <span class="cm">// true — сравниваем содержимое, ПРАВИЛЬНО</span>
+
+<span class="cm">// ── Полезные методы Integer</span>
+<span class="kw">int</span> parsed = <span class="cl">Integer</span>.<span class="fn">parseInt</span>(<span class="st">"123"</span>);  <span class="cm">// String → int, кидает NumberFormatException</span>
+<span class="cl">String</span> str = <span class="cl">Integer</span>.<span class="fn">toString</span>(<span class="nu">456</span>);   <span class="cm">// int → String</span>
+<span class="kw">int</span> max = <span class="cl">Integer</span>.MAX_VALUE;           <span class="cm">// 2 147 483 647</span>
+<span class="kw">int</span> min = <span class="cl">Integer</span>.MIN_VALUE;           <span class="cm">// -2 147 483 648</span>
+<span class="cl">String</span> bin = <span class="cl">Integer</span>.<span class="fn">toBinaryString</span>(<span class="nu">10</span>); <span class="cm">// "1010"</span>
+<span class="cl">String</span> hex = <span class="cl">Integer</span>.<span class="fn">toHexString</span>(<span class="nu">255</span>);  <span class="cm">// "ff"</span></pre>
+      </div>
+
+      <!-- Пример 2 -->
+      <div class="section-subtitle">2. String Pool, сравнение и методы строк</div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">Java</span>
+          <button class="copy-btn">⎘ Копировать</button>
+        </div>
+        <pre><span class="cm">// ── String Pool: литералы переиспользуются</span>
+<span class="cl">String</span> s1 = <span class="st">"Java"</span>;                    <span class="cm">// создаётся в String Pool</span>
+<span class="cl">String</span> s2 = <span class="st">"Java"</span>;                    <span class="cm">// берётся из Pool — тот же объект</span>
+<span class="cl">String</span> s3 = <span class="kw">new</span> <span class="cl">String</span>(<span class="st">"Java"</span>);       <span class="cm">// принудительно новый объект в Heap</span>
+
+<span class="cl">System</span>.out.<span class="fn">println</span>(s1 == s2);         <span class="cm">// true — одна ссылка (пул)</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(s1 == s3);         <span class="cm">// false — разные ссылки!</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(s1.<span class="fn">equals</span>(s3));   <span class="cm">// true — содержимое одинаково ✅</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(s3.<span class="fn">intern</span>() == s1); <span class="cm">// true — intern() помещает в пул</span>
+
+<span class="cm">// ── Основные методы String</span>
+<span class="cl">String</span> name = <span class="st">"  Hello, World!  "</span>;
+<span class="cl">System</span>.out.<span class="fn">println</span>(name.<span class="fn">trim</span>());       <span class="cm">// "Hello, World!" — убирает пробелы</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(name.<span class="fn">strip</span>());      <span class="cm">// Java 11+, лучше trim для Unicode</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(name.<span class="fn">length</span>());     <span class="cm">// 18 — количество символов</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(name.<span class="fn">toUpperCase</span>()); <span class="cm">// "  HELLO, WORLD!  "</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(name.<span class="fn">contains</span>(<span class="st">"World"</span>));  <span class="cm">// true</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(name.<span class="fn">replace</span>(<span class="st">"World"</span>, <span class="st">"Java"</span>)); <span class="cm">// "  Hello, Java!  "</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(name.<span class="fn">indexOf</span>(<span class="st">"o"</span>));  <span class="cm">// 4 — индекс первого 'o'</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(name.<span class="fn">substring</span>(<span class="nu">2</span>, <span class="nu">7</span>)); <span class="cm">// "Hello"</span>
+<span class="kw">boolean</span> empty = <span class="st">""</span>.<span class="fn">isEmpty</span>();          <span class="cm">// true</span>
+<span class="kw">boolean</span> blank = <span class="st">"  "</span>.<span class="fn">isBlank</span>();       <span class="cm">// true (Java 11+)</span>
+
+<span class="cm">// ── StringBuilder — быстрая конкатенация (не создаёт объект на каждый +)</span>
+<span class="cl">StringBuilder</span> sb = <span class="kw">new</span> <span class="cl">StringBuilder</span>(); <span class="cm">// изменяемый буфер строки</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nu">0</span>; i < <span class="nu">5</span>; i++) {
+    sb.<span class="fn">append</span>(i).<span class="fn">append</span>(<span class="st">","</span>);           <span class="cm">// append возвращает this — цепочка</span>
+}
+sb.<span class="fn">deleteCharAt</span>(sb.<span class="fn">length</span>() - <span class="nu">1</span>);    <span class="cm">// удаляем последнюю запятую</span>
+<span class="cl">String</span> result = sb.<span class="fn">toString</span>();         <span class="cm">// "0,1,2,3,4"</span>
+
+<span class="cm">// ── Text Block (Java 15+) — многострочные строки без \n и \"</span>
+<span class="cl">String</span> json = <span class="st">"""
+    {
+        "name": "Ivan",
+        "age": 25
+    }
+    """</span>;  <span class="cm">// отступы убираются автоматически относительно """</span></pre>
+      </div>
+
+      <!-- Пример 3 -->
+      <div class="section-subtitle">3. Исключения и try-with-resources</div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">Java</span>
+          <button class="copy-btn">⎘ Копировать</button>
+        </div>
+        <pre><span class="cm">// ── Стандартный try-catch-finally</span>
+<span class="kw">try</span> {
+    <span class="kw">int</span> result = <span class="nu">10</span> / <span class="nu">0</span>;               <span class="cm">// кидает ArithmeticException</span>
+} <span class="kw">catch</span> (<span class="cl">ArithmeticException</span> e) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Деление на 0: "</span> + e.<span class="fn">getMessage</span>()); <span class="cm">// "/" by zero</span>
+} <span class="kw">finally</span> {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"finally всегда выполняется"</span>); <span class="cm">// даже при исключении</span>
+}
+
+<span class="cm">// ── Multi-catch (Java 7+) — несколько типов в одном catch</span>
+<span class="kw">try</span> {
+    <span class="fn">doSomething</span>();
+} <span class="kw">catch</span> (<span class="cl">IOException</span> | <span class="cl">SQLException</span> e) { <span class="cm">// оба типа обрабатываются одинаково</span>
+    <span class="fn">log</span>.<span class="fn">error</span>(<span class="st">"Ошибка: {}"</span>, e.<span class="fn">getMessage</span>());
+}
+
+<span class="cm">// ── try-with-resources (Java 7+) — ресурс закрывается АВТОМАТИЧЕСКИ</span>
+<span class="kw">try</span> (<span class="cl">BufferedReader</span> reader = <span class="kw">new</span> <span class="cl">BufferedReader</span>(  <span class="cm">// открываем ресурс в ()</span>
+        <span class="kw">new</span> <span class="cl">FileReader</span>(<span class="st">"data.txt"</span>))) {           <span class="cm">// reader реализует AutoCloseable</span>
+    <span class="cl">String</span> line;
+    <span class="kw">while</span> ((line = reader.<span class="fn">readLine</span>()) != <span class="kw">null</span>) {   <span class="cm">// читаем до конца файла</span>
+        <span class="fn">process</span>(line);                              <span class="cm">// обрабатываем строку</span>
+    }
+} <span class="kw">catch</span> (<span class="cl">IOException</span> e) {
+    <span class="cl">System</span>.err.<span class="fn">println</span>(<span class="st">"Ошибка файла: "</span> + e.<span class="fn">getMessage</span>());
+}
+<span class="cm">// reader.close() вызывается автоматически — даже при исключении!</span>
+
+<span class="cm">// ── Собственное исключение</span>
+<span class="kw">public class</span> <span class="cl">UserNotFoundException</span> <span class="kw">extends</span> <span class="cl">RuntimeException</span> { <span class="cm">// Unchecked</span>
+    <span class="kw">public</span> <span class="fn">UserNotFoundException</span>(<span class="cl">Long</span> id) {
+        <span class="kw">super</span>(<span class="st">"Пользователь с id "</span> + id + <span class="st">" не найден"</span>); <span class="cm">// сообщение в родитель</span>
+    }
+}
+<span class="cm">// Использование:</span>
+<span class="kw">throw new</span> <span class="cl">UserNotFoundException</span>(<span class="nu">42L</span>); <span class="cm">// кидаем наше исключение</span></pre>
+      </div>
+
+      <!-- Пример 4 -->
+      <div class="section-subtitle">4. equals(), hashCode() и Objects</div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">Java</span>
+          <button class="copy-btn">⎘ Копировать</button>
+        </div>
+        <pre><span class="kw">import</span> java.util.<span class="cl">Objects</span>;
+
+<span class="kw">public class</span> <span class="cl">User</span> {
+    <span class="kw">private</span> <span class="cl">Long</span> id;
+    <span class="kw">private</span> <span class="cl">String</span> email;
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">equals</span>(<span class="cl">Object</span> o) {        <span class="cm">// параметр всегда Object</span>
+        <span class="kw">if</span> (<span class="kw">this</span> == o) <span class="kw">return true</span>;           <span class="cm">// быстрая проверка — один объект</span>
+        <span class="kw">if</span> (!(o <span class="kw">instanceof</span> <span class="cl">User</span> user)) <span class="kw">return false</span>; <span class="cm">// Java 16+: pattern matching</span>
+        <span class="kw">return</span> <span class="cl">Objects</span>.<span class="fn">equals</span>(id, user.id)          <span class="cm">// null-safe сравнение</span>
+            && <span class="cl">Objects</span>.<span class="fn">equals</span>(email, user.email);   <span class="cm">// по всем значимым полям</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> <span class="fn">hashCode</span>() {
+        <span class="kw">return</span> <span class="cl">Objects</span>.<span class="fn">hash</span>(id, email);   <span class="cm">// тот же набор полей, что в equals!</span>
+    }                                       <span class="cm">// Objects.hash обрабатывает null</span>
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toString</span>() {
+        <span class="kw">return</span> <span class="st">"User{id="</span> + id + <span class="st">", email='"</span> + email + <span class="st">"'}"</span>; <span class="cm">// для отладки</span>
+    }
+}
+
+<span class="cm">// ── record (Java 16+) — equals/hashCode/toString АВТОМАТИЧЕСКИ!</span>
+<span class="kw">public record</span> <span class="cl">UserRecord</span>(<span class="cl">Long</span> id, <span class="cl">String</span> email) {}  <span class="cm">// всё готово из коробки</span>
+
+<span class="cm">// ── Использование</span>
+<span class="cl">User</span> u1 = <span class="kw">new</span> <span class="cl">User</span>(<span class="nu">1L</span>, <span class="st">"ivan@mail.ru"</span>);
+<span class="cl">User</span> u2 = <span class="kw">new</span> <span class="cl">User</span>(<span class="nu">1L</span>, <span class="st">"ivan@mail.ru"</span>);
+<span class="cl">System</span>.out.<span class="fn">println</span>(u1.<span class="fn">equals</span>(u2));  <span class="cm">// true — содержимое одинаково</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(u1 == u2);       <span class="cm">// false — разные объекты в Heap</span>
+
+<span class="kw">var</span> set = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;<span class="cl">User</span>&gt;();       <span class="cm">// HashSet использует hashCode + equals</span>
+set.<span class="fn">add</span>(u1);
+<span class="cl">System</span>.out.<span class="fn">println</span>(set.<span class="fn">contains</span>(u2)); <span class="cm">// true только если оба метода правильные</span></pre>
+      </div>
+
+      <!-- Пример 5 -->
+      <div class="section-subtitle">5. Optional — работа с отсутствием значения</div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">Java</span>
+          <button class="copy-btn">⎘ Копировать</button>
+        </div>
+        <pre><span class="cm">// ── Создание Optional</span>
+<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; present = <span class="cl">Optional</span>.<span class="fn">of</span>(<span class="st">"Иван"</span>);         <span class="cm">// есть значение</span>
+<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; empty   = <span class="cl">Optional</span>.<span class="fn">empty</span>();            <span class="cm">// пусто</span>
+<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; maybe  = <span class="cl">Optional</span>.<span class="fn">ofNullable</span>(<span class="fn">getUser</span>()); <span class="cm">// может быть null</span>
+
+<span class="cm">// ── Получение значения</span>
+<span class="cl">String</span> name = present.<span class="fn">get</span>();                    <span class="cm">// "Иван" (кидает если пусто!)</span>
+<span class="cl">String</span> def  = empty.<span class="fn">orElse</span>(<span class="st">"Аноним"</span>);          <span class="cm">// "Аноним" — значение по умолчанию</span>
+<span class="cl">String</span> lazy = empty.<span class="fn">orElseGet</span>(() -> <span class="fn">loadDefault</span>()); <span class="cm">// ленивое вычисление</span>
+<span class="cl">String</span> safe = maybe.<span class="fn">orElseThrow</span>(               <span class="cm">// кидает наше исключение</span>
+    () -> <span class="kw">new</span> <span class="cl">UserNotFoundException</span>(<span class="nu">1L</span>));
+
+<span class="cm">// ── Преобразование (map, filter)</span>
+<span class="cl">Optional</span>&lt;<span class="cl">Integer</span>&gt; len = present.<span class="fn">map</span>(<span class="cl">String</span>::<span class="fn">length</span>); <span class="cm">// Optional[4]</span>
+<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; upper = present
+    .<span class="fn">filter</span>(s -> s.<span class="fn">length</span>() > <span class="nu">3</span>)               <span class="cm">// проходит если длина > 3</span>
+    .<span class="fn">map</span>(<span class="cl">String</span>::<span class="fn">toUpperCase</span>);               <span class="cm">// "ИВАН"</span>
+
+<span class="cm">// ── Пример из репозитория Spring</span>
+<span class="kw">public</span> <span class="cl">User</span> <span class="fn">getById</span>(<span class="cl">Long</span> id) {
+    <span class="kw">return</span> userRepository.<span class="fn">findById</span>(id)        <span class="cm">// возвращает Optional<User></span>
+        .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">UserNotFoundException</span>(id)); <span class="cm">// или кидаем 404</span>
+}
+
+<span class="cm">// ── Что НЕ надо делать с Optional</span>
+<span class="cm">// if (opt.isPresent()) { opt.get(); } — лучше orElse/map</span>
+<span class="cm">// Optional в полях класса — не используй для полей, только как возврат метода</span>
+<span class="cm">// Optional в параметрах — не принято, лучше перегрузка метода</span></pre>
+      </div>
+    </div>
+
+    <!-- ═══ 11. ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <!-- Q1 -->
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">В чём разница между == и .equals() в Java?</div>
+            <div class="qa-q-en">What is the difference between == and .equals() in Java?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span>
+          <span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row">
+            <div class="qa-label ans">✅ Ответ (RU)</div>
+            <div class="qa-text"><code>==</code> сравнивает <strong>ссылки</strong> (адреса в памяти) — одинаковый ли объект. <code>.equals()</code> сравнивает <strong>содержимое</strong> по логике, определённой в классе. Для примитивов <code>==</code> сравнивает значения. Для строк всегда используй <code>.equals()</code>.</div>
+          </div>
+          <div class="qa-row">
+            <div class="qa-label en">✅ Answer (EN)</div>
+            <div class="qa-text"><code>==</code> compares <strong>references</strong> (memory addresses). <code>.equals()</code> compares <strong>content</strong> using the logic defined in the class. For primitives, <code>==</code> compares values. Always use <code>.equals()</code> for Strings and objects.</div>
+          </div>
+          <div class="qa-row">
+            <div class="qa-label tip">🔥 Сильный ответ</div>
+            <div class="qa-text">«<code>==</code> — сравнение идентичности (один ли объект в памяти), <code>.equals()</code> — сравнение эквивалентности (одинаковое ли содержимое). Для String важно помнить про String Pool: два литерала <code>"abc"</code> будут <code>==</code>, но <code>new String("abc")</code> — нет. Поэтому для строк всегда <code>.equals()</code> или <code>Objects.equals()</code>.»</div>
+          </div>
+          <div class="qa-row">
+            <div class="qa-label err">⚠️ Типичная ошибка кандидата</div>
+            <div class="qa-text">Говорят только про строки, забывая про примитивы и про Integer кэш (-128..127).</div>
+          </div>
+          <div class="qa-fav-row">
+            <button class="qa-fav-btn" data-qid="jc-q1">☆ В избранное</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое String Pool и зачем он нужен?</div>
+            <div class="qa-q-en">What is the String Pool and why does it exist?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span>
+          <span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row">
+            <div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">String Pool — специальная область в Heap (с Java 8+), где JVM хранит интернированные строковые литералы. Когда ты пишешь <code>"Java"</code>, JVM проверяет: есть ли такая строка в пуле? Если есть — возвращает ту же ссылку, не создавая новый объект. Это возможно потому что String в Java <strong>immutable</strong> (неизменяемый). Экономит память и ускоряет сравнение по ссылке.</div>
+          </div>
+          <div class="qa-row">
+            <div class="qa-label tip">🔥 Сильный ответ</div>
+            <div class="qa-text">«String Pool — это оптимизация JVM, основанная на том что String immutable. Раз строку нельзя изменить, её безопасно переиспользовать. С Java 8 пул переехал из PermGen в основной Heap. <code>String.intern()</code> позволяет добавить строку в пул принудительно. <code>new String("abc")</code> всегда создаёт новый объект в Heap, минуя пул.»</div>
+          </div>
+          <div class="qa-fav-row">
+            <button class="qa-fav-btn" data-qid="jc-q2">☆ В избранное</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем Stack отличается от Heap в JVM?</div>
+            <div class="qa-q-en">What is the difference between Stack and Heap in JVM?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span>
+          <span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row">
+            <div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><strong>Stack</strong>: хранит фреймы вызовов методов, локальные переменные, примитивы и ссылки. Управляется автоматически (LIFO). Каждый поток имеет свой Stack. <code>StackOverflowError</code> — бесконечная рекурсия.<br><strong>Heap</strong>: все объекты, массивы, String Pool. Управляется GC. Общий для всех потоков. <code>OutOfMemoryError</code> — утечка памяти.</div>
+          </div>
+          <div class="qa-row">
+            <div class="qa-label tip">🔥 Добавить в ответ</div>
+            <div class="qa-text">«Локальная переменная <code>int x = 5</code> живёт в Stack. <code>new User()</code> создаёт объект в Heap, а ссылка на него — в Stack. Когда метод завершается, его Stack-фрейм уничтожается. Объект в Heap живёт пока на него есть хотя бы одна живая ссылка.»</div>
+          </div>
+          <div class="qa-fav-row">
+            <button class="qa-fav-btn" data-qid="jc-q3">☆ В избранное</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Контракт equals и hashCode — что это?</div>
+            <div class="qa-q-en">Explain the equals() and hashCode() contract.</div>
+          </div>
+          <span class="qa-badge hard">Hard</span>
+          <span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row">
+            <div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Контракт: если <code>a.equals(b)</code> → <code>true</code>, то <code>a.hashCode() == b.hashCode()</code> <em>обязан</em> быть <code>true</code>. Обратное необязательно (коллизии допустимы). Нарушение: если переопределить только <code>equals</code> без <code>hashCode</code>, объекты могут «потеряться» в HashMap/HashSet — два равных объекта попадут в разные bucket'ы и <code>contains()</code> вернёт <code>false</code>.</div>
+          </div>
+          <div class="qa-row">
+            <div class="qa-label tip">🔥 Сильный ответ</div>
+            <div class="qa-text">«HashMap сначала использует hashCode() для определения bucket'а, потом equals() для поиска внутри bucket'а. Если hashCode разный — equals не вызывается вообще, объект не найдётся. Поэтому оба метода должны использовать одни и те же поля. Lombok @EqualsAndHashCode или record решают это автоматически.»</div>
+          </div>
+          <div class="qa-fav-row">
+            <button class="qa-fav-btn" data-qid="jc-q4">☆ В избранное</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Java передаёт аргументы по значению или по ссылке?</div>
+            <div class="qa-q-en">Does Java pass arguments by value or by reference?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span>
+          <span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row">
+            <div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Java всегда передаёт <strong>по значению</strong>. Для примитивов — копия значения. Для объектов — копия <em>ссылки</em>. Это значит: изменение полей объекта внутри метода видно снаружи (работаем с тем же объектом через ссылку), но переприсвоение переменной (<code>obj = new Obj()</code>) снаружи не видно.</div>
+          </div>
+          <div class="qa-row">
+            <div class="qa-label err">⚠️ Ошибка кандидата</div>
+            <div class="qa-text">Говорят «объекты передаются по ссылке» — это неточно. Передаётся <em>копия ссылки</em>. Нельзя изменить переменную снаружи через параметр метода.</div>
+          </div>
+          <div class="qa-fav-row">
+            <button class="qa-fav-btn" data-qid="jc-q5">☆ В избранное</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем Checked исключения отличаются от Unchecked?</div>
+            <div class="qa-q-en">What is the difference between Checked and Unchecked exceptions?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span>
+          <span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row">
+            <div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><strong>Checked</strong>: наследуют <code>Exception</code> (не RuntimeException). Компилятор требует их поймать или объявить в сигнатуре (<code>throws</code>). Пример: <code>IOException</code>, <code>SQLException</code>. Используются для ожидаемых внешних сбоев.<br><strong>Unchecked</strong>: наследуют <code>RuntimeException</code>. Компилятор не требует обработки. Пример: <code>NullPointerException</code>, <code>IllegalArgumentException</code>. Обычно означают ошибку программиста.</div>
+          </div>
+          <div class="qa-row">
+            <div class="qa-label tip">💡 Совет</div>
+            <div class="qa-text">В Spring принято использовать Unchecked исключения (RuntimeException) — это позволяет GlobalExceptionHandler перехватывать их без объявления throws в каждом методе.</div>
+          </div>
+          <div class="qa-fav-row">
+            <button class="qa-fav-btn" data-qid="jc-q6">☆ В избранное</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /interview -->
+
+  </div><!-- /page-content -->
+</div><!-- /page-main -->
+</div><!-- /page-layout -->
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  // Показываем кнопку меню на мобилке
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>

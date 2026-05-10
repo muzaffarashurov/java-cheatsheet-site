@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OOP Принципы | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#4f8ef7"></span>📌 Конспект</a>
+    <a class="nav-link" href="#encapsulation"><span class="nav-dot" style="background:#22d3a0"></span>Инкапсуляция</a>
+    <a class="nav-link" href="#inheritance"><span class="nav-dot" style="background:#f5a623"></span>Наследование</a>
+    <a class="nav-link" href="#polymorphism"><span class="nav-dot" style="background:#b88bfa"></span>Полиморфизм</a>
+    <a class="nav-link" href="#abstraction"><span class="nav-dot" style="background:#5bcefa"></span>Абстракция</a>
+    <a class="nav-link" href="#interface-vs-abstract"><span class="nav-dot" style="background:#f06060"></span>Interface vs Abstract</a>
+    <a class="nav-link" href="#solid"><span class="nav-dot" style="background:#4f8ef7"></span>SOLID</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#f5a623"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="java-core.html"><span class="nav-dot" style="background:#4f8ef7"></span>Java Core</a>
+    <a class="nav-link" href="collections.html"><span class="nav-dot" style="background:#22d3a0"></span>Collections</a>
+    <a class="nav-link" href="threads.html"><span class="nav-dot" style="background:#f06060"></span>Многопоточность</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">🏗 OOP Принципы</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:var(--accent);width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#1a4a8a,#5bcefa)">🏗</div>
+        <div>
+          <h1>OOP Принципы</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-blue">Java</span>
+            <span class="chip chip-red">Core</span>
+            <span class="chip chip-cyan">OOP</span>
+            <span class="chip chip-purple">SOLID</span>
+          </div>
+        </div>
+      </div>
+      <p>4 столпа ООП + SOLID принципы + interface vs abstract class. Без этого не проходит ни одно собеседование на Java-разработчика.</p>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#encapsulation">Инкапсуляция</a>
+        <a class="toc-link" href="#inheritance">Наследование</a>
+        <a class="toc-link" href="#polymorphism">Полиморфизм</a>
+        <a class="toc-link" href="#abstraction">Абстракция</a>
+        <a class="toc-link" href="#interface-vs-abstract">Interface vs Abstract</a>
+        <a class="toc-link" href="#solid">SOLID</a>
+        <a class="toc-link" href="#code">💻 Код</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Принцип</th><th>Суть одной фразой</th><th>Ключевое слово Java</th></tr>
+          <tr><td><strong>Инкапсуляция</strong></td><td>Скрываем внутренности, открываем интерфейс</td><td><code>private</code> + getters/setters</td></tr>
+          <tr><td><strong>Наследование</strong></td><td>Дочерний класс расширяет родительский</td><td><code>extends</code></td></tr>
+          <tr><td><strong>Полиморфизм</strong></td><td>Один интерфейс — много реализаций</td><td><code>@Override</code>, <code>instanceof</code></td></tr>
+          <tr><td><strong>Абстракция</strong></td><td>Показываем ЧТО, скрываем КАК</td><td><code>abstract</code>, <code>interface</code></td></tr>
+        </table>
+      </div>
+      <div class="box box-blue">
+        <div class="box-label">💡 Главное правило</div>
+        Предпочитай <strong>композицию</strong> наследованию. Наследование — «является» (is-a). Композиция — «содержит» (has-a). Глубокая иерархия наследования хрупка и сложна в поддержке.
+      </div>
+    </div>
+
+    <!-- ═══ 2. ИНКАПСУЛЯЦИЯ ═══ -->
+    <div class="section" id="encapsulation">
+      <div class="section-title"><span class="s-icon">🔒</span> Инкапсуляция</div>
+      <div class="prose">
+        <p>Объединяем данные (поля) и методы работы с ними в одном классе, скрывая детали реализации от внешнего мира. Поля — <code>private</code>, доступ — через публичные методы.</p>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">✅ Зачем нужна</div>
+        Контролируем изменение состояния объекта. Можно добавить валидацию в setter. Внутреннее представление можно менять, не ломая внешний API. Защита от некорректных данных.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Модификатор</th><th>Класс</th><th>Пакет</th><th>Подкласс</th><th>Все</th></tr>
+          <tr><td><code>private</code></td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+          <tr><td><code>default</code></td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+          <tr><td><code>protected</code></td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+          <tr><td><code>public</code></td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 3. НАСЛЕДОВАНИЕ ═══ -->
+    <div class="section" id="inheritance">
+      <div class="section-title"><span class="s-icon">🧬</span> Наследование</div>
+      <div class="prose">
+        <p>Дочерний класс наследует поля и методы родителя (<code>extends</code>). Java поддерживает только <strong>одиночное наследование</strong> классов, но множественное — через интерфейсы.</p>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Проблема хрупкого базового класса</div>
+        Изменение родительского класса может сломать все дочерние. Поэтому глубокое наследование (более 2–3 уровней) — антипаттерн. Предпочитай композицию.
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Когда использовать наследование</div>
+          <ul class="compare-list">
+            <li>Дочерний — действительно «является» родительским (is-a)</li>
+            <li>Иерархия глубиной 1–2 уровня</li>
+            <li>Переиспользование реальной логики родителя</li>
+            <li>Пример: <code>Animal → Dog, Cat</code></li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Когда НЕ использовать</div>
+          <ul class="compare-list">
+            <li>Только ради переиспользования кода (бери композицию)</li>
+            <li>Если нужно наследовать от нескольких классов</li>
+            <li>Глубокая иерархия 4+ уровней</li>
+            <li>Пример: <code>Stack extends Vector</code> — классический антипаттерн</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 4. ПОЛИМОРФИЗМ ═══ -->
+    <div class="section" id="polymorphism">
+      <div class="section-title"><span class="s-icon">🎭</span> Полиморфизм</div>
+      <div class="prose">
+        <p>«Много форм» — один и тот же код работает с объектами разных типов. Два вида:</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Вид</th><th>Как</th><th>Когда решается</th><th>Пример</th></tr>
+          <tr><td><strong>Runtime (динамический)</strong></td><td><code>@Override</code></td><td>Во время выполнения (JVM)</td><td><code>animal.sound()</code> → Dog или Cat</td></tr>
+          <tr><td><strong>Compile-time (статический)</strong></td><td>Overloading (перегрузка)</td><td>Во время компиляции</td><td><code>print(int)</code> vs <code>print(String)</code></td></tr>
+        </table>
+      </div>
+      <div class="box box-blue">
+        <div class="box-label">💡 Dynamic Dispatch</div>
+        JVM вызывает метод на основе <strong>фактического типа объекта</strong>, а не типа переменной. Это ключевой механизм полиморфизма времени выполнения.
+      </div>
+    </div>
+
+    <!-- ═══ 5. АБСТРАКЦИЯ ═══ -->
+    <div class="section" id="abstraction">
+      <div class="section-title"><span class="s-icon">🌫</span> Абстракция</div>
+      <div class="prose">
+        <p>Показываем пользователю класса только то, что ему нужно знать (ЧТО делает), скрывая детали реализации (КАК делает). Реализуется через <code>abstract class</code> и <code>interface</code>.</p>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">✅ Пример из жизни</div>
+        Ты знаешь что метод <code>repository.save(user)</code> сохраняет пользователя. Тебе не важно, как именно — SQL INSERT, NoSQL, файл. Это и есть абстракция.
+      </div>
+    </div>
+
+    <!-- ═══ 6. INTERFACE vs ABSTRACT ═══ -->
+    <div class="section" id="interface-vs-abstract">
+      <div class="section-title"><span class="s-icon">⚖️</span> Interface vs Abstract Class</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Критерий</th><th>Interface</th><th>Abstract Class</th></tr>
+          <tr><td>Наследование</td><td>Множественное (<code>implements A, B</code>)</td><td>Одиночное (<code>extends A</code>)</td></tr>
+          <tr><td>Конструктор</td><td>❌ Нет</td><td>✅ Есть</td></tr>
+          <tr><td>Поля</td><td>Только <code>public static final</code></td><td>Любые (private, protected)</td></tr>
+          <tr><td>Методы</td><td>abstract, default, static, private (Java 9+)</td><td>abstract + конкретные</td></tr>
+          <tr><td>Состояние</td><td>❌ Нет состояния</td><td>✅ Может иметь состояние</td></tr>
+          <tr><td>Когда</td><td>Контракт поведения (что умеет)</td><td>Общая база с частичной реализацией</td></tr>
+        </table>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--primary)">✅ Interface — когда</div>
+          <ul class="compare-list">
+            <li>Определяешь контракт (что умеет объект)</li>
+            <li>Нужно множественное «наследование»</li>
+            <li>Слабая связность (loose coupling)</li>
+            <li>Пример: <code>Runnable</code>, <code>Comparable</code>, <code>Serializable</code></li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--warn)">✅ Abstract — когда</div>
+          <ul class="compare-list">
+            <li>Есть общая логика для группы классов</li>
+            <li>Нужны конструкторы или нестатические поля</li>
+            <li>Template Method паттерн</li>
+            <li>Пример: <code>AbstractList</code>, <code>HttpServlet</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 7. SOLID ═══ -->
+    <div class="section" id="solid">
+      <div class="section-title"><span class="s-icon">🏛</span> SOLID Принципы</div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title"><span class="chip chip-blue">S</span> &nbsp;Single Responsibility — один класс, одна ответственность</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Каждый класс должен иметь <strong>только одну причину для изменения</strong>. Если класс делает слишком много — его сложно тестировать, изменять и понимать.</p>
+            <p><strong>Признак нарушения:</strong> класс называется <code>UserManager</code>, <code>DataProcessor</code> — широкое название намекает на множество обязанностей.</p>
+          </div>
+          <div class="box box-red"><div class="box-label">🚫 Плохо</div>Класс <code>User</code> содержит логику: сохранение в БД, отправку email, форматирование JSON.</div>
+          <div class="box box-green"><div class="box-label">✅ Хорошо</div><code>User</code> — только данные. <code>UserRepository</code> — сохранение. <code>EmailService</code> — письма. <code>UserMapper</code> — маппинг.</div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title"><span class="chip chip-green">O</span> &nbsp;Open/Closed — открыт для расширения, закрыт для изменения</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Добавляй новую функциональность через расширение (новые классы/методы), а не изменение существующего кода. Существующий рабочий код не трогаем.</p>
+            <p><strong>Реализация:</strong> интерфейсы, абстрактные классы, стратегии, декораторы.</p>
+          </div>
+          <div class="box box-red"><div class="box-label">🚫 Плохо</div>Каждый новый тип скидки — <code>if/else if</code> в методе расчёта цены. Добавление нового типа ломает существующий метод.</div>
+          <div class="box box-green"><div class="box-label">✅ Хорошо</div>Интерфейс <code>DiscountStrategy</code> + отдельный класс для каждой скидки. Новая скидка = новый класс без изменения существующего кода.</div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title"><span class="chip chip-warn">L</span> &nbsp;Liskov Substitution — подтип заменяем базовым типом</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Объекты дочернего класса должны корректно заменять объекты родительского класса без изменения поведения программы.</p>
+            <p><strong>Нарушение:</strong> метод дочернего класса кидает исключение там, где родитель работал нормально, или требует более строгих предусловий.</p>
+          </div>
+          <div class="box box-red"><div class="box-label">🚫 Классический антипример</div><code>Square extends Rectangle</code>: у квадрата нельзя независимо менять ширину и высоту — нарушается поведение Rectangle.</div>
+          <div class="box box-green"><div class="box-label">✅ Хорошо</div>Общий интерфейс <code>Shape</code> с методом <code>area()</code>. Rectangle и Square реализуют его независимо.</div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title"><span class="chip chip-purple">I</span> &nbsp;Interface Segregation — много маленьких интерфейсов</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Клиент не должен зависеть от методов, которые не использует. Лучше много маленьких специализированных интерфейсов, чем один «толстый».</p>
+          </div>
+          <div class="box box-red"><div class="box-label">🚫 Плохо</div>Интерфейс <code>Animal</code> с методами <code>fly()</code>, <code>swim()</code>, <code>run()</code>. Класс <code>Dog</code> вынужден реализовывать <code>fly()</code>.</div>
+          <div class="box box-green"><div class="box-label">✅ Хорошо</div>Отдельные интерфейсы <code>Flyable</code>, <code>Swimmable</code>, <code>Runnable</code>. Класс реализует только нужные.</div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title"><span class="chip chip-cyan">D</span> &nbsp;Dependency Inversion — зависи от абстракций, не от конкретики</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Модули высокого уровня не зависят от модулей низкого уровня — оба зависят от абстракций (интерфейсов). Это основа Dependency Injection в Spring.</p>
+          </div>
+          <div class="box box-red"><div class="box-label">🚫 Плохо</div><code>UserService</code> создаёт <code>new MySQLUserRepository()</code> напрямую — жёсткая связь с конкретной реализацией БД.</div>
+          <div class="box box-green"><div class="box-label">✅ Хорошо</div><code>UserService</code> принимает <code>UserRepository</code> (интерфейс) через конструктор. Spring сам подставит нужную реализацию.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 8. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. Все 4 принципа ООП в одном примере</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── АБСТРАКЦИЯ: интерфейс описывает ЧТО умеет делать, скрывая КАК</span>
+<span class="kw">public interface</span> <span class="cl">PaymentService</span> {
+    <span class="kw">void</span> <span class="fn">pay</span>(<span class="kw">double</span> amount);         <span class="cm">// только контракт, без реализации</span>
+    <span class="kw">boolean</span> <span class="fn">supports</span>(<span class="cl">String</span> method); <span class="cm">// знаем ЧТО, не знаем КАК</span>
+}
+
+<span class="cm">// ── ИНКАПСУЛЯЦИЯ: поля скрыты, доступ через методы</span>
+<span class="kw">public abstract class</span> <span class="cl">BasePayment</span> <span class="kw">implements</span> <span class="cl">PaymentService</span> {
+    <span class="kw">private</span> <span class="cl">String</span> merchantId;       <span class="cm">// private — снаружи не видно</span>
+    <span class="kw">private double</span> commission;       <span class="cm">// изменить можно только через метод</span>
+
+    <span class="kw">public</span> <span class="fn">BasePayment</span>(<span class="cl">String</span> merchantId, <span class="kw">double</span> commission) {
+        <span class="kw">this</span>.merchantId = merchantId;
+        <span class="kw">this</span>.commission = commission;
+    }
+
+    <span class="kw">protected double</span> <span class="fn">getCommission</span>() { <span class="cm">// protected — только для подклассов</span>
+        <span class="kw">return</span> commission;
+    }
+
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">getMerchantId</span>() {
+        <span class="kw">return</span> merchantId;
+    }
+}
+
+<span class="cm">// ── НАСЛЕДОВАНИЕ: CardPayment расширяет BasePayment</span>
+<span class="kw">public class</span> <span class="cl">CardPayment</span> <span class="kw">extends</span> <span class="cl">BasePayment</span> {
+
+    <span class="kw">public</span> <span class="fn">CardPayment</span>() {
+        <span class="kw">super</span>(<span class="st">"MERCHANT_CARD"</span>, <span class="nu">0.015</span>);   <span class="cm">// вызываем конструктор родителя</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">pay</span>(<span class="kw">double</span> amount) {    <span class="cm">// ПОЛИМОРФИЗМ: своя реализация метода</span>
+        <span class="kw">double</span> fee = amount * <span class="fn">getCommission</span>(); <span class="cm">// используем protected метод</span>
+        <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"💳 Карта: %.2f + комиссия %.2f%n"</span>, amount, fee);
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">supports</span>(<span class="cl">String</span> method) {
+        <span class="kw">return</span> <span class="st">"CARD"</span>.<span class="fn">equalsIgnoreCase</span>(method); <span class="cm">// equalsIgnoreCase безопаснее</span>
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">CryptoPayment</span> <span class="kw">extends</span> <span class="cl">BasePayment</span> {
+
+    <span class="kw">public</span> <span class="fn">CryptoPayment</span>() {
+        <span class="kw">super</span>(<span class="st">"MERCHANT_CRYPTO"</span>, <span class="nu">0.005</span>);  <span class="cm">// меньше комиссия у крипты</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">pay</span>(<span class="kw">double</span> amount) {    <span class="cm">// другая реализация — полиморфизм</span>
+        <span class="kw">double</span> fee = amount * <span class="fn">getCommission</span>();
+        <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"₿ Крипта: %.2f + комиссия %.2f%n"</span>, amount, fee);
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">supports</span>(<span class="cl">String</span> method) {
+        <span class="kw">return</span> <span class="st">"CRYPTO"</span>.<span class="fn">equalsIgnoreCase</span>(method);
+    }
+}
+
+<span class="cm">// ── ПОЛИМОРФИЗМ в действии: один тип, разное поведение</span>
+<span class="cl">List</span>&lt;<span class="cl">PaymentService</span>&gt; services = <span class="cl">List</span>.<span class="fn">of</span>(
+    <span class="kw">new</span> <span class="cl">CardPayment</span>(),
+    <span class="kw">new</span> <span class="cl">CryptoPayment</span>()
+);
+
+<span class="cl">String</span> method = <span class="st">"CARD"</span>;
+services.<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(s -> s.<span class="fn">supports</span>(method))  <span class="cm">// найти подходящий сервис</span>
+    .<span class="fn">findFirst</span>()
+    .<span class="fn">ifPresent</span>(s -> s.<span class="fn">pay</span>(<span class="nu">1000.0</span>));   <span class="cm">// JVM сам выберет нужный метод</span>
+<span class="cm">// Вывод: 💳 Карта: 1000.00 + комиссия 15.00</span></pre>
+      </div>
+
+      <div class="section-subtitle">2. Interface — default методы и функциональные интерфейсы</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Интерфейс с default методом (Java 8+)</span>
+<span class="kw">public interface</span> <span class="cl">Printable</span> {
+    <span class="cl">String</span> <span class="fn">getContent</span>();                  <span class="cm">// абстрактный — обязан реализовать</span>
+
+    <span class="kw">default void</span> <span class="fn">print</span>() {               <span class="cm">// default — реализация по умолчанию</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="fn">getContent</span>()); <span class="cm">// можно переопределить, но не обязательно</span>
+    }
+
+    <span class="kw">static</span> <span class="cl">Printable</span> <span class="fn">of</span>(<span class="cl">String</span> text) {   <span class="cm">// static метод в интерфейсе (Java 8+)</span>
+        <span class="kw">return</span> () -> text;                  <span class="cm">// лямбда — реализация Printable</span>
+    }
+}
+
+<span class="cm">// ── Множественная реализация интерфейсов</span>
+<span class="kw">public class</span> <span class="cl">Report</span> <span class="kw">implements</span> <span class="cl">Printable</span>, <span class="cl">Comparable</span>&lt;<span class="cl">Report</span>&gt; {
+    <span class="kw">private final</span> <span class="cl">String</span> title;
+    <span class="kw">private final</span> <span class="kw">int</span> priority;
+
+    <span class="kw">public</span> <span class="fn">Report</span>(<span class="cl">String</span> title, <span class="kw">int</span> priority) {
+        <span class="kw">this</span>.title = title;
+        <span class="kw">this</span>.priority = priority;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getContent</span>() {
+        <span class="kw">return</span> <span class="st">"Отчёт: "</span> + title;            <span class="cm">// реализация из Printable</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> <span class="fn">compareTo</span>(<span class="cl">Report</span> other) {  <span class="cm">// реализация из Comparable</span>
+        <span class="kw">return</span> <span class="cl">Integer</span>.<span class="fn">compare</span>(<span class="kw">this</span>.priority, other.priority);
+    }
+}
+
+<span class="cm">// ── Функциональный интерфейс + лямбда (Java 8+)</span>
+<span class="an">@FunctionalInterface</span>                       <span class="cm">// ровно 1 абстрактный метод</span>
+<span class="kw">public interface</span> <span class="cl">Validator</span>&lt;<span class="ty">T</span>&gt; {
+    <span class="kw">boolean</span> <span class="fn">validate</span>(<span class="ty">T</span> value);            <span class="cm">// единственный абстрактный метод</span>
+
+    <span class="kw">default</span> <span class="cl">Validator</span>&lt;<span class="ty">T</span>&gt; <span class="fn">and</span>(<span class="cl">Validator</span>&lt;<span class="ty">T</span>&gt; other) { <span class="cm">// комбинирование</span>
+        <span class="kw">return</span> value -> <span class="kw">this</span>.<span class="fn">validate</span>(value) && other.<span class="fn">validate</span>(value);
+    }
+}
+
+<span class="cm">// Использование лямбдами</span>
+<span class="cl">Validator</span>&lt;<span class="cl">String</span>&gt; notEmpty = s -> !s.<span class="fn">isBlank</span>();     <span class="cm">// лямбда = анонимный класс</span>
+<span class="cl">Validator</span>&lt;<span class="cl">String</span>&gt; notTooLong = s -> s.<span class="fn">length</span>() &lt; <span class="nu">100</span>; <span class="cm">// ещё один валидатор</span>
+<span class="cl">Validator</span>&lt;<span class="cl">String</span>&gt; combined = notEmpty.<span class="fn">and</span>(notTooLong);  <span class="cm">// комбинируем через default</span>
+
+<span class="cl">System</span>.out.<span class="fn">println</span>(combined.<span class="fn">validate</span>(<span class="st">"Hello"</span>)); <span class="cm">// true</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(combined.<span class="fn">validate</span>(<span class="st">""</span>));       <span class="cm">// false</span></pre>
+      </div>
+
+      <div class="section-subtitle">3. SOLID — Dependency Inversion + Spring DI</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── D: Dependency Inversion — зависим от абстракции</span>
+<span class="kw">public interface</span> <span class="cl">NotificationService</span> {  <span class="cm">// абстракция (интерфейс)</span>
+    <span class="kw">void</span> <span class="fn">send</span>(<span class="cl">String</span> to, <span class="cl">String</span> message);
+}
+
+<span class="an">@Service</span>                                    <span class="cm">// Spring управляет этим бином</span>
+<span class="kw">public class</span> <span class="cl">EmailNotificationService</span> <span class="kw">implements</span> <span class="cl">NotificationService</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">send</span>(<span class="cl">String</span> to, <span class="cl">String</span> message) {
+        <span class="cm">// реализация отправки email</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"📧 Email → "</span> + to + <span class="st">": "</span> + message);
+    }
+}
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">SmsNotificationService</span> <span class="kw">implements</span> <span class="cl">NotificationService</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">send</span>(<span class="cl">String</span> to, <span class="cl">String</span> message) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"📱 SMS → "</span> + to + <span class="st">": "</span> + message);
+    }
+}
+
+<span class="cm">// ── UserService зависит от ИНТЕРФЕЙСА, а не от конкретного класса</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">UserService</span> {
+
+    <span class="kw">private final</span> <span class="cl">NotificationService</span> notificationService; <span class="cm">// интерфейс!</span>
+
+    <span class="cm">// Spring сам подставит нужную реализацию через конструктор (рекомендуется)</span>
+    <span class="kw">public</span> <span class="fn">UserService</span>(<span class="cl">NotificationService</span> notificationService) {
+        <span class="kw">this</span>.notificationService = notificationService;    <span class="cm">// DI через конструктор</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">registerUser</span>(<span class="cl">String</span> email) {
+        <span class="cm">// ... сохранение пользователя ...</span>
+        notificationService.<span class="fn">send</span>(email, <span class="st">"Добро пожаловать!"</span>); <span class="cm">// полиморфный вызов</span>
+        <span class="cm">// Не знаем и не должны знать: Email или SMS</span>
+    }
+}
+
+<span class="cm">// ── Если реализаций несколько — используем @Qualifier</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">OrderService</span> {
+    <span class="kw">private final</span> <span class="cl">NotificationService</span> notificationService;
+
+    <span class="kw">public</span> <span class="fn">OrderService</span>(
+        <span class="an">@Qualifier</span>(<span class="st">"emailNotificationService"</span>) <span class="cm">// выбираем конкретную реализацию</span>
+        <span class="cl">NotificationService</span> notificationService) {
+        <span class="kw">this</span>.notificationService = notificationService;
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">4. Полиморфизм — overriding vs overloading</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Overriding (переопределение) — Runtime полиморфизм</span>
+<span class="kw">class</span> <span class="cl">Animal</span> {
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">sound</span>() { <span class="kw">return</span> <span class="st">"..."</span>; }   <span class="cm">// базовый метод</span>
+}
+<span class="kw">class</span> <span class="cl">Dog</span> <span class="kw">extends</span> <span class="cl">Animal</span> {
+    <span class="an">@Override</span>                                      <span class="cm">// аннотация помогает компилятору проверить</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">sound</span>() { <span class="kw">return</span> <span class="st">"Woof"</span>; }  <span class="cm">// своя реализация</span>
+}
+<span class="kw">class</span> <span class="cl">Cat</span> <span class="kw">extends</span> <span class="cl">Animal</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">sound</span>() { <span class="kw">return</span> <span class="st">"Meow"</span>; }
+}
+
+<span class="cl">Animal</span> a1 = <span class="kw">new</span> <span class="cl">Dog</span>();   <span class="cm">// тип переменной — Animal</span>
+<span class="cl">Animal</span> a2 = <span class="kw">new</span> <span class="cl">Cat</span>();   <span class="cm">// фактический тип — Cat</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(a1.<span class="fn">sound</span>());   <span class="cm">// "Woof" — JVM смотрит на РЕАЛЬНЫЙ тип</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(a2.<span class="fn">sound</span>());   <span class="cm">// "Meow" — dynamic dispatch</span>
+
+<span class="cm">// ── Overloading (перегрузка) — Compile-time полиморфизм</span>
+<span class="kw">class</span> <span class="cl">Printer</span> {
+    <span class="kw">public void</span> <span class="fn">print</span>(<span class="cl">String</span> text)  { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"String: "</span> + text); }
+    <span class="kw">public void</span> <span class="fn">print</span>(<span class="kw">int</span> number)   { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Int: "</span> + number); }
+    <span class="kw">public void</span> <span class="fn">print</span>(<span class="cl">String</span> s, <span class="kw">int</span> n) { <span class="cl">System</span>.out.<span class="fn">println</span>(s + <span class="st">": "</span> + n); }
+    <span class="cm">// Компилятор выбирает метод по типу аргументов ещё при компиляции</span>
+}
+
+<span class="cm">// ── instanceof + pattern matching (Java 16+)</span>
+<span class="kw">void</span> <span class="fn">describe</span>(<span class="cl">Animal</span> animal) {
+    <span class="kw">if</span> (animal <span class="kw">instanceof</span> <span class="cl">Dog</span> dog) {       <span class="cm">// pattern matching — кастинг сразу</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Собака: "</span> + dog.<span class="fn">sound</span>());
+    } <span class="kw">else if</span> (animal <span class="kw">instanceof</span> <span class="cl">Cat</span> cat) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Кошка: "</span> + cat.<span class="fn">sound</span>());
+    }
+}
+
+<span class="cm">// ── switch expression с sealed классами (Java 17+)</span>
+<span class="kw">sealed interface</span> <span class="cl">Shape</span> <span class="kw">permits</span> <span class="cl">Circle</span>, <span class="cl">Rectangle</span> {}  <span class="cm">// только эти реализации!</span>
+<span class="kw">record</span> <span class="cl">Circle</span>(<span class="kw">double</span> radius) <span class="kw">implements</span> <span class="cl">Shape</span> {}
+<span class="kw">record</span> <span class="cl">Rectangle</span>(<span class="kw">double</span> w, <span class="kw">double</span> h) <span class="kw">implements</span> <span class="cl">Shape</span> {}
+
+<span class="kw">double</span> <span class="fn">area</span>(<span class="cl">Shape</span> shape) {
+    <span class="kw">return switch</span> (shape) {                         <span class="cm">// exhaustive — все случаи покрыты</span>
+        <span class="kw">case</span> <span class="cl">Circle</span> c    -> <span class="cl">Math</span>.PI * c.<span class="fn">radius</span>() * c.<span class="fn">radius</span>();
+        <span class="kw">case</span> <span class="cl">Rectangle</span> r -> r.<span class="fn">w</span>() * r.<span class="fn">h</span>();
+    };
+}</pre>
+      </div>
+    </div>
+
+    <!-- ═══ 9. ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Расскажи о 4 принципах ООП</div>
+            <div class="qa-q-en">Explain the 4 principles of OOP</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">
+              <strong>Инкапсуляция</strong> — скрываем внутреннее состояние, открываем только нужный API (private поля + public методы).<br>
+              <strong>Наследование</strong> — дочерний класс расширяет родительский (extends), переиспользует код.<br>
+              <strong>Полиморфизм</strong> — один интерфейс, разные реализации. Override (runtime) и Overload (compile-time).<br>
+              <strong>Абстракция</strong> — показываем ЧТО делает объект (интерфейс/abstract), скрываем КАК.
+            </div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">🔥 Сильный ответ</div>
+            <div class="qa-text">Добавь пример из реального проекта: «В Spring Security есть интерфейс UserDetailsService — это абстракция. Я реализую его в своём классе — это полиморфизм. Поле password — private и меняется только через метод — это инкапсуляция. Мой класс может extends BaseUserService — это наследование.»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="oop-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем отличается interface от abstract class?</div>
+            <div class="qa-q-en">What is the difference between interface and abstract class?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">
+              <strong>Interface</strong>: множественная реализация, нет конструктора, нет нестатических полей, описывает контракт (что умеет). С Java 8 — default и static методы.<br>
+              <strong>Abstract class</strong>: одиночное наследование, есть конструктор, может иметь состояние (поля), частичная реализация, шаблонный метод (Template Method).
+            </div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">🔥 Добавить</div>
+            <div class="qa-text">«Если нужно только описать контракт — интерфейс. Если есть общая логика и состояние — abstract. В современном Java с default методами граница размылась, но abstract лучше когда нужен конструктор или protected поля.»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="oop-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое SOLID? Расскажи каждый принцип</div>
+            <div class="qa-q-en">What is SOLID? Explain each principle</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">
+              <strong>S</strong> — Single Responsibility: один класс = одна причина меняться.<br>
+              <strong>O</strong> — Open/Closed: расширяем новым кодом, не правим старый.<br>
+              <strong>L</strong> — Liskov Substitution: подтип работает везде где работает базовый тип.<br>
+              <strong>I</strong> — Interface Segregation: много мелких интерфейсов лучше одного большого.<br>
+              <strong>D</strong> — Dependency Inversion: зависи от интерфейсов, не от конкретных классов.
+            </div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">🔥 Пример для D</div>
+            <div class="qa-text">«В Spring я инжектирую UserRepository как интерфейс, а не JpaUserRepository напрямую. Это DIP — могу заменить реализацию без изменения сервиса. В тестах подменяю заглушкой (mock).»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="oop-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Почему предпочитают композицию наследованию?</div>
+            <div class="qa-q-en">Why is composition preferred over inheritance?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Наследование создаёт жёсткую связь: изменение родителя ломает детей (хрупкий базовый класс). Кроме того, Java не поддерживает множественное наследование. Композиция гибче — можно комбинировать поведение, менять реализацию во время выполнения (Strategy паттерн), легче тестировать (можно подменить поле-мок).</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="oop-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое полиморфизм времени выполнения (dynamic dispatch)?</div>
+            <div class="qa-q-en">What is runtime polymorphism / dynamic dispatch?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">JVM определяет, какой метод вызвать, не по типу переменной, а по <strong>фактическому типу объекта</strong> во время выполнения. Например, переменная типа <code>Animal</code> может ссылаться на <code>Dog</code>, и вызов <code>sound()</code> выполнит метод <code>Dog.sound()</code>, а не <code>Animal.sound()</code>.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label err">⚠️ Ошибка кандидата</div>
+            <div class="qa-text">Путают с overloading — перегрузка решается на этапе компиляции (по типу аргументов), а не во время выполнения.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="oop-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>

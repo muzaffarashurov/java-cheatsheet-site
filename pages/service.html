@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Layer | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#b88bfa"></span>📌 Конспект</a>
+    <a class="nav-link" href="#architecture"><span class="nav-dot" style="background:#4f8ef7"></span>Архитектура слоёв</a>
+    <a class="nav-link" href="#transactional"><span class="nav-dot" style="background:#22d3a0"></span>@Transactional</a>
+    <a class="nav-link" href="#repository"><span class="nav-dot" style="background:#f5a623"></span>Repository / JPA</a>
+    <a class="nav-link" href="#exceptions"><span class="nav-dot" style="background:#f06060"></span>Исключения</a>
+    <a class="nav-link" href="#patterns"><span class="nav-dot" style="background:#5bcefa"></span>Паттерны</a>
+    <a class="nav-link" href="#practices"><span class="nav-dot" style="background:#22d3a0"></span>Best Practices</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#f5a623"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="spring-boot.html"><span class="nav-dot" style="background:#22d3a0"></span>Spring Boot</a>
+    <a class="nav-link" href="restcontroller.html"><span class="nav-dot" style="background:#4f8ef7"></span>@RestController</a>
+    <a class="nav-link" href="dto.html"><span class="nav-dot" style="background:#5bcefa"></span>DTO Pattern</a>
+    <a class="nav-link" href="mapstruct.html"><span class="nav-dot" style="background:#22d3a0"></span>MapStruct</a>
+    <a class="nav-link" href="global-exception-handler.html"><span class="nav-dot" style="background:#f06060"></span>ExceptionHandler</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">⚙ Service Layer</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#b88bfa;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- HERO -->
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#2a0a5a,#b88bfa)">⚙</div>
+        <div>
+          <h1>Service Layer</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-green">Spring</span>
+            <span class="chip chip-backend">Backend</span>
+            <span class="chip chip-purple">@Service</span>
+            <span class="chip chip-warn">@Transactional</span>
+          </div>
+        </div>
+      </div>
+      <p>@Service, @Transactional, Repository, разделение слоёв, бизнес-логика, паттерны сервисного слоя, работа с JPA, обработка исключений — всё что нужно знать о сервисном слое Spring приложения.</p>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#architecture">Архитектура</a>
+        <a class="toc-link" href="#transactional">@Transactional</a>
+        <a class="toc-link" href="#repository">Repository</a>
+        <a class="toc-link" href="#exceptions">Исключения</a>
+        <a class="toc-link" href="#patterns">Паттерны</a>
+        <a class="toc-link" href="#practices">Best Practices</a>
+        <a class="toc-link" href="#code">💻 Код</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-purple" style="background:rgba(184,139,250,0.08);border:1px solid rgba(184,139,250,0.25);color:#c9aef8">
+        <div class="box-label">Золотое правило Service Layer</div>
+        Сервис — единственное место для <strong>бизнес-логики</strong>.<br>
+        Контроллер: принять запрос → вызвать сервис → вернуть ответ.<br>
+        Репозиторий: только CRUD операции с БД.<br>
+        Сервис: оркестрирует, валидирует, трансформирует, управляет транзакциями.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Слой</th><th>Аннотация</th><th>Ответственность</th></tr>
+          <tr><td>Web Layer</td><td><code>@RestController</code></td><td>HTTP запросы/ответы, маппинг URL, валидация входа</td></tr>
+          <tr><td>Service Layer</td><td><code>@Service</code></td><td>Бизнес-логика, транзакции, оркестрация</td></tr>
+          <tr><td>Repository Layer</td><td><code>@Repository</code></td><td>CRUD операции, запросы к БД</td></tr>
+          <tr><td>Domain Layer</td><td><code>@Entity</code></td><td>Доменные объекты, бизнес-правила на уровне объекта</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. АРХИТЕКТУРА ═══ -->
+    <div class="section" id="architecture">
+      <div class="section-title"><span class="s-icon">🏗</span> Архитектура слоёв</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Схема зависимостей</span></div>
+        <pre style="font-size:0.8rem;line-height:1.9">
+  HTTP Request
+       │
+       ▼
+  <span class="an">@RestController</span>          ← принимает запрос, возвращает ResponseEntity
+       │ вызывает
+       ▼
+  <span class="kw">@Service</span>                 ← бизнес-логика, @Transactional
+       │ вызывает
+       ▼
+  <span class="cl">@Repository</span>              ← JPA / Spring Data, работа с БД
+       │
+       ▼
+  <span class="ty">Database</span> (PostgreSQL, MySQL...)
+
+  Правило зависимостей: Controller → Service → Repository
+  Controller НЕ знает о Repository напрямую
+  Repository НЕ знает о Controller
+        </pre>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Антипаттерн — логика в контроллере</div>
+          <ul class="compare-list">
+            <li>Контроллер сам обращается к репозиторию</li>
+            <li>Бизнес-правила разбросаны по контроллерам</li>
+            <li>Невозможно переиспользовать логику</li>
+            <li>Сложно тестировать без HTTP контекста</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Правильно — логика в сервисе</div>
+          <ul class="compare-list">
+            <li>Контроллер только вызывает сервис</li>
+            <li>Сервис можно вызвать из разных контроллеров</li>
+            <li>Сервис легко тестировать с mock репозиторием</li>
+            <li>Транзакции управляются в одном месте</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 3. TRANSACTIONAL ═══ -->
+    <div class="section" id="transactional">
+      <div class="section-title"><span class="s-icon">🔄</span> @Transactional — управление транзакциями</div>
+      <div class="prose">
+        <p><code>@Transactional</code> — Spring управляет транзакцией автоматически: открывает перед методом, коммитит при успехе, откатывает при исключении.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Атрибут</th><th>Значения</th><th>Описание</th></tr>
+          <tr><td><code>readOnly</code></td><td><code>true / false</code></td><td>Оптимизация для SELECT — не нужен flush, подсказка Hibernate</td></tr>
+          <tr><td><code>rollbackFor</code></td><td><code>Exception.class</code></td><td>Откат при checked исключении (по умолч. только RuntimeException)</td></tr>
+          <tr><td><code>noRollbackFor</code></td><td><code>SpecificException.class</code></td><td>Не откатывать при этом исключении</td></tr>
+          <tr><td><code>timeout</code></td><td>секунды</td><td>Откат если транзакция длится дольше N секунд</td></tr>
+          <tr><td><code>isolation</code></td><td>READ_COMMITTED и др.</td><td>Уровень изоляции транзакции</td></tr>
+          <tr><td><code>propagation</code></td><td>REQUIRED и др.</td><td>Поведение при вложенных транзакциях</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Propagation — распространение транзакций</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Propagation</th><th>Поведение</th><th>Когда</th></tr>
+          <tr><td><code>REQUIRED</code> (default)</td><td>Использует существующую или создаёт новую</td><td>99% случаев</td></tr>
+          <tr><td><code>REQUIRES_NEW</code></td><td>Всегда создаёт новую, приостанавливает текущую</td><td>Логирование, аудит — должен сохраниться даже при откате внешней</td></tr>
+          <tr><td><code>NESTED</code></td><td>Вложенная транзакция (savepoint)</td><td>Частичный откат</td></tr>
+          <tr><td><code>SUPPORTS</code></td><td>Использует если есть, без транзакции если нет</td><td>Опциональная транзакция</td></tr>
+          <tr><td><code>NOT_SUPPORTED</code></td><td>Приостанавливает текущую, выполняет без транзакции</td><td>Редко</td></tr>
+          <tr><td><code>NEVER</code></td><td>Кидает исключение если транзакция есть</td><td>Явный запрет транзакции</td></tr>
+          <tr><td><code>MANDATORY</code></td><td>Требует существующей транзакции, иначе исключение</td><td>Метод только внутри транзакции</td></tr>
+        </table>
+      </div>
+
+      <div class="box box-red">
+        <div class="box-label">⚠️ Частые ошибки с @Transactional</div>
+        <strong>1. Self-invocation</strong> — вызов @Transactional метода из того же класса не работает (нет AOP прокси).<br>
+        <strong>2. private методы</strong> — @Transactional не работает на private методах (Spring AOP не может создать прокси).<br>
+        <strong>3. Checked исключения</strong> — по умолчанию откат только при RuntimeException. Добавь <code>rollbackFor = Exception.class</code> если нужно.<br>
+        <strong>4. readOnly на write операциях</strong> — данные не сохранятся в БД.
+      </div>
+    </div>
+
+    <!-- ═══ 4. REPOSITORY ═══ -->
+    <div class="section" id="repository">
+      <div class="section-title"><span class="s-icon">🗄</span> Repository и Spring Data JPA</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Интерфейс</th><th>Методы</th><th>Когда</th></tr>
+          <tr><td><code>CrudRepository&lt;T,ID&gt;</code></td><td>save, findById, findAll, delete, count</td><td>Базовые CRUD</td></tr>
+          <tr><td><code>JpaRepository&lt;T,ID&gt;</code></td><td>+ flush, saveAll, findAll(Sort), findAll(Pageable)</td><td>✅ Рекомендован для JPA</td></tr>
+          <tr><td><code>PagingAndSortingRepository</code></td><td>Пагинация и сортировка</td><td>Если нужна только пагинация</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Методы именования (Query Methods)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Метод</th><th>SQL эквивалент</th></tr>
+          <tr><td><code>findByEmail(String email)</code></td><td><code>WHERE email = ?</code></td></tr>
+          <tr><td><code>findByNameAndActive(String name, boolean active)</code></td><td><code>WHERE name = ? AND active = ?</code></td></tr>
+          <tr><td><code>findByAgeGreaterThan(int age)</code></td><td><code>WHERE age > ?</code></td></tr>
+          <tr><td><code>findByAgeBetween(int min, int max)</code></td><td><code>WHERE age BETWEEN ? AND ?</code></td></tr>
+          <tr><td><code>findByNameContaining(String part)</code></td><td><code>WHERE name LIKE '%?%'</code></td></tr>
+          <tr><td><code>findByEmailIn(List&lt;String&gt; emails)</code></td><td><code>WHERE email IN (?)</code></td></tr>
+          <tr><td><code>findByDeletedAtIsNull()</code></td><td><code>WHERE deleted_at IS NULL</code></td></tr>
+          <tr><td><code>findTop10ByOrderBySalaryDesc()</code></td><td><code>ORDER BY salary DESC LIMIT 10</code></td></tr>
+          <tr><td><code>countByActive(boolean active)</code></td><td><code>SELECT COUNT(*) WHERE active = ?</code></td></tr>
+          <tr><td><code>existsByEmail(String email)</code></td><td><code>SELECT EXISTS(WHERE email = ?)</code></td></tr>
+          <tr><td><code>deleteByIdAndUserId(Long id, Long userId)</code></td><td><code>DELETE WHERE id = ? AND user_id = ?</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 5. ИСКЛЮЧЕНИЯ ═══ -->
+    <div class="section" id="exceptions">
+      <div class="section-title"><span class="s-icon">🚨</span> Обработка исключений в сервисе</div>
+      <div class="prose">
+        <p>Сервис должен кидать осмысленные бизнесовые исключения — не JPA исключения напрямую. GlobalExceptionHandler их перехватит и вернёт правильный HTTP статус.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Исключение</th><th>HTTP статус</th><th>Когда кидать</th></tr>
+          <tr><td><code>ResourceNotFoundException</code></td><td>404 Not Found</td><td>Сущность не найдена по ID</td></tr>
+          <tr><td><code>EmailAlreadyExistsException</code></td><td>409 Conflict</td><td>Дублирующийся уникальный ключ</td></tr>
+          <tr><td><code>AccessDeniedException</code></td><td>403 Forbidden</td><td>Нет прав на операцию</td></tr>
+          <tr><td><code>InvalidPasswordException</code></td><td>400 Bad Request</td><td>Неверный пароль при смене</td></tr>
+          <tr><td><code>InsufficientFundsException</code></td><td>422 Unprocessable Entity</td><td>Бизнес-правило нарушено</td></tr>
+          <tr><td><code>IllegalStateException</code></td><td>400 Bad Request</td><td>Недопустимое состояние</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 6. ПАТТЕРНЫ ═══ -->
+    <div class="section" id="patterns">
+      <div class="section-title"><span class="s-icon">🧩</span> Паттерны сервисного слоя</div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Interface + Implementation — разделение контракта и реализации</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Классический подход: создать интерфейс <code>UserService</code> и реализацию <code>UserServiceImpl</code>. Плюсы: легко заменить реализацию, мокировать в тестах, соответствует DIP.<br>
+            Минус: много бойлерплейта. В современном Spring — необязательно если нет нескольких реализаций. Достаточно просто класса <code>@Service</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Facade — упрощение сложных операций</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Один сервис оркестрирует несколько других. Например, <code>RegistrationFacade</code> вызывает <code>UserService.create()</code>, <code>EmailService.sendWelcome()</code>, <code>ProfileService.createDefault()</code>. Контроллер вызывает только Facade, не зная о деталях.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Strategy — заменяемое поведение через интерфейс</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Разные алгоритмы за одним интерфейсом. Пример: <code>PaymentStrategy</code> с реализациями CardPayment, CryptoPayment, BankTransfer. Сервис выбирает нужную через <code>List&lt;PaymentStrategy&gt;</code> или Map. Spring инжектирует все реализации автоматически.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 7. BEST PRACTICES ═══ -->
+    <div class="section" id="practices">
+      <div class="section-title"><span class="s-icon">✅</span> Best Practices</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Правильно</div>
+          <ul class="compare-list">
+            <li><code>@Transactional(readOnly = true)</code> на методах чтения</li>
+            <li>Кидать бизнесовые исключения, не JPA напрямую</li>
+            <li>DI через конструктор + <code>@RequiredArgsConstructor</code></li>
+            <li>Один сервис — одна область ответственности</li>
+            <li>Возвращать DTO, не Entity из сервиса</li>
+            <li>Логировать через <code>@Slf4j</code> + <code>log.info/debug</code></li>
+            <li>Транзакция на уровне сервиса, не репозитория</li>
+            <li>Валидация бизнес-правил в сервисе, не в контроллере</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Ошибки</div>
+          <ul class="compare-list">
+            <li>Бизнес-логика в контроллере или репозитории</li>
+            <li>Вызывать @Transactional метод из того же класса</li>
+            <li>@Transactional на private методах</li>
+            <li>Возвращать Entity из сервиса в контроллер</li>
+            <li>Ловить и проглатывать исключения без логирования</li>
+            <li>God Service — один сервис делает всё</li>
+            <li>Инжектировать контроллер в сервис (нарушение слоёв)</li>
+            <li>Не освобождать ресурсы при ошибках</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 8. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. Полный UserService с CRUD операциями</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Service</span>                                          <span class="cm">// бин сервисного слоя</span>
+<span class="an">@RequiredArgsConstructor</span>                          <span class="cm">// Lombok: конструктор для final полей</span>
+<span class="an">@Slf4j</span>                                            <span class="cm">// Lombok: поле log = LoggerFactory.getLogger()</span>
+<span class="kw">public class</span> <span class="cl">UserService</span> {
+
+    <span class="kw">private final</span> <span class="cl">UserRepository</span>  userRepository;  <span class="cm">// доступ к БД</span>
+    <span class="kw">private final</span> <span class="cl">UserMapper</span>      userMapper;       <span class="cm">// маппинг Entity ↔ DTO</span>
+    <span class="kw">private final</span> <span class="cl">PasswordEncoder</span> passwordEncoder; <span class="cm">// BCrypt хэширование</span>
+
+    <span class="cm">// ── Получение всех с пагинацией — readOnly оптимизация</span>
+    <span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)                <span class="cm">// нет flush, быстрее</span>
+    <span class="kw">public</span> <span class="cl">Page</span>&lt;<span class="cl">UserResponse</span>&gt; <span class="fn">findAll</span>(<span class="cl">Pageable</span> pageable, <span class="cl">String</span> search) {
+        <span class="cl">Page</span>&lt;<span class="cl">User</span>&gt; users = search != <span class="kw">null</span>
+            ? userRepository.<span class="fn">findByNameContainingIgnoreCase</span>(search, pageable)
+            : userRepository.<span class="fn">findAll</span>(pageable);
+        <span class="kw">return</span> users.<span class="fn">map</span>(userMapper::toResponse);   <span class="cm">// Entity → DTO для каждой записи</span>
+    }
+
+    <span class="cm">// ── Поиск по ID — кидаем 404 если не найден</span>
+    <span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">findById</span>(<span class="cl">Long</span> id) {
+        <span class="kw">return</span> userRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">map</span>(userMapper::toResponse)              <span class="cm">// нашли — конвертируем</span>
+            .<span class="fn">orElseThrow</span>(() -> {
+                log.<span class="fn">warn</span>(<span class="st">"User not found: id={}"</span>, id);  <span class="cm">// логируем предупреждение</span>
+                <span class="kw">return new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"User"</span>, id); <span class="cm">// → 404</span>
+            });
+    }
+
+    <span class="cm">// ── Создание нового пользователя</span>
+    <span class="an">@Transactional</span>                                  <span class="cm">// по умолч. REQUIRED — откат при RuntimeEx</span>
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">create</span>(<span class="cl">CreateUserRequest</span> request) {
+        <span class="cm">// ── Бизнес-валидация: email должен быть уникальным</span>
+        <span class="kw">if</span> (userRepository.<span class="fn">existsByEmail</span>(request.<span class="fn">email</span>())) {
+            <span class="kw">throw new</span> <span class="cl">EmailAlreadyExistsException</span>(request.<span class="fn">email</span>()); <span class="cm">// → 409</span>
+        }
+
+        <span class="cm">// ── Создаём Entity через Builder</span>
+        <span class="cl">User</span> user = <span class="cl">User</span>.<span class="fn">builder</span>()
+            .<span class="fn">name</span>(request.<span class="fn">name</span>())
+            .<span class="fn">email</span>(request.<span class="fn">email</span>().<span class="fn">toLowerCase</span>().<span class="fn">trim</span>()) <span class="cm">// нормализуем email</span>
+            .<span class="fn">password</span>(passwordEncoder.<span class="fn">encode</span>(request.<span class="fn">password</span>())) <span class="cm">// BCrypt хэш</span>
+            .<span class="fn">role</span>(<span class="cl">Role</span>.ROLE_USER)                    <span class="cm">// роль по умолчанию</span>
+            .<span class="fn">active</span>(<span class="kw">true</span>)
+            .<span class="fn">build</span>();
+
+        <span class="cl">User</span> saved = userRepository.<span class="fn">save</span>(user);     <span class="cm">// INSERT INTO users</span>
+        log.<span class="fn">info</span>(<span class="st">"Created user: id={}, email={}"</span>, saved.<span class="fn">getId</span>(), saved.<span class="fn">getEmail</span>());
+        <span class="kw">return</span> userMapper.<span class="fn">toResponse</span>(saved);        <span class="cm">// Entity → DTO</span>
+    }
+
+    <span class="cm">// ── Полное обновление (PUT)</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">update</span>(<span class="cl">Long</span> id, <span class="cl">UpdateUserRequest</span> request) {
+        <span class="cl">User</span> user = userRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"User"</span>, id));
+
+        <span class="cm">// Проверяем что email не занят другим пользователем</span>
+        <span class="kw">if</span> (!user.<span class="fn">getEmail</span>().<span class="fn">equals</span>(request.<span class="fn">email</span>()) &&
+            userRepository.<span class="fn">existsByEmail</span>(request.<span class="fn">email</span>())) {
+            <span class="kw">throw new</span> <span class="cl">EmailAlreadyExistsException</span>(request.<span class="fn">email</span>());
+        }
+
+        <span class="cm">// Обновляем поля Entity</span>
+        user.<span class="fn">setName</span>(request.<span class="fn">name</span>());
+        user.<span class="fn">setEmail</span>(request.<span class="fn">email</span>());
+        <span class="cm">// В @Transactional — dirty checking сам сохранит изменения при коммите!</span>
+        <span class="cm">// save() не обязателен, но явный вызов — хорошая практика</span>
+        <kw>return</kw> userMapper.<span class="fn">toResponse</span>(userRepository.<span class="fn">save</span>(user));
+    }
+
+    <span class="cm">// ── Частичное обновление (PATCH)</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">patch</span>(<span class="cl">Long</span> id, <span class="cl">PatchUserRequest</span> request) {
+        <span class="cl">User</span> user = userRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"User"</span>, id));
+
+        <span class="cm">// Обновляем только непустые поля</span>
+        <span class="kw">if</span> (request.<span class="fn">name</span>() != <span class="kw">null</span>)  user.<span class="fn">setName</span>(request.<span class="fn">name</span>());
+        <span class="kw">if</span> (request.<span class="fn">email</span>() != <span class="kw">null</span>) user.<span class="fn">setEmail</span>(request.<span class="fn">email</span>());
+        <span class="kw">if</span> (request.<span class="fn">phone</span>() != <span class="kw">null</span>) user.<span class="fn">setPhone</span>(request.<span class="fn">phone</span>());
+
+        <span class="kw">return</span> userMapper.<span class="fn">toResponse</span>(userRepository.<span class="fn">save</span>(user));
+    }
+
+    <span class="cm">// ── Soft Delete (помечаем удалённым, не удаляем из БД)</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public void</span> <span class="fn">delete</span>(<span class="cl">Long</span> id) {
+        <span class="cl">User</span> user = userRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"User"</span>, id));
+        user.<span class="fn">setDeletedAt</span>(<span class="cl">Instant</span>.<span class="fn">now</span>());           <span class="cm">// помечаем время удаления</span>
+        user.<span class="fn">setActive</span>(<span class="kw">false</span>);
+        userRepository.<span class="fn">save</span>(user);
+        log.<span class="fn">info</span>(<span class="st">"Soft deleted user: id={}"</span>, id);
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">2. @Transactional — тонкости и ловушки</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">PaymentService</span> {
+
+    <span class="kw">private final</span> <span class="cl">AccountRepository</span> accountRepository;
+    <span class="kw">private final</span> <span class="cl">AuditService</span>     auditService;      <span class="cm">// для логирования</span>
+
+    <span class="cm">// ── Перевод денег — атомарная операция</span>
+    <span class="an">@Transactional</span>                                   <span class="cm">// откат при любой ошибке</span>
+    <span class="kw">public void</span> <span class="fn">transfer</span>(<span class="cl">Long</span> fromId, <span class="cl">Long</span> toId, <span class="cl">BigDecimal</span> amount) {
+        <span class="cl">Account</span> from = accountRepository.<span class="fn">findById</span>(fromId)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"Account"</span>, fromId));
+        <span class="cl">Account</span> to = accountRepository.<span class="fn">findById</span>(toId)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"Account"</span>, toId));
+
+        <span class="cm">// Бизнес-проверка</span>
+        <span class="kw">if</span> (from.<span class="fn">getBalance</span>().<span class="fn">compareTo</span>(amount) < <span class="nu">0</span>) {
+            <span class="kw">throw new</span> <span class="cl">InsufficientFundsException</span>(fromId, amount); <span class="cm">// → 422</span>
+        }
+
+        from.<span class="fn">setBalance</span>(from.<span class="fn">getBalance</span>().<span class="fn">subtract</span>(amount)); <span class="cm">// списываем</span>
+        to.<span class="fn">setBalance</span>(to.<span class="fn">getBalance</span>().<span class="fn">add</span>(amount));          <span class="cm">// зачисляем</span>
+
+        accountRepository.<span class="fn">save</span>(from);
+        accountRepository.<span class="fn">save</span>(to);
+
+        <span class="cm">// auditService использует REQUIRES_NEW — сохранится даже при откате transfer</span>
+        auditService.<span class="fn">logTransfer</span>(fromId, toId, amount);
+    }
+
+    <span class="cm">// ── ЛОВУШКА: self-invocation не работает!</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public void</span> <span class="fn">processAll</span>() {
+        <span class="fn">processOne</span>(<span class="nu">1L</span>);   <span class="cm">// ❌ @Transactional на processOne НЕ СРАБОТАЕТ</span>
+                           <span class="cm">// вызов идёт напрямую, минуя Spring прокси</span>
+    }
+
+    <span class="an">@Transactional</span>(propagation = <span class="cl">Propagation</span>.REQUIRES_NEW)
+    <span class="kw">public void</span> <span class="fn">processOne</span>(<span class="cl">Long</span> id) { ... }
+
+    <span class="cm">// ── РЕШЕНИЕ: вынести в отдельный бин или использовать ApplicationContext</span>
+}
+
+<span class="cm">// ── AuditService с REQUIRES_NEW — независимая транзакция</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">AuditService</span> {
+    <span class="kw">private final</span> <span class="cl">AuditLogRepository</span> auditLogRepository;
+
+    <span class="an">@Transactional</span>(propagation = <span class="cl">Propagation</span>.REQUIRES_NEW) <span class="cm">// НОВАЯ транзакция!</span>
+    <span class="kw">public void</span> <span class="fn">logTransfer</span>(<span class="cl">Long</span> fromId, <span class="cl">Long</span> toId, <span class="cl">BigDecimal</span> amount) {
+        <span class="cm">// сохранится ВСЕГДА — даже если внешняя транзакция откатится</span>
+        auditLogRepository.<span class="fn">save</span>(<span class="cl">AuditLog</span>.<span class="fn">builder</span>()
+            .<span class="fn">action</span>(<span class="st">"TRANSFER"</span>)
+            .<span class="fn">details</span>(<span class="st">"from="</span> + fromId + <span class="st">" to="</span> + toId + <span class="st">" amount="</span> + amount)
+            .<span class="fn">timestamp</span>(<span class="cl">Instant</span>.<span class="fn">now</span>())
+            .<span class="fn">build</span>());
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">3. Repository — кастомные запросы</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Repository</span>                                        <span class="cm">// Spring Data JPA репозиторий</span>
+<span class="kw">public interface</span> <span class="cl">UserRepository</span> <span class="kw">extends</span> <span class="cl">JpaRepository</span>&lt;<span class="cl">User</span>, <span class="cl">Long</span>&gt; {
+
+    <span class="cm">// ── Query methods — Spring генерирует SQL по имени</span>
+    <span class="cl">Optional</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findByEmail</span>(<span class="cl">String</span> email);                      <span class="cm">// WHERE email = ?</span>
+    <span class="kw">boolean</span> <span class="fn">existsByEmail</span>(<span class="cl">String</span> email);                          <span class="cm">// EXISTS WHERE email = ?</span>
+    <span class="cl">List</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findByActiveTrue</span>();                                 <span class="cm">// WHERE active = true</span>
+    <span class="cl">List</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findByDeletedAtIsNull</span>();                            <span class="cm">// WHERE deleted_at IS NULL</span>
+    <span class="cl">Page</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findByNameContainingIgnoreCase</span>(<span class="cl">String</span> name, <span class="cl">Pageable</span> p); <span class="cm">// ILIKE</span>
+
+    <span class="cm">// ── @Query — JPQL (Java Persistence Query Language)</span>
+    <span class="an">@Query</span>(<span class="st">"SELECT u FROM User u WHERE u.role = :role AND u.active = true"</span>)
+    <span class="cl">List</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findActiveByRole</span>(<span class="an">@Param</span>(<span class="st">"role"</span>) <span class="cl">Role</span> role);      <span class="cm">// именованный параметр</span>
+
+    <span class="cm">// ── @Query с нативным SQL (когда JPQL недостаточно)</span>
+    <span class="an">@Query</span>(value = <span class="st">"""
+        SELECT u.*, COUNT(o.id) as orders_count
+        FROM users u
+        LEFT JOIN orders o ON u.id = o.user_id
+        WHERE u.active = true
+        GROUP BY u.id
+        HAVING COUNT(o.id) >= :minOrders
+        """</span>, nativeQuery = <span class="kw">true</span>)                                <span class="cm">// nativeQuery = реальный SQL</span>
+    <span class="cl">List</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findUsersWithMinOrders</span>(<span class="an">@Param</span>(<span class="st">"minOrders"</span>) <span class="kw">int</span> minOrders);
+
+    <span class="cm">// ── @Modifying — UPDATE/DELETE запросы</span>
+    <span class="an">@Modifying</span>                                                     <span class="cm">// обязательно для изменений</span>
+    <span class="an">@Transactional</span>                                                 <span class="cm">// нужна транзакция</span>
+    <span class="an">@Query</span>(<span class="st">"UPDATE User u SET u.active = false WHERE u.id = :id"</span>)
+    <span class="kw">int</span> <span class="fn">deactivateById</span>(<span class="an">@Param</span>(<span class="st">"id"</span>) <span class="cl">Long</span> id);                    <span class="cm">// возвращает кол-во изменённых</span>
+
+    <span class="cm">// ── Projection — возвращаем не всю Entity, только нужные поля</span>
+    <span class="an">@Query</span>(<span class="st">"SELECT u.id as id, u.name as name, u.email as email FROM User u"</span>)
+    <span class="cl">List</span>&lt;<span class="cl">UserSummary</span>&gt; <span class="fn">findAllSummaries</span>();                        <span class="cm">// интерфейс-проекция</span>
+}
+
+<span class="cm">// ── Интерфейс проекции</span>
+<span class="kw">public interface</span> <span class="cl">UserSummary</span> {
+    <span class="cl">Long</span>   <span class="fn">getId</span>();                                              <span class="cm">// Spring создаёт прокси</span>
+    <span class="cl">String</span> <span class="fn">getName</span>();
+    <span class="cl">String</span> <span class="fn">getEmail</span>();
+}</pre>
+      </div>
+
+      <div class="section-subtitle">4. Кастомные исключения сервиса</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Базовое исключение приложения</span>
+<span class="kw">public abstract class</span> <span class="cl">AppException</span> <span class="kw">extends</span> <span class="cl">RuntimeException</span> { <span class="cm">// Unchecked — не нужен throws</span>
+    <span class="kw">private final</span> <span class="cl">HttpStatus</span> status;                            <span class="cm">// HTTP статус для ответа</span>
+
+    <span class="kw">protected</span> <span class="fn">AppException</span>(<span class="cl">String</span> message, <span class="cl">HttpStatus</span> status) {
+        <span class="kw">super</span>(message);
+        <span class="kw">this</span>.status = status;
+    }
+
+    <span class="kw">public</span> <span class="cl">HttpStatus</span> <span class="fn">getStatus</span>() { <span class="kw">return</span> status; }
+}
+
+<span class="cm">// ── 404 Not Found</span>
+<span class="kw">public class</span> <span class="cl">ResourceNotFoundException</span> <span class="kw">extends</span> <span class="cl">AppException</span> {
+    <span class="kw">public</span> <span class="fn">ResourceNotFoundException</span>(<span class="cl">String</span> resource, <span class="cl">Long</span> id) {
+        <span class="kw">super</span>(resource + <span class="st">" с id "</span> + id + <span class="st">" не найден"</span>, <span class="cl">HttpStatus</span>.NOT_FOUND);
+    }
+    <span class="kw">public</span> <span class="fn">ResourceNotFoundException</span>(<span class="cl">String</span> resource, <span class="cl">String</span> field, <span class="cl">String</span> value) {
+        <span class="kw">super</span>(resource + <span class="st">" с "</span> + field + <span class="st">"='"</span> + value + <span class="st">"' не найден"</span>, <span class="cl">HttpStatus</span>.NOT_FOUND);
+    }
+}
+
+<span class="cm">// ── 409 Conflict</span>
+<span class="kw">public class</span> <span class="cl">EmailAlreadyExistsException</span> <span class="kw">extends</span> <span class="cl">AppException</span> {
+    <span class="kw">public</span> <span class="fn">EmailAlreadyExistsException</span>(<span class="cl">String</span> email) {
+        <span class="kw">super</span>(<span class="st">"Email '"</span> + email + <span class="st">"' уже используется"</span>, <span class="cl">HttpStatus</span>.CONFLICT);
+    }
+}
+
+<span class="cm">// ── 422 Unprocessable Entity — бизнес-правило нарушено</span>
+<span class="kw">public class</span> <span class="cl">InsufficientFundsException</span> <span class="kw">extends</span> <span class="cl">AppException</span> {
+    <span class="kw">public</span> <span class="fn">InsufficientFundsException</span>(<span class="cl">Long</span> accountId, <span class="cl">BigDecimal</span> required) {
+        <span class="kw">super</span>(<span class="st">"На счёте "</span> + accountId + <span class="st">" недостаточно средств. Нужно: "</span> + required,
+              <span class="cl">HttpStatus</span>.UNPROCESSABLE_ENTITY);
+    }
+}
+
+<span class="cm">// ── Использование в сервисе</span>
+<span class="kw">throw new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"User"</span>, id);           <span class="cm">// → 404</span>
+<span class="kw">throw new</span> <span class="cl">EmailAlreadyExistsException</span>(email);                <span class="cm">// → 409</span>
+<span class="kw">throw new</span> <span class="cl">InsufficientFundsException</span>(accountId, amount);     <span class="cm">// → 422</span></pre>
+      </div>
+
+      <div class="section-subtitle">5. Strategy паттерн в сервисе</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Интерфейс стратегии</span>
+<span class="kw">public interface</span> <span class="cl">NotificationStrategy</span> {
+    <span class="kw">boolean</span> <span class="fn">supports</span>(<span class="cl">NotificationType</span> type);  <span class="cm">// поддерживает ли этот тип</span>
+    <span class="kw">void</span>    <span class="fn">send</span>(<span class="cl">String</span> recipient, <span class="cl">String</span> message);
+}
+
+<span class="cm">// ── Реализации</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">EmailNotificationStrategy</span> <span class="kw">implements</span> <span class="cl">NotificationStrategy</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">supports</span>(<span class="cl">NotificationType</span> type) {
+        <span class="kw">return</span> type == <span class="cl">NotificationType</span>.EMAIL;
+    }
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">send</span>(<span class="cl">String</span> recipient, <span class="cl">String</span> message) {
+        <span class="cm">// отправка email через JavaMailSender</span>
+    }
+}
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">SmsNotificationStrategy</span> <span class="kw">implements</span> <span class="cl">NotificationStrategy</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">supports</span>(<span class="cl">NotificationType</span> type) {
+        <span class="kw">return</span> type == <span class="cl">NotificationType</span>.SMS;
+    }
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">send</span>(<span class="cl">String</span> recipient, <span class="cl">String</span> message) {
+        <span class="cm">// отправка SMS</span>
+    }
+}
+
+<span class="cm">// ── Сервис автоматически получает ВСЕ реализации</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">NotificationService</span> {
+
+    <span class="cm">// Spring инжектирует все бины NotificationStrategy автоматически!</span>
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">NotificationStrategy</span>&gt; strategies;
+
+    <span class="kw">public void</span> <span class="fn">send</span>(<span class="cl">NotificationType</span> type, <span class="cl">String</span> recipient, <span class="cl">String</span> message) {
+        strategies.<span class="fn">stream</span>()
+            .<span class="fn">filter</span>(s -> s.<span class="fn">supports</span>(type))           <span class="cm">// находим подходящую стратегию</span>
+            .<span class="fn">findFirst</span>()
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">IllegalArgumentException</span>(
+                <span class="st">"Нет стратегии для: "</span> + type))
+            .<span class="fn">send</span>(recipient, message);               <span class="cm">// полиморфный вызов</span>
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- ═══ 9. ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Зачем нужен Service слой? Почему нельзя писать логику в контроллере?</div>
+            <div class="qa-q-en">Why do we need a Service layer? Why not put logic in the controller?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Service слой обеспечивает: 1) <strong>Разделение ответственности</strong> — контроллер знает только HTTP, сервис — только бизнес. 2) <strong>Переиспользование</strong> — логику можно вызвать из разных контроллеров, Kafka-слушателей, schedulers. 3) <strong>Тестируемость</strong> — сервис тестируется без HTTP контекста. 4) <strong>Транзакции</strong> — управляются в одном месте. 5) <strong>Безопасность</strong> — @PreAuthorize на методах сервиса.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="svc-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как работает @Transactional? Что такое propagation?</div>
+            <div class="qa-q-en">How does @Transactional work? What is propagation?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Spring создаёт AOP прокси вокруг метода: открывает транзакцию до вызова, коммитит при успехе, откатывает при RuntimeException. Propagation определяет поведение при вложенных транзакциях: REQUIRED (default) — использует существующую или создаёт новую. REQUIRES_NEW — всегда новая независимая транзакция. Важно: откатывает по умолчанию только RuntimeException, не checked.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label err">⚠️ Частые ошибки</div>
+            <div class="qa-text">Self-invocation — вызов @Transactional метода из того же класса не работает (прокси минуется). @Transactional на private методах не работает. readOnly = true при write операциях — данные не сохранятся.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="svc-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Зачем readOnly = true в @Transactional?</div>
+            <div class="qa-q-en">What is the purpose of readOnly = true in @Transactional?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">readOnly = true даёт оптимизации: 1) Hibernate не делает dirty checking (не проверяет что изменилось) — быстрее. 2) Не делает flush перед запросом. 3) JDBC драйвер может оптимизировать соединение. 4) Документирует намерение — читаем, не пишем. Используй на всех GET методах сервиса. Если поставить readOnly = true на метод с save() — изменения могут не сохраниться.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="svc-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем JpaRepository отличается от CrudRepository?</div>
+            <div class="qa-q-en">What is the difference between JpaRepository and CrudRepository?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>CrudRepository</code> — базовый CRUD: save, findById, findAll, delete, count. <code>PagingAndSortingRepository</code> добавляет пагинацию и сортировку. <code>JpaRepository</code> расширяет оба и добавляет: flush(), saveAll(), deleteAllInBatch(), getReferenceById(), findAll(Pageable). Используй JpaRepository — он включает всё нужное для JPA.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="svc-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое N+1 проблема и как её решить?</div>
+            <div class="qa-q-en">What is the N+1 problem and how do you fix it?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">N+1: при загрузке N сущностей с lazy связями — каждое обращение к связи делает отдельный SELECT. Итого: 1 запрос для списка + N запросов для каждой связи. Решения: 1) <code>JOIN FETCH</code> в JPQL: <code>SELECT u FROM User u JOIN FETCH u.orders</code>. 2) <code>@EntityGraph</code> на методе репозитория. 3) <code>@BatchSize(size=20)</code> — пакетная загрузка. 4) Проекции (DTO) вместо Entity. 5) Нативный SQL с JOIN.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">🔥 Диагностика</div>
+            <div class="qa-text">Включи логирование: <code>spring.jpa.show-sql=true</code> и считай запросы. Или Hibernate Statistics, p6spy, datasource-proxy.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="svc-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>

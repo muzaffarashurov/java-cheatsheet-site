@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Многопоточность | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#4f8ef7"></span>📌 Конспект</a>
+    <a class="nav-link" href="#thread-basics"><span class="nav-dot" style="background:#f06060"></span>Thread / Runnable</a>
+    <a class="nav-link" href="#lifecycle"><span class="nav-dot" style="background:#f5a623"></span>Жизненный цикл</a>
+    <a class="nav-link" href="#executor"><span class="nav-dot" style="background:#22d3a0"></span>ExecutorService</a>
+    <a class="nav-link" href="#sync"><span class="nav-dot" style="background:#b88bfa"></span>synchronized / volatile</a>
+    <a class="nav-link" href="#locks"><span class="nav-dot" style="background:#5bcefa"></span>Locks / Semaphore</a>
+    <a class="nav-link" href="#atomic"><span class="nav-dot" style="background:#4f8ef7"></span>Atomic классы</a>
+    <a class="nav-link" href="#completable"><span class="nav-dot" style="background:#22d3a0"></span>CompletableFuture</a>
+    <a class="nav-link" href="#problems"><span class="nav-dot" style="background:#f06060"></span>Deadlock / Race</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#f5a623"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="java-core.html"><span class="nav-dot" style="background:#4f8ef7"></span>Java Core</a>
+    <a class="nav-link" href="collections.html"><span class="nav-dot" style="background:#22d3a0"></span>Collections</a>
+    <a class="nav-link" href="spring-boot.html"><span class="nav-dot" style="background:#22d3a0"></span>Spring Boot</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">🧵 Многопоточность</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#f06060;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- HERO -->
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#5a0a0a,#f06060)">🧵</div>
+        <div>
+          <h1>Многопоточность (Concurrency)</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-blue">Java</span>
+            <span class="chip chip-red">Core</span>
+            <span class="chip chip-cyan">Threads</span>
+            <span class="chip chip-purple">Async</span>
+          </div>
+        </div>
+      </div>
+      <p>Thread, Runnable, ExecutorService, synchronized, volatile, ReentrantLock, AtomicInteger, CompletableFuture. Deadlock, race condition — как избежать. Один из самых сложных топиков на собеседованиях.</p>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#thread-basics">Thread/Runnable</a>
+        <a class="toc-link" href="#lifecycle">Жизненный цикл</a>
+        <a class="toc-link" href="#executor">ExecutorService</a>
+        <a class="toc-link" href="#sync">synchronized/volatile</a>
+        <a class="toc-link" href="#locks">Locks</a>
+        <a class="toc-link" href="#atomic">Atomic</a>
+        <a class="toc-link" href="#completable">CompletableFuture</a>
+        <a class="toc-link" href="#problems">Deadlock/Race</a>
+        <a class="toc-link" href="#code">💻 Код</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-blue">
+        <div class="box-label">Главное правило</div>
+        Многопоточность нужна для <strong>параллельных вычислений</strong> и <strong>неблокирующего I/O</strong>.
+        Главные проблемы: <strong>race condition</strong> (гонка данных) и <strong>deadlock</strong> (взаимная блокировка).
+        Современный подход: <code>ExecutorService</code> + <code>CompletableFuture</code> вместо ручного управления потоками.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Инструмент</th><th>Когда использовать</th><th>Уровень</th></tr>
+          <tr><td><code>Thread / Runnable</code></td><td>Понять основы, редко напрямую</td><td>Низкий</td></tr>
+          <tr><td><code>ExecutorService</code></td><td>Пул потоков, задачи</td><td>Средний</td></tr>
+          <tr><td><code>synchronized</code></td><td>Простая блокировка блока/метода</td><td>Средний</td></tr>
+          <tr><td><code>volatile</code></td><td>Видимость одной переменной между потоками</td><td>Средний</td></tr>
+          <tr><td><code>ReentrantLock</code></td><td>Гибкая блокировка с tryLock/timeout</td><td>Средний</td></tr>
+          <tr><td><code>AtomicInteger</code></td><td>Потокобезопасные счётчики без synchronized</td><td>Средний</td></tr>
+          <tr><td><code>CompletableFuture</code></td><td>Асинхронные цепочки, комбинирование</td><td>Высокий</td></tr>
+          <tr><td><code>ConcurrentHashMap</code></td><td>Потокобезопасная Map</td><td>Средний</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. THREAD / RUNNABLE ═══ -->
+    <div class="section" id="thread-basics">
+      <div class="section-title"><span class="s-icon">🧵</span> Thread и Runnable</div>
+      <div class="prose">
+        <p>Поток (Thread) — наименьшая единица выполнения. В Java есть 3 способа создать поток:</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Способ</th><th>Как</th><th>Плюсы / Минусы</th></tr>
+          <tr><td>Наследование <code>Thread</code></td><td><code>class MyThread extends Thread</code></td><td>❌ Нельзя наследовать другой класс</td></tr>
+          <tr><td>Реализация <code>Runnable</code></td><td><code>class Task implements Runnable</code></td><td>✅ Можно передавать в ExecutorService</td></tr>
+          <tr><td><code>Callable&lt;T&gt;</code></td><td>Возвращает результат <code>Future&lt;T&gt;</code></td><td>✅ Возврат значения + исключения</td></tr>
+        </table>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ thread.start() vs thread.run()</div>
+        <code>start()</code> — создаёт новый поток и выполняет в нём <code>run()</code>. <code>run()</code> напрямую — выполняет в <strong>текущем</strong> потоке, никакой многопоточности! Это классическая ошибка новичков.
+      </div>
+    </div>
+
+    <!-- ═══ 3. ЖИЗНЕННЫЙ ЦИКЛ ═══ -->
+    <div class="section" id="lifecycle">
+      <div class="section-title"><span class="s-icon">🔄</span> Жизненный цикл потока</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Схема состояний</span></div>
+        <pre style="font-size:0.8rem;line-height:1.8">
+  <span class="fn">NEW</span>  ──start()──▶  <span class="kw">RUNNABLE</span>  ──планировщик──▶  <span class="ty">RUNNING</span>
+                        ▲                                  │
+                        │                    ┌─────────────┤
+                        │                    │             │
+                   notify()           <span class="cl">WAITING</span>       <span class="an">TIMED_WAITING</span>
+                   unlock()        wait()/join()   sleep(n)/wait(n)
+                        │                    │             │
+                        └────────────────────┘             │
+                                                           │
+                                                     <span class="st">BLOCKED</span>
+                                               ожидание synchronized
+                                                           │
+                                                      <span class="cm">TERMINATED</span>
+                                                   метод завершился
+        </pre>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Состояние</th><th>Описание</th><th>Как попасть</th></tr>
+          <tr><td><code>NEW</code></td><td>Создан, не запущен</td><td><code>new Thread()</code></td></tr>
+          <tr><td><code>RUNNABLE</code></td><td>Готов к выполнению или выполняется</td><td><code>start()</code></td></tr>
+          <tr><td><code>BLOCKED</code></td><td>Ждёт монитор (synchronized)</td><td>Другой поток держит блокировку</td></tr>
+          <tr><td><code>WAITING</code></td><td>Ждёт бесконечно</td><td><code>wait()</code>, <code>join()</code></td></tr>
+          <tr><td><code>TIMED_WAITING</code></td><td>Ждёт с таймаутом</td><td><code>sleep(n)</code>, <code>wait(n)</code></td></tr>
+          <tr><td><code>TERMINATED</code></td><td>Завершён</td><td>Метод <code>run()</code> вернулся</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 4. EXECUTORSERVICE ═══ -->
+    <div class="section" id="executor">
+      <div class="section-title"><span class="s-icon">⚡</span> ExecutorService — пул потоков</div>
+      <div class="prose">
+        <p>Никогда не создавай потоки вручную в продакшене. <code>ExecutorService</code> управляет пулом потоков — переиспользует их, ограничивает количество, обрабатывает очередь задач.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Фабричный метод</th><th>Тип пула</th><th>Когда</th></tr>
+          <tr><td><code>newFixedThreadPool(n)</code></td><td>Фиксированное число потоков</td><td>Известна нагрузка, CPU-задачи</td></tr>
+          <tr><td><code>newCachedThreadPool()</code></td><td>Растёт по необходимости</td><td>Много коротких задач</td></tr>
+          <tr><td><code>newSingleThreadExecutor()</code></td><td>1 поток, очередь задач</td><td>Последовательное выполнение</td></tr>
+          <tr><td><code>newScheduledThreadPool(n)</code></td><td>Планировщик, с задержкой</td><td>Периодические задачи</td></tr>
+          <tr><td><code>newVirtualThreadPerTaskExecutor()</code></td><td>Virtual threads (Java 21+)</td><td>Тысячи I/O задач</td></tr>
+        </table>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">💡 Virtual Threads (Java 21)</div>
+        Виртуальные потоки — лёгкие потоки управляемые JVM, не OS. Можно создать <strong>миллионы</strong> без проблем с памятью. Идеальны для I/O-задач (HTTP, БД). Революция для Java Backend.
+      </div>
+      <div class="box box-red">
+        <div class="box-label">🚫 Не используй Executors.newCachedThreadPool() в продакшене</div>
+        При резком росте нагрузки создаст тысячи потоков → OutOfMemoryError. Используй <code>ThreadPoolExecutor</code> с явными границами или готовые решения типа Spring's <code>TaskExecutor</code>.
+      </div>
+    </div>
+
+    <!-- ═══ 5. SYNCHRONIZED / VOLATILE ═══ -->
+    <div class="section" id="sync">
+      <div class="section-title"><span class="s-icon">🔐</span> synchronized и volatile</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--primary)">synchronized</div>
+          <ul class="compare-list">
+            <li>Взаимное исключение (mutex)</li>
+            <li>Только один поток в блоке одновременно</li>
+            <li>Гарантирует видимость + атомарность</li>
+            <li>Может быть на методе или блоке</li>
+            <li>Монитор — любой Object</li>
+            <li>Блокирует поток при ожидании (BLOCKED)</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--warn)">volatile</div>
+          <ul class="compare-list">
+            <li>Только гарантия видимости</li>
+            <li>Все потоки видят актуальное значение</li>
+            <li>НЕ гарантирует атомарность (i++ не атомарен!)</li>
+            <li>Только для одной переменной</li>
+            <li>Нет блокировки — быстрее synchronized</li>
+            <li>Применение: флаги остановки, singleton</li>
+          </ul>
+        </div>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ volatile НЕ заменяет synchronized</div>
+        <code>volatile int counter; counter++;</code> — НЕ атомарная операция! <code>counter++</code> — это три шага: read → increment → write. Между ними другой поток может вмешаться. Используй <code>AtomicInteger</code> или <code>synchronized</code>.
+      </div>
+    </div>
+
+    <!-- ═══ 6. LOCKS ═══ -->
+    <div class="section" id="locks">
+      <div class="section-title"><span class="s-icon">🔑</span> ReentrantLock, ReadWriteLock, Semaphore</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Класс</th><th>Особенность</th><th>Когда</th></tr>
+          <tr><td><code>ReentrantLock</code></td><td>Как synchronized, но с tryLock, timeout, fairness</td><td>Нужен tryLock или прерывание</td></tr>
+          <tr><td><code>ReentrantReadWriteLock</code></td><td>Много читателей / один писатель</td><td>Много чтений, мало записей</td></tr>
+          <tr><td><code>StampedLock</code></td><td>Оптимистичное чтение (Java 8+)</td><td>Максимальная производительность чтения</td></tr>
+          <tr><td><code>Semaphore</code></td><td>Ограничивает число одновременных потоков</td><td>Ограничение доступа к ресурсу</td></tr>
+          <tr><td><code>CountDownLatch</code></td><td>Ждём пока N потоков завершатся</td><td>Стартовый пистолет / барьер</td></tr>
+          <tr><td><code>CyclicBarrier</code></td><td>Все потоки ждут друг друга в точке</td><td>Фазовые вычисления</td></tr>
+        </table>
+      </div>
+      <div class="box box-blue">
+        <div class="box-label">💡 ReentrantLock vs synchronized</div>
+        ReentrantLock — всегда используй в блоке <code>try { lock.lock(); ... } finally { lock.unlock(); }</code>. Если забыть <code>unlock()</code> — deadlock навсегда. <code>synchronized</code> разблокируется автоматически — безопаснее.
+      </div>
+    </div>
+
+    <!-- ═══ 7. ATOMIC ═══ -->
+    <div class="section" id="atomic">
+      <div class="section-title"><span class="s-icon">⚛️</span> Atomic классы</div>
+      <div class="prose">
+        <p>Пакет <code>java.util.concurrent.atomic</code> — потокобезопасные операции без <code>synchronized</code>, используют аппаратные CAS-инструкции (Compare-And-Swap).</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Класс</th><th>Тип</th><th>Ключевые методы</th></tr>
+          <tr><td><code>AtomicInteger</code></td><td>int</td><td><code>get(), set(), getAndIncrement(), compareAndSet()</code></td></tr>
+          <tr><td><code>AtomicLong</code></td><td>long</td><td>Аналогично AtomicInteger</td></tr>
+          <tr><td><code>AtomicBoolean</code></td><td>boolean</td><td><code>get(), set(), compareAndSet()</code></td></tr>
+          <tr><td><code>AtomicReference&lt;T&gt;</code></td><td>Object</td><td>Атомарная ссылка на объект</td></tr>
+          <tr><td><code>LongAdder</code></td><td>long</td><td>Быстрее AtomicLong при высокой нагрузке</td></tr>
+        </table>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">💡 CAS (Compare-And-Swap)</div>
+        Атомарная CPU-инструкция: «если текущее значение == ожидаемое, то заменить на новое». Нет блокировок → нет deadlock → очень быстро. <code>AtomicInteger.compareAndSet(expected, newValue)</code>.
+      </div>
+    </div>
+
+    <!-- ═══ 8. COMPLETABLEFUTURE ═══ -->
+    <div class="section" id="completable">
+      <div class="section-title"><span class="s-icon">🚀</span> CompletableFuture</div>
+      <div class="prose">
+        <p>Современный API для асинхронного программирования (Java 8+). Позволяет строить цепочки асинхронных операций без колбеков-ада.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Метод</th><th>Описание</th><th>Поток</th></tr>
+          <tr><td><code>supplyAsync(supplier)</code></td><td>Запустить задачу, вернуть значение</td><td>ForkJoinPool</td></tr>
+          <tr><td><code>runAsync(runnable)</code></td><td>Запустить задачу без возврата</td><td>ForkJoinPool</td></tr>
+          <tr><td><code>thenApply(fn)</code></td><td>Преобразовать результат (как map)</td><td>Тот же поток</td></tr>
+          <tr><td><code>thenAccept(consumer)</code></td><td>Потребить результат (void)</td><td>Тот же поток</td></tr>
+          <tr><td><code>thenCompose(fn)</code></td><td>Плоское объединение (как flatMap)</td><td>Тот же поток</td></tr>
+          <tr><td><code>thenCombine(other, fn)</code></td><td>Объединить два результата</td><td>Любой</td></tr>
+          <tr><td><code>allOf(futures...)</code></td><td>Ждать все</td><td>—</td></tr>
+          <tr><td><code>anyOf(futures...)</code></td><td>Ждать первого</td><td>—</td></tr>
+          <tr><td><code>exceptionally(fn)</code></td><td>Обработать исключение</td><td>—</td></tr>
+          <tr><td><code>join()</code></td><td>Получить результат (блокирует поток)</td><td>Текущий</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 9. ПРОБЛЕМЫ ═══ -->
+    <div class="section" id="problems">
+      <div class="section-title"><span class="s-icon">💥</span> Deadlock, Race Condition, Livelock</div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">🔴 Deadlock — взаимная блокировка</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p><strong>Ситуация:</strong> Поток A держит блокировку 1 и ждёт блокировку 2. Поток B держит блокировку 2 и ждёт блокировку 1. Оба ждут вечно.</p>
+            <p><strong>Условия (все 4 должны быть):</strong> взаимное исключение, удержание и ожидание, отсутствие вытеснения, циклическое ожидание.</p>
+            <p><strong>Решения:</strong> всегда захватывать блокировки в одном порядке, использовать <code>tryLock(timeout)</code>, избегать вложенных блокировок, использовать высокоуровневые примитивы.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">🟡 Race Condition — гонка данных</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p><strong>Ситуация:</strong> Два потока читают и изменяют одну переменную без синхронизации. Результат зависит от порядка выполнения — непредсказуем.</p>
+            <p><strong>Пример:</strong> <code>counter++</code> из двух потоков одновременно. Ожидаем 2, но можем получить 1 — оба прочитали 0, оба записали 1.</p>
+            <p><strong>Решения:</strong> <code>synchronized</code>, <code>AtomicInteger</code>, <code>volatile</code> (только для видимости), неизменяемые объекты.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">🟠 Livelock и Starvation</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p><strong>Livelock:</strong> Потоки активны, но не делают полезной работы — постоянно реагируют друг на друга. Как два человека в коридоре, которые уступают дорогу одновременно.</p>
+            <p><strong>Starvation (голодание):</strong> Поток никогда не получает ресурс, потому что другие потоки с более высоким приоритетом всё время его забирают.</p>
+            <p><strong>Решения:</strong> fair locks (<code>new ReentrantLock(true)</code>), равные приоритеты, случайные задержки.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 10. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. Thread, Runnable, Callable — три способа создания</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Способ 1: наследование Thread (устаревший, избегай)</span>
+<span class="kw">class</span> <span class="cl">MyThread</span> <span class="kw">extends</span> <span class="cl">Thread</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>() {                         <span class="cm">// тело потока — что выполняется</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Thread: "</span> + <span class="fn">getName</span>()); <span class="cm">// getName() — имя потока</span>
+    }
+}
+<span class="cl">MyThread</span> t = <span class="kw">new</span> <span class="cl">MyThread</span>();
+t.<span class="fn">setName</span>(<span class="st">"Worker-1"</span>);                          <span class="cm">// имя видно в профайлере</span>
+t.<span class="fn">start</span>();                                       <span class="cm">// ВАЖНО: start(), не run()!</span>
+
+<span class="cm">// ── Способ 2: Runnable (рекомендуется)</span>
+<span class="cl">Runnable</span> task = () -> {                            <span class="cm">// лямбда = реализация Runnable</span>
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Runnable в потоке: "</span>
+        + <span class="cl">Thread</span>.<span class="fn">currentThread</span>().<span class="fn">getName</span>());      <span class="cm">// имя текущего потока</span>
+};
+<span class="kw">new</span> <span class="cl">Thread</span>(task).<span class="fn">start</span>();                        <span class="cm">// оборачиваем в Thread</span>
+
+<span class="cm">// ── Способ 3: Callable — возвращает результат</span>
+<span class="cl">Callable</span>&lt;<span class="cl">Integer</span>&gt; callable = () -> {              <span class="cm">// Callable<T> возвращает T</span>
+    <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nu">100</span>);                            <span class="cm">// имитируем работу</span>
+    <span class="kw">return</span> <span class="nu">42</span>;                                    <span class="cm">// возвращаем результат</span>
+};
+
+<span class="cl">ExecutorService</span> executor = <span class="cl">Executors</span>.<span class="fn">newSingleThreadExecutor</span>();
+<span class="cl">Future</span>&lt;<span class="cl">Integer</span>&gt; future = executor.<span class="fn">submit</span>(callable); <span class="cm">// запускаем, получаем Future</span>
+
+<span class="kw">try</span> {
+    <span class="cl">Integer</span> result = future.<span class="fn">get</span>();               <span class="cm">// БЛОКИРУЕТ поток до готовности</span>
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Результат: "</span> + result);  <span class="cm">// 42</span>
+} <span class="kw">catch</span> (<span class="cl">InterruptedException</span> | <span class="cl">ExecutionException</span> e) {
+    <span class="cl">Thread</span>.<span class="fn">currentThread</span>().<span class="fn">interrupt</span>();           <span class="cm">// восстанавливаем флаг прерывания</span>
+} <span class="kw">finally</span> {
+    executor.<span class="fn">shutdown</span>();                          <span class="cm">// ВСЕГДА завершай ExecutorService</span>
+}</pre>
+      </div>
+
+      <div class="section-subtitle">2. ExecutorService — пул потоков правильно</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Создание пула с правильными параметрами</span>
+<span class="kw">int</span> cores = <span class="cl">Runtime</span>.<span class="fn">getRuntime</span>().<span class="fn">availableProcessors</span>(); <span class="cm">// число CPU ядер</span>
+
+<span class="cm">// CPU-задачи: cores потоков (нет смысла больше ядер)</span>
+<span class="cl">ExecutorService</span> cpuPool = <span class="cl">Executors</span>.<span class="fn">newFixedThreadPool</span>(cores);
+
+<span class="cm">// I/O-задачи: больше потоков (ждут сеть/диск)</span>
+<span class="cl">ExecutorService</span> ioPool = <span class="cl">Executors</span>.<span class="fn">newFixedThreadPool</span>(cores * <span class="nu">4</span>);
+
+<span class="cm">// ── Отправка задач</span>
+<span class="cl">Future</span>&lt;<span class="cl">String</span>&gt; f1 = cpuPool.<span class="fn">submit</span>(() -> <span class="fn">computeHeavy</span>()); <span class="cm">// Callable</span>
+cpuPool.<span class="fn">execute</span>(() -> <span class="fn">logSomething</span>());                    <span class="cm">// Runnable (без результата)</span>
+
+<span class="cm">// ── invokeAll — запустить все и дождаться</span>
+<span class="cl">List</span>&lt;<span class="cl">Callable</span>&lt;<span class="cl">String</span>&gt;&gt; tasks = <span class="cl">List</span>.<span class="fn">of</span>(
+    () -> <span class="fn">fetchUser</span>(<span class="nu">1L</span>),        <span class="cm">// задача 1</span>
+    () -> <span class="fn">fetchUser</span>(<span class="nu">2L</span>),        <span class="cm">// задача 2</span>
+    () -> <span class="fn">fetchUser</span>(<span class="nu">3L</span>)         <span class="cm">// задача 3</span>
+);
+<span class="cl">List</span>&lt;<span class="cl">Future</span>&lt;<span class="cl">String</span>&gt;&gt; results = ioPool.<span class="fn">invokeAll</span>(tasks);   <span class="cm">// ждём все</span>
+<span class="kw">for</span> (<span class="cl">Future</span>&lt;<span class="cl">String</span>&gt; res : results) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(res.<span class="fn">get</span>());  <span class="cm">// получаем каждый результат</span>
+}
+
+<span class="cm">// ── Правильное завершение пула</span>
+cpuPool.<span class="fn">shutdown</span>();                              <span class="cm">// прекратить принимать задачи</span>
+<span class="kw">if</span> (!cpuPool.<span class="fn">awaitTermination</span>(<span class="nu">60</span>, <span class="cl">TimeUnit</span>.SECONDS)) { <span class="cm">// ждём завершения 60 сек</span>
+    cpuPool.<span class="fn">shutdownNow</span>();                        <span class="cm">// принудительно если не успел</span>
+}
+
+<span class="cm">// ── ScheduledExecutorService — периодические задачи</span>
+<span class="cl">ScheduledExecutorService</span> scheduler =
+    <span class="cl">Executors</span>.<span class="fn">newScheduledThreadPool</span>(<span class="nu">1</span>);
+
+scheduler.<span class="fn">scheduleAtFixedRate</span>(             <span class="cm">// выполнять каждые N секунд</span>
+    () -> <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Tick"</span>),       <span class="cm">// задача</span>
+    <span class="nu">0</span>,                                       <span class="cm">// начальная задержка</span>
+    <span class="nu">5</span>,                                       <span class="cm">// период</span>
+    <span class="cl">TimeUnit</span>.SECONDS                         <span class="cm">// единица времени</span>
+);</pre>
+      </div>
+
+      <div class="section-subtitle">3. synchronized и volatile — примеры правильного использования</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Synchronized метод — блокировка на this</span>
+<span class="kw">public class</span> <span class="cl">Counter</span> {
+    <span class="kw">private int</span> count = <span class="nu">0</span>;                    <span class="cm">// обычное поле — небезопасно</span>
+
+    <span class="kw">public synchronized void</span> <span class="fn">increment</span>() {   <span class="cm">// synchronized = блокировка на this</span>
+        count++;                               <span class="cm">// теперь атомарно: read+inc+write</span>
+    }
+
+    <span class="kw">public synchronized int</span> <span class="fn">getCount</span>() {     <span class="cm">// тоже synchronized для видимости</span>
+        <span class="kw">return</span> count;
+    }
+}
+
+<span class="cm">// ── Synchronized блок — более гранулярный контроль</span>
+<span class="kw">public class</span> <span class="cl">BankAccount</span> {
+    <span class="kw">private final</span> <span class="cl">Object</span> lock = <span class="kw">new</span> <span class="cl">Object</span>(); <span class="cm">// отдельный объект-монитор</span>
+    <span class="kw">private double</span> balance;
+
+    <span class="kw">public void</span> <span class="fn">transfer</span>(<span class="cl">BankAccount</span> to, <span class="kw">double</span> amount) {
+        <span class="kw">synchronized</span> (lock) {                 <span class="cm">// только этот блок — критическая секция</span>
+            <span class="kw">if</span> (balance >= amount) {
+                balance -= amount;             <span class="cm">// списываем</span>
+                to.balance += amount;          <span class="cm">// зачисляем</span>
+            }
+        }                                     <span class="cm">// блокировка снимается автоматически</span>
+    }
+}
+
+<span class="cm">// ── volatile — только видимость, не атомарность</span>
+<span class="kw">public class</span> <span class="cl">Worker</span> <span class="kw">implements</span> <span class="cl">Runnable</span> {
+    <span class="kw">private volatile boolean</span> running = <span class="kw">true</span>; <span class="cm">// volatile: все потоки видят изменение</span>
+
+    <span class="kw">public void</span> <span class="fn">stop</span>() {
+        running = <span class="kw">false</span>;                      <span class="cm">// главный поток меняет флаг</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>() {
+        <span class="kw">while</span> (running) {                     <span class="cm">// рабочий поток видит изменение</span>
+            <span class="fn">doWork</span>();                          <span class="cm">// без volatile мог бы loop вечно</span>
+        }
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Остановлен"</span>);
+    }
+}
+
+<span class="cm">// ── Double-checked locking Singleton (volatile обязателен!)</span>
+<span class="kw">public class</span> <span class="cl">Singleton</span> {
+    <span class="kw">private static volatile</span> <span class="cl">Singleton</span> instance; <span class="cm">// volatile — запрет переупорядочивания</span>
+
+    <span class="kw">public static</span> <span class="cl">Singleton</span> <span class="fn">getInstance</span>() {
+        <span class="kw">if</span> (instance == <span class="kw">null</span>) {              <span class="cm">// первая проверка — без блокировки</span>
+            <span class="kw">synchronized</span> (<span class="cl">Singleton</span>.<span class="kw">class</span>) { <span class="cm">// блокировка только при первом создании</span>
+                <span class="kw">if</span> (instance == <span class="kw">null</span>) {      <span class="cm">// вторая проверка — уже под блокировкой</span>
+                    instance = <span class="kw">new</span> <span class="cl">Singleton</span>(); <span class="cm">// создаём единственный экземпляр</span>
+                }
+            }
+        }
+        <span class="kw">return</span> instance;
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">4. AtomicInteger и ReentrantLock</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="kw">import</span> java.util.concurrent.atomic.*;
+<span class="kw">import</span> java.util.concurrent.locks.*;
+
+<span class="cm">// ── AtomicInteger — счётчик без synchronized</span>
+<span class="cl">AtomicInteger</span> counter = <span class="kw">new</span> <span class="cl">AtomicInteger</span>(<span class="nu">0</span>);  <span class="cm">// начальное значение 0</span>
+
+counter.<span class="fn">incrementAndGet</span>();     <span class="cm">// ++counter атомарно, возвращает новое значение</span>
+counter.<span class="fn">getAndIncrement</span>();     <span class="cm">// counter++ атомарно, возвращает старое значение</span>
+counter.<span class="fn">addAndGet</span>(<span class="nu">5</span>);          <span class="cm">// прибавить 5, вернуть новое</span>
+counter.<span class="fn">get</span>();                  <span class="cm">// просто прочитать</span>
+
+<span class="cm">// CAS — compare and set (используется внутри всех Atomic)</span>
+<span class="kw">boolean</span> updated = counter.<span class="fn">compareAndSet</span>(<span class="nu">10</span>, <span class="nu">20</span>); <span class="cm">// если значение == 10, поставить 20</span>
+<span class="cm">// true если обновилось, false если кто-то уже изменил значение</span>
+
+<span class="cm">// ── ReentrantLock — гибкая блокировка</span>
+<span class="cl">ReentrantLock</span> lock = <span class="kw">new</span> <span class="cl">ReentrantLock</span>();       <span class="cm">// несправедливый по умолчанию</span>
+<span class="cm">// new ReentrantLock(true) — справедливый: FIFO порядок потоков</span>
+
+<span class="kw">lock</span>.<span class="fn">lock</span>();                                    <span class="cm">// захватить блокировку (ждать если занята)</span>
+<span class="kw">try</span> {
+    <span class="fn">criticalSection</span>();                           <span class="cm">// защищённый код</span>
+} <span class="kw">finally</span> {
+    lock.<span class="fn">unlock</span>();                               <span class="cm">// ВСЕГДА в finally — иначе deadlock!</span>
+}
+
+<span class="cm">// tryLock — не блокируем поток, пробуем захватить</span>
+<span class="kw">if</span> (lock.<span class="fn">tryLock</span>(<span class="nu">500</span>, <span class="cl">TimeUnit</span>.MILLISECONDS)) { <span class="cm">// пробуем 500мс</span>
+    <span class="kw">try</span> {
+        <span class="fn">doWork</span>();
+    } <span class="kw">finally</span> {
+        lock.<span class="fn">unlock</span>();
+    }
+} <span class="kw">else</span> {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Не удалось захватить блокировку"</span>); <span class="cm">// не ждём</span>
+}
+
+<span class="cm">// ── ReadWriteLock — оптимизация для чтения</span>
+<span class="cl">ReadWriteLock</span> rwLock = <span class="kw">new</span> <span class="cl">ReentrantReadWriteLock</span>();
+<span class="cl">Lock</span> readLock  = rwLock.<span class="fn">readLock</span>();   <span class="cm">// много потоков могут читать одновременно</span>
+<span class="cl">Lock</span> writeLock = rwLock.<span class="fn">writeLock</span>(); <span class="cm">// только один поток пишет, остальные ждут</span>
+
+<span class="kw">public</span> <span class="cl">String</span> <span class="fn">read</span>() {
+    readLock.<span class="fn">lock</span>();                  <span class="cm">// несколько потоков читают параллельно</span>
+    <span class="kw">try</span> { <span class="kw">return</span> data; }
+    <span class="kw">finally</span> { readLock.<span class="fn">unlock</span>(); }
+}
+
+<span class="kw">public void</span> <span class="fn">write</span>(<span class="cl">String</span> val) {
+    writeLock.<span class="fn">lock</span>();                 <span class="cm">// эксклюзивный доступ при записи</span>
+    <span class="kw">try</span> { data = val; }
+    <span class="kw">finally</span> { writeLock.<span class="fn">unlock</span>(); }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">5. CompletableFuture — асинхронные цепочки</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="kw">import</span> java.util.concurrent.*;
+
+<span class="cm">// ── Простая асинхронная задача</span>
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">String</span>&gt; future =
+    <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -> {      <span class="cm">// запускает в ForkJoinPool</span>
+        <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nu">200</span>);                      <span class="cm">// имитируем I/O</span>
+        <span class="kw">return</span> <span class="fn">fetchUserFromDB</span>(<span class="nu">1L</span>);           <span class="cm">// результат</span>
+    });
+
+<span class="cm">// ── Цепочка преобразований</span>
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">String</span>&gt; result = future
+    .<span class="fn">thenApply</span>(<span class="cl">String</span>::<span class="fn">toUpperCase</span>)          <span class="cm">// преобразуем (синхронно в том же потоке)</span>
+    .<span class="fn">thenApply</span>(s -> <span class="st">"Пользователь: "</span> + s)     <span class="cm">// ещё преобразование</span>
+    .<span class="fn">exceptionally</span>(ex -> <span class="st">"Ошибка: "</span> + ex.<span class="fn">getMessage</span>()); <span class="cm">// обработка ошибки</span>
+
+<span class="cl">System</span>.out.<span class="fn">println</span>(result.<span class="fn">join</span>());           <span class="cm">// join() блокирует и возвращает результат</span>
+
+<span class="cm">// ── Комбинирование двух задач</span>
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">User</span>&gt;    userFuture    = <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -> <span class="fn">getUser</span>(<span class="nu">1L</span>));
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">Profile</span>&gt; profileFuture = <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -> <span class="fn">getProfile</span>(<span class="nu">1L</span>));
+
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">String</span>&gt; combined =
+    userFuture.<span class="fn">thenCombine</span>(profileFuture,     <span class="cm">// ждём обоих, затем комбинируем</span>
+        (user, profile) -> user.<span class="fn">getName</span>() + <span class="st">" — "</span> + profile.<span class="fn">getBio</span>());
+
+<span class="cm">// ── Запустить несколько параллельно, дождаться всех</span>
+<span class="cl">List</span>&lt;<span class="cl">CompletableFuture</span>&lt;<span class="cl">String</span>&gt;&gt; futures = <span class="cl">List</span>.<span class="fn">of</span>(
+    <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -> <span class="fn">callServiceA</span>()), <span class="cm">// параллельно</span>
+    <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -> <span class="fn">callServiceB</span>()), <span class="cm">// параллельно</span>
+    <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -> <span class="fn">callServiceC</span>())  <span class="cm">// параллельно</span>
+);
+
+<span class="cl">CompletableFuture</span>.<span class="fn">allOf</span>(futures.<span class="fn">toArray</span>(<span class="kw">new</span> <span class="cl">CompletableFuture</span>[<span class="nu">0</span>]))
+    .<span class="fn">join</span>();                                   <span class="cm">// ждём ВСЕ задачи</span>
+
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; results = futures.<span class="fn">stream</span>()
+    .<span class="fn">map</span>(<span class="cl">CompletableFuture</span>::<span class="fn">join</span>)             <span class="cm">// собираем результаты</span>
+    .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">toList</span>());
+
+<span class="cm">// ── Свой пул потоков (рекомендуется для I/O)</span>
+<span class="cl">ExecutorService</span> myPool = <span class="cl">Executors</span>.<span class="fn">newFixedThreadPool</span>(<span class="nu">10</span>);
+<span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -> <span class="fn">heavyIO</span>(), myPool)  <span class="cm">// не ForkJoinPool!</span>
+    .<span class="fn">thenAcceptAsync</span>(res -> <span class="fn">process</span>(res), myPool);        <span class="cm">// продолжить в том же пуле</span></pre>
+      </div>
+
+      <div class="section-subtitle">6. CountDownLatch и Semaphore</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── CountDownLatch: ждём пока N потоков завершат работу</span>
+<span class="kw">int</span> workerCount = <span class="nu">3</span>;
+<span class="cl">CountDownLatch</span> latch = <span class="kw">new</span> <span class="cl">CountDownLatch</span>(workerCount); <span class="cm">// счётчик = 3</span>
+
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nu">0</span>; i < workerCount; i++) {
+    <span class="kw">int</span> id = i;
+    <span class="kw">new</span> <span class="cl">Thread</span>(() -> {
+        <span class="kw">try</span> {
+            <span class="fn">doWork</span>(id);                      <span class="cm">// выполняем работу</span>
+        } <span class="kw">finally</span> {
+            latch.<span class="fn">countDown</span>();               <span class="cm">// декрементируем счётчик (3→2→1→0)</span>
+        }
+    }).<span class="fn">start</span>();
+}
+
+latch.<span class="fn">await</span>();                             <span class="cm">// главный поток ждёт пока счётчик = 0</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Все потоки завершили работу"</span>);
+
+<span class="cm">// ── Semaphore: ограничиваем число одновременных потоков</span>
+<span class="cl">Semaphore</span> semaphore = <span class="kw">new</span> <span class="cl">Semaphore</span>(<span class="nu">3</span>);    <span class="cm">// максимум 3 потока одновременно</span>
+
+<span class="kw">void</span> <span class="fn">accessResource</span>() <span class="kw">throws</span> <span class="cl">InterruptedException</span> {
+    semaphore.<span class="fn">acquire</span>();                     <span class="cm">// захватить разрешение (ждать если нет)</span>
+    <span class="kw">try</span> {
+        <span class="fn">useResource</span>();                       <span class="cm">// максимум 3 потока здесь одновременно</span>
+    } <span class="kw">finally</span> {
+        semaphore.<span class="fn">release</span>();                 <span class="cm">// ВСЕГДА освобождать в finally</span>
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- ═══ 11. ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">В чём разница между synchronized и volatile?</div>
+            <div class="qa-q-en">What is the difference between synchronized and volatile?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>synchronized</code> гарантирует <strong>атомарность + видимость</strong>: только один поток выполняет блок, другие ждут. <code>volatile</code> гарантирует только <strong>видимость</strong>: все потоки видят актуальное значение переменной, но операции не атомарны. <code>i++</code> с volatile — не потокобезопасно, нужен AtomicInteger или synchronized.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">🔥 Сильный ответ</div>
+            <div class="qa-text">«Под капотом volatile запрещает CPU и JIT переупорядочивать инструкции (memory barrier) и гарантирует чтение из main memory, а не из CPU кэша. synchronized же использует монитор объекта и создаёт happens-before отношение между потоками.»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="thr-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое deadlock и как его избежать?</div>
+            <div class="qa-q-en">What is a deadlock and how do you prevent it?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Deadlock — два потока ждут ресурсы друг друга и никогда не продолжат. Профилактика: 1) всегда захватывать блокировки в одном порядке, 2) использовать <code>tryLock(timeout)</code> вместо <code>lock()</code>, 3) избегать вложенных synchronized блоков, 4) использовать высокоуровневые примитивы (ConcurrentHashMap вместо synchronized Map).</div>
+          </div>
+          <div class="qa-row"><div class="qa-label err">⚠️ Ошибка кандидата</div>
+            <div class="qa-text">«Просто не использовать synchronized» — неверно. Надо уметь применять синхронизацию правильно, а не избегать её.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="thr-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем CompletableFuture лучше Future?</div>
+            <div class="qa-q-en">What advantages does CompletableFuture have over Future?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>Future.get()</code> всегда блокирует поток. Нельзя комбинировать несколько задач, нет обработки ошибок, нельзя задать колбек. <code>CompletableFuture</code>: цепочки через thenApply/thenCompose, комбинирование через allOf/anyOf/thenCombine, обработка ошибок через exceptionally, можно завершить вручную через complete().</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="thr-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое race condition? Пример и решение.</div>
+            <div class="qa-q-en">What is a race condition? Give an example and solution.</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Race condition — результат зависит от порядка выполнения потоков. Пример: два потока делают <code>balance -= amount</code>. Оба читают 1000, оба вычитают 100, оба записывают 900 — потеряли одно списание. Решения: <code>synchronized</code>, <code>AtomicInteger</code>, неизменяемые объекты, ограничение мутации одним потоком.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="thr-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Когда использовать ReentrantLock вместо synchronized?</div>
+            <div class="qa-q-en">When would you use ReentrantLock instead of synchronized?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">ReentrantLock выбирают когда нужно: 1) <code>tryLock(timeout)</code> — не блокировать бесконечно, 2) прерываемое ожидание (<code>lockInterruptibly()</code>), 3) справедливый порядок FIFO (<code>new ReentrantLock(true)</code>), 4) несколько условных переменных (<code>newCondition()</code>). Для простых случаев — <code>synchronized</code> проще и читаемее.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="thr-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое happens-before в Java Memory Model?</div>
+            <div class="qa-q-en">What is happens-before in the Java Memory Model?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Happens-before — гарантия: если действие A happens-before B, то B видит все изменения A. Основные правила: запись в volatile HB чтению той же переменной; unlock монитора HB его следующему lock; Thread.start() HB первому действию потока; Thread.join() HB возврату join(). JMM позволяет CPU и JIT переупорядочивать инструкции — happens-before запрещает опасные переупорядочивания.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">💡 Совет</div>
+            <div class="qa-text">Этот вопрос задают Senior-позициям. Достаточно сказать: «HB — гарантия видимости изменений между потоками. volatile и synchronized создают HB отношения.»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="thr-q6">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collections Framework | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#4f8ef7"></span>📌 Конспект</a>
+    <a class="nav-link" href="#hierarchy"><span class="nav-dot" style="background:#22d3a0"></span>Иерархия классов</a>
+    <a class="nav-link" href="#list"><span class="nav-dot" style="background:#f5a623"></span>List</a>
+    <a class="nav-link" href="#set"><span class="nav-dot" style="background:#b88bfa"></span>Set</a>
+    <a class="nav-link" href="#map"><span class="nav-dot" style="background:#5bcefa"></span>Map</a>
+    <a class="nav-link" href="#queue"><span class="nav-dot" style="background:#f06060"></span>Queue / Deque</a>
+    <a class="nav-link" href="#hashmap-internals"><span class="nav-dot" style="background:#4f8ef7"></span>HashMap изнутри</a>
+    <a class="nav-link" href="#concurrent"><span class="nav-dot" style="background:#22d3a0"></span>Concurrent</a>
+    <a class="nav-link" href="#complexity"><span class="nav-dot" style="background:#f5a623"></span>Big-O таблица</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#b88bfa"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#f06060"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="java-core.html"><span class="nav-dot" style="background:#4f8ef7"></span>Java Core</a>
+    <a class="nav-link" href="oop.html"><span class="nav-dot" style="background:#5bcefa"></span>OOP</a>
+    <a class="nav-link" href="threads.html"><span class="nav-dot" style="background:#f06060"></span>Многопоточность</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">📦 Collections Framework</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:var(--accent);width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- HERO -->
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#0f4a2a,#22d3a0)">📦</div>
+        <div>
+          <h1>Collections Framework</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-blue">Java</span>
+            <span class="chip chip-red">Core</span>
+            <span class="chip chip-green">Collections</span>
+            <span class="chip chip-warn">Big-O</span>
+          </div>
+        </div>
+      </div>
+      <p>List, Set, Map, Queue — полный разбор. HashMap internals, ConcurrentHashMap, выбор правильной структуры данных и сложность операций. Спрашивают на каждом собеседовании.</p>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#hierarchy">Иерархия</a>
+        <a class="toc-link" href="#list">List</a>
+        <a class="toc-link" href="#set">Set</a>
+        <a class="toc-link" href="#map">Map</a>
+        <a class="toc-link" href="#queue">Queue/Deque</a>
+        <a class="toc-link" href="#hashmap-internals">HashMap изнутри</a>
+        <a class="toc-link" href="#concurrent">Concurrent</a>
+        <a class="toc-link" href="#complexity">Big-O</a>
+        <a class="toc-link" href="#code">💻 Код</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-blue">
+        <div class="box-label">Главное правило выбора коллекции</div>
+        <strong>Нужен порядок + дубли?</strong> → <code>ArrayList</code> &nbsp;|&nbsp;
+        <strong>Уникальность + порядок вставки?</strong> → <code>LinkedHashSet</code> &nbsp;|&nbsp;
+        <strong>Ключ-значение?</strong> → <code>HashMap</code> &nbsp;|&nbsp;
+        <strong>Сортировка?</strong> → <code>TreeMap</code> / <code>TreeSet</code> &nbsp;|&nbsp;
+        <strong>Потоки?</strong> → <code>ConcurrentHashMap</code>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Интерфейс</th><th>Реализации</th><th>Главное свойство</th></tr>
+          <tr><td><code>List</code></td><td>ArrayList, LinkedList, Vector</td><td>Упорядоченные, допускают дубли, доступ по индексу</td></tr>
+          <tr><td><code>Set</code></td><td>HashSet, LinkedHashSet, TreeSet</td><td>Уникальные элементы, нет дублей</td></tr>
+          <tr><td><code>Map</code></td><td>HashMap, LinkedHashMap, TreeMap</td><td>Ключ-значение, уникальные ключи</td></tr>
+          <tr><td><code>Queue</code></td><td>LinkedList, PriorityQueue, ArrayDeque</td><td>FIFO очередь</td></tr>
+          <tr><td><code>Deque</code></td><td>ArrayDeque, LinkedList</td><td>Двусторонняя очередь (стек + очередь)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. ИЕРАРХИЯ ═══ -->
+    <div class="section" id="hierarchy">
+      <div class="section-title"><span class="s-icon">🌳</span> Иерархия Collections Framework</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Схема</span></div>
+        <pre style="font-size:0.78rem;line-height:1.6">
+<span class="kw">Iterable</span>
+  └── <span class="cl">Collection</span>
+        ├── <span class="cl">List</span>
+        │     ├── <span class="ty">ArrayList</span>       ← массив, быстрый get(i)
+        │     ├── <span class="ty">LinkedList</span>      ← двусвязный список, быстрый add/remove в начале
+        │     └── <span class="ty">Vector</span>          ← устаревший, thread-safe (избегай)
+        │
+        ├── <span class="cl">Set</span>
+        │     ├── <span class="ty">HashSet</span>         ← хэш-таблица, O(1), без порядка
+        │     ├── <span class="ty">LinkedHashSet</span>   ← HashSet + порядок вставки
+        │     └── <span class="ty">TreeSet</span>         ← красно-чёрное дерево, O(log n), сортировка
+        │
+        └── <span class="cl">Queue</span> / <span class="cl">Deque</span>
+              ├── <span class="ty">PriorityQueue</span>   ← min-heap, с приоритетом
+              ├── <span class="ty">ArrayDeque</span>      ← быстрый стек и очередь (лучше Stack/LinkedList)
+              └── <span class="ty">LinkedList</span>      ← реализует и List, и Deque
+
+<span class="kw">Map</span>  (не наследует Collection!)
+  ├── <span class="ty">HashMap</span>              ← хэш-таблица, O(1), порядок не гарантирован
+  ├── <span class="ty">LinkedHashMap</span>        ← HashMap + порядок вставки / порядок доступа
+  ├── <span class="ty">TreeMap</span>              ← красно-чёрное дерево, O(log n), сортировка по ключу
+  ├── <span class="ty">Hashtable</span>            ← устаревший, thread-safe (избегай, бери ConcurrentHashMap)
+  └── <span class="ty">ConcurrentHashMap</span>    ← потокобезопасный HashMap, O(1)</pre>
+      </div>
+    </div>
+
+    <!-- ═══ 3. LIST ═══ -->
+    <div class="section" id="list">
+      <div class="section-title"><span class="s-icon">📋</span> List</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--primary)">ArrayList</div>
+          <ul class="compare-list">
+            <li>Внутри — динамический массив Object[]</li>
+            <li>get(i) — O(1) ← главное преимущество</li>
+            <li>add в конец — O(1) амортизированный</li>
+            <li>add/remove в середине — O(n) (сдвиг)</li>
+            <li>Начальная ёмкость 10, растёт ×1.5</li>
+            <li>✅ Используй по умолчанию для List</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--warn)">LinkedList</div>
+          <ul class="compare-list">
+            <li>Внутри — двусвязный список (Node)</li>
+            <li>get(i) — O(n) ← главный минус</li>
+            <li>add/remove в начале/конце — O(1)</li>
+            <li>Больше памяти (каждый Node = 3 поля)</li>
+            <li>Реализует Deque — можно как стек/очередь</li>
+            <li>✅ Используй только как Deque</li>
+          </ul>
+        </div>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">💡 Совет</div>
+        <code>List.of(...)</code> и <code>Collections.unmodifiableList()</code> создают неизменяемые списки. Попытка добавить элемент — <code>UnsupportedOperationException</code>.
+      </div>
+    </div>
+
+    <!-- ═══ 4. SET ═══ -->
+    <div class="section" id="set">
+      <div class="section-title"><span class="s-icon">🔵</span> Set</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Класс</th><th>Порядок</th><th>null</th><th>add/contains</th><th>Когда</th></tr>
+          <tr><td><code>HashSet</code></td><td>❌ Нет</td><td>✅ 1 null</td><td>O(1)</td><td>Уникальность, порядок не важен</td></tr>
+          <tr><td><code>LinkedHashSet</code></td><td>✅ Вставки</td><td>✅ 1 null</td><td>O(1)</td><td>Уникальность + порядок вставки</td></tr>
+          <tr><td><code>TreeSet</code></td><td>✅ Сортировка</td><td>❌ NPE</td><td>O(log n)</td><td>Уникальность + нужна сортировка</td></tr>
+        </table>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Обязательное условие</div>
+        Объекты в HashSet/LinkedHashSet должны правильно реализовывать <code>equals()</code> и <code>hashCode()</code>. Объекты в TreeSet — реализовывать <code>Comparable</code> или передавать <code>Comparator</code>.
+      </div>
+    </div>
+
+    <!-- ═══ 5. MAP ═══ -->
+    <div class="section" id="map">
+      <div class="section-title"><span class="s-icon">🗺</span> Map</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Класс</th><th>Порядок</th><th>null ключ</th><th>get/put</th><th>Когда</th></tr>
+          <tr><td><code>HashMap</code></td><td>❌ Нет</td><td>✅ 1 null</td><td>O(1)</td><td>По умолчанию для Map</td></tr>
+          <tr><td><code>LinkedHashMap</code></td><td>✅ Вставки / LRU</td><td>✅ 1 null</td><td>O(1)</td><td>Кэш с порядком / LRU-кэш</td></tr>
+          <tr><td><code>TreeMap</code></td><td>✅ Сортировка по ключу</td><td>❌ NPE</td><td>O(log n)</td><td>Нужна сортировка по ключу</td></tr>
+          <tr><td><code>ConcurrentHashMap</code></td><td>❌ Нет</td><td>❌ NPE</td><td>O(1)</td><td>Многопоточность</td></tr>
+          <tr><td><code>EnumMap</code></td><td>✅ Порядок enum</td><td>❌ NPE</td><td>O(1)</td><td>Ключи — enum (очень быстро)</td></tr>
+        </table>
+      </div>
+      <div class="section-subtitle">Полезные методы Map (Java 8+)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Метод</th><th>Описание</th></tr>
+          <tr><td><code>getOrDefault(k, def)</code></td><td>Получить значение или default если нет ключа</td></tr>
+          <tr><td><code>putIfAbsent(k, v)</code></td><td>Добавить только если ключа ещё нет</td></tr>
+          <tr><td><code>computeIfAbsent(k, fn)</code></td><td>Вычислить и добавить значение если ключа нет</td></tr>
+          <tr><td><code>merge(k, v, fn)</code></td><td>Слить значения — удобно для счётчиков</td></tr>
+          <tr><td><code>forEach((k,v) -> ...)</code></td><td>Итерация по парам ключ-значение</td></tr>
+          <tr><td><code>entrySet()</code></td><td>Набор Map.Entry — ключ + значение вместе</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 6. QUEUE / DEQUE ═══ -->
+    <div class="section" id="queue">
+      <div class="section-title"><span class="s-icon">🚦</span> Queue и Deque</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--primary)">Queue (FIFO)</div>
+          <ul class="compare-list">
+            <li><code>offer(e)</code> — добавить в конец (не кидает исключение)</li>
+            <li><code>poll()</code> — взять из начала (null если пусто)</li>
+            <li><code>peek()</code> — посмотреть начало (null если пусто)</li>
+            <li>PriorityQueue — минимальный элемент всегда первый</li>
+            <li>Используй ArrayDeque вместо LinkedList</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">Deque (стек + очередь)</div>
+          <ul class="compare-list">
+            <li><code>push(e)</code> / <code>pop()</code> — стек (LIFO)</li>
+            <li><code>offerFirst()</code> / <code>offerLast()</code> — в начало/конец</li>
+            <li><code>pollFirst()</code> / <code>pollLast()</code> — из начала/конца</li>
+            <li><code>ArrayDeque</code> — самый быстрый, без null</li>
+            <li>✅ Замени Stack на ArrayDeque</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 7. HASHMAP ИЗНУТРИ ═══ -->
+    <div class="section" id="hashmap-internals">
+      <div class="section-title"><span class="s-icon">⚙️</span> HashMap — как работает изнутри</div>
+      <div class="prose">
+        <p>HashMap внутри — это массив «бакетов» (<strong>bucket[]</strong>). Каждый бакет — связный список (до Java 8) или сбалансированное дерево (с Java 8 при коллизиях).</p>
+      </div>
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Алгоритм put(key, value) — шаг за шагом</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p><strong>1.</strong> Вычисляем <code>hash = key.hashCode()</code>, затем дополнительное перемешивание: <code>hash ^ (hash >>> 16)</code> — это уменьшает коллизии.</p>
+            <p><strong>2.</strong> Определяем индекс бакета: <code>index = hash & (capacity - 1)</code> — быстрее, чем остаток от деления.</p>
+            <p><strong>3.</strong> Если бакет пустой — кладём Node туда.</p>
+            <p><strong>4.</strong> Если бакет занят (коллизия) — идём по цепочке, ищем ключ через <code>equals()</code>. Нашли — обновляем. Не нашли — добавляем в конец.</p>
+            <p><strong>5.</strong> Если в одном бакете ≥ 8 элементов → цепочка превращается в <strong>красно-чёрное дерево</strong> (Java 8+). O(n) → O(log n).</p>
+            <p><strong>6.</strong> Если заполнено > <strong>loadFactor (0.75)</strong> от capacity → <strong>resize</strong>: удваиваем массив, перехэшируем все элементы.</p>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Параметр</th><th>Значение по умолчанию</th><th>Описание</th></tr>
+          <tr><td>Initial capacity</td><td>16</td><td>Начальный размер массива бакетов</td></tr>
+          <tr><td>Load factor</td><td>0.75</td><td>При заполнении 75% — resize (удвоение)</td></tr>
+          <tr><td>Treeify threshold</td><td>8</td><td>При ≥8 коллизий в бакете — дерево</td></tr>
+          <tr><td>Untreeify threshold</td><td>6</td><td>При ≤6 — обратно в список</td></tr>
+        </table>
+      </div>
+      <div class="box box-red">
+        <div class="box-label">⚠️ Почему нельзя использовать мутабельные объекты как ключи</div>
+        Если изменить поле объекта-ключа после помещения в Map — его hashCode изменится, и HashMap не найдёт элемент (будет искать в другом бакете). Ключи должны быть <strong>immutable</strong> (String, Integer, enum — идеальные ключи).
+      </div>
+    </div>
+
+    <!-- ═══ 8. CONCURRENT ═══ -->
+    <div class="section" id="concurrent">
+      <div class="section-title"><span class="s-icon">🔒</span> Thread-safe коллекции</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Класс</th><th>Потокобезопасность</th><th>Особенность</th></tr>
+          <tr><td><code>ConcurrentHashMap</code></td><td>✅ Сегментная блокировка (Java 8: CAS)</td><td>Лучший выбор для многопоточных Map</td></tr>
+          <tr><td><code>CopyOnWriteArrayList</code></td><td>✅ Копия при записи</td><td>Читают много, пишут редко</td></tr>
+          <tr><td><code>CopyOnWriteArraySet</code></td><td>✅ Копия при записи</td><td>Аналогично для Set</td></tr>
+          <tr><td><code>BlockingQueue</code></td><td>✅ Блокирующие операции</td><td>Producer-Consumer паттерн</td></tr>
+          <tr><td><code>Collections.synchronizedList()</code></td><td>✅ Synchronized</td><td>Устаревший подход, избегай</td></tr>
+        </table>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Hashtable и Vector</div>
+        Устаревшие классы с <code>synchronized</code> на каждом методе. Очень медленные. Используй <code>ConcurrentHashMap</code> и <code>CopyOnWriteArrayList</code>.
+      </div>
+    </div>
+
+    <!-- ═══ 9. BIG-O ═══ -->
+    <div class="section" id="complexity">
+      <div class="section-title"><span class="s-icon">📊</span> Big-O сложность операций</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Структура</th><th>get(i)</th><th>add/put</th><th>remove</th><th>contains/search</th></tr>
+          <tr><td><code>ArrayList</code></td><td>O(1)</td><td>O(1)*</td><td>O(n)</td><td>O(n)</td></tr>
+          <tr><td><code>LinkedList</code></td><td>O(n)</td><td>O(1)</td><td>O(1)**</td><td>O(n)</td></tr>
+          <tr><td><code>HashSet</code></td><td>—</td><td>O(1)</td><td>O(1)</td><td>O(1)</td></tr>
+          <tr><td><code>TreeSet</code></td><td>—</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td></tr>
+          <tr><td><code>HashMap</code></td><td>—</td><td>O(1)</td><td>O(1)</td><td>O(1) по ключу</td></tr>
+          <tr><td><code>TreeMap</code></td><td>—</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td></tr>
+          <tr><td><code>PriorityQueue</code></td><td>O(1) peek</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+          <tr><td><code>ArrayDeque</code></td><td>—</td><td>O(1)</td><td>O(1)</td><td>O(n)</td></tr>
+        </table>
+      </div>
+      <div class="prose" style="font-size:0.78rem;color:var(--text-muted)">
+        * амортизированный (иногда O(n) при resize) &nbsp;|&nbsp; ** при наличии ссылки на Node
+      </div>
+    </div>
+
+    <!-- ═══ 10. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. ArrayList — основные операции</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="kw">import</span> java.util.*;
+
+<span class="cm">// ── Создание ArrayList</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();    <span class="cm">// пустой список</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; copy  = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(names); <span class="cm">// копия другого списка</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; fixed = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Анна"</span>, <span class="st">"Борис"</span>); <span class="cm">// immutable (Java 9+), нельзя менять</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; mutable = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(<span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"A"</span>, <span class="st">"B"</span>)); <span class="cm">// изменяемая копия</span>
+
+<span class="cm">// ── Добавление элементов</span>
+names.<span class="fn">add</span>(<span class="st">"Иван"</span>);            <span class="cm">// добавить в конец O(1)*</span>
+names.<span class="fn">add</span>(<span class="nu">0</span>, <span class="st">"Анна"</span>);          <span class="cm">// добавить по индексу O(n) — сдвигает остальных</span>
+names.<span class="fn">addAll</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Пётр"</span>, <span class="st">"Мария"</span>)); <span class="cm">// добавить коллекцию</span>
+
+<span class="cm">// ── Доступ и изменение</span>
+<span class="cl">String</span> first = names.<span class="fn">get</span>(<span class="nu">0</span>);   <span class="cm">// O(1) — быстрый доступ по индексу</span>
+names.<span class="fn">set</span>(<span class="nu">0</span>, <span class="st">"Алёна"</span>);          <span class="cm">// заменить элемент по индексу</span>
+
+<span class="cm">// ── Удаление</span>
+names.<span class="fn">remove</span>(<span class="st">"Иван"</span>);           <span class="cm">// удалить по значению O(n)</span>
+names.<span class="fn">remove</span>(<span class="nu">0</span>);                <span class="cm">// удалить по индексу O(n)</span>
+names.<span class="fn">removeIf</span>(s -> s.<span class="fn">startsWith</span>(<span class="st">"А"</span>)); <span class="cm">// удалить по условию (Java 8+)</span>
+
+<span class="cm">// ── Поиск</span>
+<span class="kw">boolean</span> has = names.<span class="fn">contains</span>(<span class="st">"Пётр"</span>); <span class="cm">// O(n) — линейный поиск</span>
+<span class="kw">int</span> idx = names.<span class="fn">indexOf</span>(<span class="st">"Пётр"</span>);     <span class="cm">// индекс первого вхождения, -1 если нет</span>
+
+<span class="cm">// ── Сортировка</span>
+<span class="cl">Collections</span>.<span class="fn">sort</span>(names);                      <span class="cm">// по умолчанию — алфавит (Comparable)</span>
+names.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">reverseOrder</span>());       <span class="cm">// обратный порядок</span>
+names.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">comparingInt</span>(<span class="cl">String</span>::<span class="fn">length</span>)); <span class="cm">// по длине строки</span>
+
+<span class="cm">// ── Итерация</span>
+<span class="kw">for</span> (<span class="cl">String</span> name : names) {             <span class="cm">// for-each — самый простой способ</span>
+    <span class="cl">System</span>.out.<span class="fn">println</span>(name);
+}
+names.<span class="fn">forEach</span>(<span class="cl">System</span>.out::<span class="fn">println</span>);     <span class="cm">// метод-ссылка (Java 8+)</span>
+
+<span class="cm">// ── Преобразование</span>
+<span class="cl">String</span>[] arr = names.<span class="fn">toArray</span>(<span class="kw">new</span> <span class="cl">String</span>[<span class="nu">0</span>]); <span class="cm">// List → массив</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; fromArr = <span class="cl">Arrays</span>.<span class="fn">asList</span>(arr);   <span class="cm">// массив → List (фиксированный размер!)</span></pre>
+      </div>
+
+      <div class="section-subtitle">2. HashMap — все важные операции</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Создание Map</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; scores = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();       <span class="cm">// пустая карта</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; fixed = <span class="cl">Map</span>.<span class="fn">of</span>(<span class="st">"А"</span>, <span class="nu">1</span>, <span class="st">"Б"</span>, <span class="nu">2</span>);   <span class="cm">// immutable (Java 9+)</span>
+
+<span class="cm">// ── Добавление и обновление</span>
+scores.<span class="fn">put</span>(<span class="st">"Иван"</span>, <span class="nu">95</span>);           <span class="cm">// добавить / перезаписать</span>
+scores.<span class="fn">putIfAbsent</span>(<span class="st">"Иван"</span>, <span class="nu">80</span>);   <span class="cm">// добавит только если "Иван" ещё не существует</span>
+
+<span class="cm">// ── Получение</span>
+<span class="kw">int</span> score = scores.<span class="fn">get</span>(<span class="st">"Иван"</span>);              <span class="cm">// 95, NPE если нет ключа</span>
+<span class="kw">int</span> safe  = scores.<span class="fn">getOrDefault</span>(<span class="st">"Петя"</span>, <span class="nu">0</span>); <span class="cm">// 0 если нет — безопасно</span>
+
+<span class="cm">// ── Проверки</span>
+<span class="kw">boolean</span> hasKey = scores.<span class="fn">containsKey</span>(<span class="st">"Иван"</span>);    <span class="cm">// O(1)</span>
+<span class="kw">boolean</span> hasVal = scores.<span class="fn">containsValue</span>(<span class="nu">95</span>);      <span class="cm">// O(n) — медленно!</span>
+
+<span class="cm">// ── Вычисление значений (Java 8+)</span>
+<span class="cm">// computeIfAbsent — создаём список если ключа нет (группировка)</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; groups = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+groups.<span class="fn">computeIfAbsent</span>(<span class="st">"А"</span>, k -> <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;()).<span class="fn">add</span>(<span class="st">"Аня"</span>); <span class="cm">// создаёт и добавляет</span>
+groups.<span class="fn">computeIfAbsent</span>(<span class="st">"А"</span>, k -> <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;()).<span class="fn">add</span>(<span class="st">"Артём"</span>); <span class="cm">// добавляет к существующему</span>
+
+<span class="cm">// merge — удобен для счётчиков и агрегации</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; wordCount = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+<span class="kw">for</span> (<span class="cl">String</span> word : <span class="kw">new</span> <span class="cl">String</span>[]{<span class="st">"java"</span>, <span class="st">"java"</span>, <span class="st">"spring"</span>}) {
+    wordCount.<span class="fn">merge</span>(word, <span class="nu">1</span>, <span class="cl">Integer</span>::<span class="fn">sum</span>);  <span class="cm">// если нет — 1, если есть — прибавляем</span>
+}
+<span class="cm">// {java=2, spring=1}</span>
+
+<span class="cm">// ── Итерация по Map (рекомендуемый способ)</span>
+<span class="kw">for</span> (<span class="cl">Map</span>.<span class="cl">Entry</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; entry : scores.<span class="fn">entrySet</span>()) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(entry.<span class="fn">getKey</span>() + <span class="st">" → "</span> + entry.<span class="fn">getValue</span>()); <span class="cm">// ключ и значение</span>
+}
+scores.<span class="fn">forEach</span>((k, v) -> <span class="cl">System</span>.out.<span class="fn">println</span>(k + <span class="st">": "</span> + v)); <span class="cm">// Java 8+, компактнее</span>
+
+<span class="cm">// ── Работа с ключами и значениями</span>
+<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt;      keys   = scores.<span class="fn">keySet</span>();   <span class="cm">// все ключи (Set)</span>
+<span class="cl">Collection</span>&lt;<span class="cl">Integer</span>&gt; vals = scores.<span class="fn">values</span>();  <span class="cm">// все значения (Collection)</span></pre>
+      </div>
+
+      <div class="section-subtitle">3. Set — работа с уникальными элементами</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── HashSet — уникальность без порядка</span>
+<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; tags = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;();
+tags.<span class="fn">add</span>(<span class="st">"java"</span>);    <span class="cm">// добавляем тег</span>
+tags.<span class="fn">add</span>(<span class="st">"spring"</span>); <span class="cm">// добавляем ещё</span>
+tags.<span class="fn">add</span>(<span class="st">"java"</span>);   <span class="cm">// дубль — игнорируется! Set остаётся {java, spring}</span>
+<span class="kw">boolean</span> added = tags.<span class="fn">add</span>(<span class="st">"kafka"</span>); <span class="cm">// возвращает true если добавлен (не дубль)</span>
+
+<span class="cm">// ── Операции над множествами</span>
+<span class="cl">Set</span>&lt;<span class="cl">Integer</span>&gt; a = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(<span class="cl">Set</span>.<span class="fn">of</span>(<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>));
+<span class="cl">Set</span>&lt;<span class="cl">Integer</span>&gt; b = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(<span class="cl">Set</span>.<span class="fn">of</span>(<span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>, <span class="nu">6</span>));
+
+<span class="cl">Set</span>&lt;<span class="cl">Integer</span>&gt; union = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(a);
+union.<span class="fn">addAll</span>(b);          <span class="cm">// объединение: {1,2,3,4,5,6}</span>
+
+<span class="cl">Set</span>&lt;<span class="cl">Integer</span>&gt; intersect = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(a);
+intersect.<span class="fn">retainAll</span>(b);   <span class="cm">// пересечение: {3,4}</span>
+
+<span class="cl">Set</span>&lt;<span class="cl">Integer</span>&gt; diff = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(a);
+diff.<span class="fn">removeAll</span>(b);         <span class="cm">// разность: {1,2}</span>
+
+<span class="cm">// ── TreeSet — автоматическая сортировка</span>
+<span class="cl">TreeSet</span>&lt;<span class="cl">Integer</span>&gt; sorted = <span class="kw">new</span> <span class="cl">TreeSet</span>&lt;&gt;(<span class="cl">Set</span>.<span class="fn">of</span>(<span class="nu">5</span>, <span class="nu">2</span>, <span class="nu">8</span>, <span class="nu">1</span>));
+<span class="cl">System</span>.out.<span class="fn">println</span>(sorted);            <span class="cm">// [1, 2, 5, 8] — всегда отсортировано</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(sorted.<span class="fn">first</span>());    <span class="cm">// 1 — минимальный элемент</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(sorted.<span class="fn">last</span>());     <span class="cm">// 8 — максимальный</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(sorted.<span class="fn">headSet</span>(<span class="nu">5</span>)); <span class="cm">// [1,2] — все < 5</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(sorted.<span class="fn">tailSet</span>(<span class="nu">5</span>)); <span class="cm">// [5,8] — все >= 5</span>
+
+<span class="cm">// ── LinkedHashSet — порядок вставки сохраняется</span>
+<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; ordered = <span class="kw">new</span> <span class="cl">LinkedHashSet</span>&lt;&gt;();
+ordered.<span class="fn">add</span>(<span class="st">"первый"</span>);   <span class="cm">// порядок вставки</span>
+ordered.<span class="fn">add</span>(<span class="st">"второй"</span>);
+ordered.<span class="fn">add</span>(<span class="st">"третий"</span>);
+<span class="cl">System</span>.out.<span class="fn">println</span>(ordered); <span class="cm">// [первый, второй, третий] — порядок сохранён</span></pre>
+      </div>
+
+      <div class="section-subtitle">4. Streams + Collections — мощная комбинация</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="kw">import</span> java.util.stream.*;
+
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Иван"</span>, <span class="st">"Анна"</span>, <span class="st">"Иван"</span>, <span class="st">"Борис"</span>, <span class="st">"Анна"</span>);
+
+<span class="cm">// ── filter + collect → отфильтрованный список</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; startWithA = names.<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(s -> s.<span class="fn">startsWith</span>(<span class="st">"А"</span>))    <span class="cm">// оставляем только начинающиеся с А</span>
+    .<span class="fn">distinct</span>()                          <span class="cm">// убираем дубли</span>
+    .<span class="fn">sorted</span>()                            <span class="cm">// сортируем</span>
+    .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">toList</span>());      <span class="cm">// собираем в список</span>
+
+<span class="cm">// ── groupingBy → группировка по первой букве</span>
+<span class="cl">Map</span>&lt;<span class="cl">Character</span>, <span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; byLetter = names.<span class="fn">stream</span>()
+    .<span class="fn">distinct</span>()
+    .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">groupingBy</span>(    <span class="cm">// группируем</span>
+        s -> s.<span class="fn">charAt</span>(<span class="nu">0</span>)));             <span class="cm">// по первому символу</span>
+<span class="cm">// {И=[Иван], А=[Анна], Б=[Борис]}</span>
+
+<span class="cm">// ── counting → подсчёт по группам</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Long</span>&gt; counts = names.<span class="fn">stream</span>()
+    .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">groupingBy</span>(
+        s -> s,
+        <span class="cl">Collectors</span>.<span class="fn">counting</span>()));         <span class="cm">// {Иван=2, Анна=2, Борис=1}</span>
+
+<span class="cm">// ── toMap → список в Map</span>
+<span class="cl">List</span>&lt;<span class="cl">User</span>&gt; users = <span class="fn">getUsers</span>();
+<span class="cl">Map</span>&lt;<span class="cl">Long</span>, <span class="cl">User</span>&gt; userById = users.<span class="fn">stream</span>()
+    .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">toMap</span>(
+        <span class="cl">User</span>::<span class="fn">getId</span>,                      <span class="cm">// ключ</span>
+        u -> u,                            <span class="cm">// значение</span>
+        (u1, u2) -> u1));                  <span class="cm">// при дубле ключа — берём первого</span>
+
+<span class="cm">// ── joining → объединить строки</span>
+<span class="cl">String</span> result = names.<span class="fn">stream</span>()
+    .<span class="fn">distinct</span>()
+    .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">joining</span>(<span class="st">", "</span>, <span class="st">"["</span>, <span class="st">"]"</span>)); <span class="cm">// "[Иван, Анна, Борис]"</span></pre>
+      </div>
+    </div>
+
+    <!-- ═══ 11. ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как работает HashMap изнутри?</div>
+            <div class="qa-q-en">How does HashMap work internally?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">HashMap — массив бакетов. При <code>put(k, v)</code>: 1) вычисляется hashCode ключа, 2) определяется индекс бакета, 3) при коллизии — список (Java 8+: дерево при ≥8 элементов), 4) при заполнении >75% — resize (удвоение). Поиск <code>get(k)</code>: тот же хэш → бакет → equals по цепочке.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">🔥 Сильный ответ</div>
+            <div class="qa-text">«В Java 8 добавили treeification: если в одном бакете накопилось ≥8 элементов, связный список превращается в красно-чёрное дерево. Это меняет худший случай с O(n) на O(log n). Это важно при плохой реализации hashCode, когда все объекты попадают в один бакет.»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="coll-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">В чём разница ArrayList и LinkedList?</div>
+            <div class="qa-q-en">What is the difference between ArrayList and LinkedList?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">ArrayList — динамический массив: быстрый get(i) O(1), медленный add/remove в середине O(n). LinkedList — двусвязный список: медленный get(i) O(n), быстрый add/remove в начале/конце O(1). На практике ArrayList быстрее почти всегда из-за cache locality (данные в памяти подряд).</div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">💡 Добавить</div>
+            <div class="qa-text">«LinkedList использовать как Deque — вот его реальный use-case. Как List — почти никогда, потому что даже add в середину ArrayList быстрее из-за System.arraycopy, оптимизированного на уровне JVM.»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="coll-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем HashMap отличается от ConcurrentHashMap?</div>
+            <div class="qa-q-en">What is the difference between HashMap and ConcurrentHashMap?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">HashMap не потокобезопасен — одновременная запись из нескольких потоков может привести к потере данных или бесконечному циклу. ConcurrentHashMap потокобезопасен: в Java 8 использует CAS-операции и блокировки на уровне бакета (не всей карты). Не допускает null ключи и null значения.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label err">⚠️ Ошибка кандидата</div>
+            <div class="qa-text">Говорят «Hashtable потокобезопасен, можно использовать». Hashtable устарел — он блокирует всю Map на каждой операции, это намного медленнее ConcurrentHashMap.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="coll-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Когда использовать TreeMap вместо HashMap?</div>
+            <div class="qa-q-en">When would you use TreeMap instead of HashMap?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">TreeMap использовать когда нужна <strong>сортировка по ключу</strong> или навигационные операции: <code>firstKey()</code>, <code>lastKey()</code>, <code>headMap()</code>, <code>tailMap()</code>, <code>subMap()</code>. Стоимость: O(log n) вместо O(1). Пример: расписание по времени, прайс-лист по цене.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="coll-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое fail-fast итератор?</div>
+            <div class="qa-q-en">What is a fail-fast iterator?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Итераторы большинства коллекций (ArrayList, HashMap и др.) — fail-fast: если коллекция модифицируется структурно во время итерации не через сам итератор — бросается <code>ConcurrentModificationException</code>. Это быстрое обнаружение ошибки. Решение: использовать <code>iterator.remove()</code>, <code>removeIf()</code>, или CopyOnWrite коллекции.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="coll-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div><!-- /interview -->
+  </div><!-- /page-content -->
+</div><!-- /page-main -->
+</div><!-- /page-layout -->
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Java Backend Mega Cheatsheet — шпаргалка Senior разработчика + тренажёр для собеседований">
+  <title>☕ Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Дополнительные стили только для index.html */
+    .hero-section {
+      background: linear-gradient(135deg, #080d14 0%, #0d1a2e 50%, #080d14 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 36px 0 20px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,142,247,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-title {
+      font-size: 2.2rem; font-weight: 900;
+      color: var(--text); letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+    .hero-title span { color: var(--primary); }
+    .hero-sub { font-size: 0.95rem; color: var(--text-muted); max-width: 540px; margin: 0 auto; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 14px; }
+
+    .section-label {
+      font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1.2px; color: var(--text-faint);
+      margin: 28px 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .empty-state {
+      grid-column: 1 / -1; text-align: center;
+      padding: 60px 20px; color: var(--text-muted);
+    }
+    .empty-state .e-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state p { font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HERO SECTION ══════════ -->
+<div class="hero-section">
+  <div style="max-width:800px; margin:0 auto; padding:0 20px;">
+    <div class="hero-title">☕ Java Mega <span>Cheatsheet</span></div>
+    <p class="hero-sub">
+      Senior-уровень: шпаргалка + документация + тренажёр для собеседований.<br>
+      Полностью оффлайн. Русский + English.
+    </p>
+    <div class="hero-chips">
+      <span class="chip chip-blue">24 темы</span>
+      <span class="chip chip-green">300+ вопросов</span>
+      <span class="chip chip-warn">100+ примеров кода</span>
+      <span class="chip chip-purple">Offline-first</span>
+      <span class="chip chip-cyan">RU + EN</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HEADER (sticky) ══════════ -->
+<header class="index-header">
+  <div class="container">
+    <div class="header-row">
+      <div class="logo">
+        <div class="logo-badge">J</div>
+        Java Mega Cheatsheet
+      </div>
+      <input
+        type="text"
+        id="topicSearch"
+        class="header-search"
+        placeholder="🔍 Поиск темы... (Spring, SQL, Docker, JWT...)"
+        autocomplete="off"
+      >
+      <div class="header-actions">
+        <button class="btn-sm" id="favViewBtn" title="Показать только избранное">⭐ Избранное</button>
+        <button class="btn-sm" onclick="exportFavs()" title="Экспорт избранного">⬇ Экспорт</button>
+        <button class="btn-sm" onclick="clearAllFavs()" title="Очистить избранное">🗑 Очистить</button>
+      </div>
+    </div>
+    <div class="tags-row">
+      <span class="tag active" data-tag="all">Все</span>
+      <span class="tag" data-tag="Java">☕ Java</span>
+      <span class="tag" data-tag="Spring">🌱 Spring</span>
+      <span class="tag" data-tag="SQL">🗄 SQL</span>
+      <span class="tag" data-tag="DevOps">🐳 DevOps</span>
+      <span class="tag" data-tag="Backend">⚙ Backend</span>
+      <span class="tag" data-tag="Core">🔷 Core</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ MAIN CONTENT ══════════ -->
+<main class="main-content">
+
+  <div class="stats-bar">
+    <span class="stat-item">Показано: <strong id="statsCount">24</strong> тем</span>
+    <span class="stat-item">Версия: <strong>2.0</strong></span>
+    <span class="stat-item">Дата обновления: <strong>2025</strong></span>
+  </div>
+
+  <!-- ────────── Java Core ────────── -->
+  <div class="section-label">☕ Java Core</div>
+  <div class="topic-grid" id="grid-core">
+
+    <!-- Java Core -->
+    <article class="card" data-tags="Java,Core" data-fav="java-core">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(79,142,247,0.12)">☕</div>
+        <div>
+          <div class="card-title">Java Core</div>
+          <div class="card-tags">
+            <span class="card-tag java">Java</span>
+            <span class="card-tag core">Core</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Примитивы, Wrapper, String Pool, equals/hashCode, autoboxing, pass-by-value, JVM память.</p>
+      <div class="card-footer">
+        <a href="pages/java-core.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="java-core" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <article class="card" data-tags="java,core" data-fav="class-methods-cheatsheet">
+  <div class="card-header">
+    <div class="card-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">📚</div>
+    <div>
+      <div class="card-title">Методы Классов Java</div>
+      <div class="card-tags">
+        <span class="card-tag java">Java</span>
+        <span class="card-tag core">Core</span>
+      </div>
+    </div>
+  </div>
+  <p class="card-desc">Полная шпаргалка: String, Collections, Math, I/O, Stream API и др. Примеры, Best Practices и вопросы.</p>
+  <div class="card-footer">
+    <a href="pages/class-methods-cheatsheet.html" class="card-link">Открыть →</a>
+    <button class="fav-btn" data-topic="class-methods-cheatsheet">☆</button>
+  </div>
+</article>
+
+    <!-- OOP -->
+    <article class="card" data-tags="Java,Core" data-fav="oop">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(91,206,250,0.12)">🏗</div>
+        <div>
+          <div class="card-title">OOP Принципы</div>
+          <div class="card-tags">
+            <span class="card-tag java">Java</span>
+            <span class="card-tag core">Core</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Инкапсуляция, наследование, полиморфизм, абстракция. SOLID в Java. Interface vs Abstract.</p>
+      <div class="card-footer">
+        <a href="pages/oop.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="oop" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Collections -->
+    <article class="card" data-tags="Java,Core" data-fav="collections">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(34,211,160,0.12)">📦</div>
+        <div>
+          <div class="card-title">Collections Framework</div>
+          <div class="card-tags">
+            <span class="card-tag java">Java</span>
+            <span class="card-tag core">Core</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">List, Set, Map, Queue. HashMap internals, TreeMap, LinkedHashMap, ConcurrentHashMap. Big-O.</p>
+      <div class="card-footer">
+        <a href="pages/collections.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="collections" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Threads -->
+    <article class="card" data-tags="Java,Backend" data-fav="threads">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(240,96,96,0.12)">🧵</div>
+        <div>
+          <div class="card-title">Многопоточность</div>
+          <div class="card-tags">
+            <span class="card-tag java">Java</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Thread, Runnable, ExecutorService, synchronized, volatile, CompletableFuture, AtomicInteger.</p>
+      <div class="card-footer">
+        <a href="pages/threads.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="threads" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Patterns -->
+    <article class="card" data-tags="java,spring,core" data-fav="design-patterns">
+  <div class="card-header">
+    <div class="card-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🎨</div>
+    <div>
+      <div class="card-title">Паттерны проектирования</div>
+      <div class="card-tags">
+        <span class="card-tag java">Java</span>
+        <span class="card-tag spring">Spring</span>
+        <span class="card-tag core">Architecture</span>
+      </div>
+    </div>
+  </div>
+  <p class="card-desc">Полный справочник: GoF паттерны + Spring-specific решения. Код, примеры, когда использовать.</p>
+  <div class="card-footer">
+    <a href="pages/design-patterns.html" class="card-link">Открыть →</a>
+    <button class="fav-btn" data-topic="design-patterns">☆</button>
+  </div>
+</article>
+
+<!-- LeetCode Patterns -->
+<article class="card" data-tags="java,leetcode,algorithms" data-fav="leetcode-patterns">
+  <div class="card-header">
+    <div class="card-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">🏆</div>
+    <div>
+      <div class="card-title">LeetCode Patterns</div>
+      <div class="card-tags">
+        <span class="card-tag java">Java</span>
+        <span class="card-tag core">Algorithms</span>
+        <span class="card-tag backend">Interview</span>
+      </div>
+    </div>
+  </div>
+  <p class="card-desc">20+ паттернов для задач: сортировки, поиск, два указателя, скользящее окно, графы, ДП. Код с комментариями.</p>
+  <div class="card-footer">
+    <a href="pages/leetcode-patterns.html" class="card-link">Открыть →</a>
+    <button class="fav-btn" data-topic="leetcode-patterns">☆</button>
+  </div>
+</article>
+
+  </div><!-- /grid-core -->
+
+  <!-- ────────── Spring ────────── -->
+  <div class="section-label">🌱 Spring Boot</div>
+  <div class="topic-grid" id="grid-spring">
+
+    <!-- Spring Boot -->
+    <article class="card" data-tags="Spring,Backend" data-fav="spring-boot">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(34,211,160,0.12)">🌱</div>
+        <div>
+          <div class="card-title">Spring Boot</div>
+          <div class="card-tags">
+            <span class="card-tag spring">Spring</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Auto-configuration, Starters, ApplicationContext, IoC/DI, Profiles, Actuator, @Bean, @Component.</p>
+      <div class="card-footer">
+        <a href="pages/spring-boot.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="spring-boot" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Spring Security + JWT -->
+    <article class="card" data-tags="Spring,Backend" data-fav="spring-security-jwt">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(240,96,96,0.12)">🔐</div>
+        <div>
+          <div class="card-title">Spring Security + JWT</div>
+          <div class="card-tags">
+            <span class="card-tag spring">Spring</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Authentication vs Authorization, SecurityFilterChain, JWT flow, OncePerRequestFilter, UserDetails.</p>
+      <div class="card-footer">
+        <a href="pages/spring-security-jwt.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="spring-security-jwt" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Spring Security Template -->
+    <article class="card" data-tags="spring,backend,security" data-fav="spring-security-jwt">
+  <div class="card-header">
+    <div class="card-icon" style="background:rgba(240,96,96,0.12);color:var(--error)">🔐</div>
+    <div class="card-title">Spring Security JWT Protection</div>
+  </div>
+  <p class="card-desc">Готовый модуль аутентификации: регистрация, логин, роли, JWT-токены. Копируй папку security/ — работает из коробки.</p>
+  <div class="card-tags">
+    <span class="card-tag spring">Spring</span>
+    <span class="card-tag backend">Backend</span>
+    <span class="card-tag core">Security</span>
+  </div>
+  <div class="card-footer">
+    <a href="pages/spring-security-jwt-template.html" class="card-link">Открыть →</a>
+    <button class="fav-btn" data-topic="spring-security-jwt">☆</button>
+  </div>
+</article>
+
+    <!-- REST Controller -->
+    <article class="card" data-tags="Spring,Backend" data-fav="restcontroller">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(79,142,247,0.12)">🌐</div>
+        <div>
+          <div class="card-title">@RestController</div>
+          <div class="card-tags">
+            <span class="card-tag spring">Spring</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">@GetMapping, @PostMapping, @RequestBody, @PathVariable, @RequestParam, ResponseEntity.</p>
+      <div class="card-footer">
+        <a href="pages/restcontroller.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="restcontroller" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Service Layer -->
+    <article class="card" data-tags="Spring,Backend" data-fav="service">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(184,139,250,0.12)">⚙</div>
+        <div>
+          <div class="card-title">Service Layer</div>
+          <div class="card-tags">
+            <span class="card-tag spring">Spring</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">@Service, @Transactional, бизнес-логика, Repository, зависимости, разделение слоёв.</p>
+      <div class="card-footer">
+        <a href="pages/service.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="service" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Annotations -->
+    <article class="card" data-tags="Spring,Java,Backend" data-fav="annotations">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(245,166,35,0.12)">🏷</div>
+        <div>
+          <div class="card-title">Аннотации Spring + Java</div>
+          <div class="card-tags">
+            <span class="card-tag spring">Spring</span>
+            <span class="card-tag java">Java</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">@Component, @Autowired, @Value, @Scope, @Lazy, @Primary, @Qualifier, @Transactional и все остальные.</p>
+      <div class="card-footer">
+        <a href="pages/annotations.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="annotations" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Global Exception Handler -->
+    <article class="card" data-tags="Spring,Backend" data-fav="global-exception-handler">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(240,96,96,0.12)">🚨</div>
+        <div>
+          <div class="card-title">GlobalExceptionHandler</div>
+          <div class="card-tags">
+            <span class="card-tag spring">Spring</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">@ControllerAdvice, @ExceptionHandler, ErrorResponse, обработка всех исключений централизованно.</p>
+      <div class="card-footer">
+        <a href="pages/global-exception-handler.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="global-exception-handler" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- EmployeeCRUD -->
+    <article class="card" data-tags="spring,backend" data-fav="employee-crud">
+  <div class="card-header">
+    <div class="card-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🌱</div>
+    <div>
+      <div class="card-title">Создание Employee-CRUD приложения на Spring Boot</div>
+      <div class="card-tags">
+        <span class="card-tag spring">Spring</span>
+        <span class="card-tag backend">Backend</span>
+      </div>
+    </div>
+  </div>
+  <p class="card-desc">Пошаговое руководство: 3-слойная архитектура, JPA, DTO, маппинг, тесты и обработка ошибок.</p>
+  <div class="card-footer">
+    <a href="pages/employee-crud-spring-boot.html" class="card-link">Открыть →</a>
+    <button class="fav-btn" data-topic="employee-crud" title="В избранное">☆</button>
+  </div>
+</article>
+
+<!-- JPA-Relationships -->
+<article class="card" data-tags="spring,jpa,backend" data-fav="jpa-relationships">
+  <div class="card-header">
+    <div class="card-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🔗</div>
+    <div>
+      <div class="card-title">Связи в JPA/Hibernate</div>
+      <div class="card-tags">
+        <span class="card-tag spring">Spring</span>
+        <span class="card-tag backend">Backend</span>
+      </div>
+    </div>
+  </div>
+  <p class="card-desc">Полное руководство: @OneToMany, @ManyToOne, @OneToOne, @ManyToMany. Owning/Inverse side, @JoinColumn, mappedBy, cascade, fetch.</p>
+  <div class="card-footer">
+    <a href="pages/jpa-relationships.html" class="card-link">Открыть →</a>
+    <button class="fav-btn" data-topic="jpa-relationships">☆</button>
+  </div>
+</article>
+
+  </div><!-- /grid-spring -->
+
+  <!-- ────────── Data & SQL ────────── -->
+  <div class="section-label">🗄 Данные и SQL</div>
+  <div class="topic-grid" id="grid-data">
+
+    <!-- SQL -->
+    <article class="card" data-tags="SQL,Backend" data-fav="sql">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(245,166,35,0.12)">🗄</div>
+        <div>
+          <div class="card-title">SQL Полный курс</div>
+          <div class="card-tags">
+            <span class="card-tag sql">SQL</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">SELECT, JOIN, GROUP BY, подзапросы, индексы, транзакции, ACID, нормализация, Window Functions.</p>
+      <div class="card-footer">
+        <a href="pages/sql.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="sql" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- DTO -->
+    <article class="card" data-tags="Spring,Backend,Java" data-fav="dto">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(91,206,250,0.12)">📋</div>
+        <div>
+          <div class="card-title">DTO Pattern</div>
+          <div class="card-tags">
+            <span class="card-tag backend">Backend</span>
+            <span class="card-tag java">Java</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Data Transfer Object, Request/Response DTO, Records, зачем нужны, как правильно создавать.</p>
+      <div class="card-footer">
+        <a href="pages/dto.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="dto" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- MapStruct -->
+    <article class="card" data-tags="Spring,Backend,Java" data-fav="mapstruct">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(34,211,160,0.12)">🔄</div>
+        <div>
+          <div class="card-title">MapStruct</div>
+          <div class="card-tags">
+            <span class="card-tag backend">Backend</span>
+            <span class="card-tag java">Java</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Маппинг Entity ↔ DTO, @Mapper, @Mapping, custom methods, ComponentModel.SPRING.</p>
+      <div class="card-footer">
+        <a href="pages/mapstruct.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="mapstruct" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Validation -->
+    <article class="card" data-tags="Spring,Java,Backend" data-fav="validation">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(79,142,247,0.12)">✅</div>
+        <div>
+          <div class="card-title">Валидация (Validation)</div>
+          <div class="card-tags">
+            <span class="card-tag spring">Spring</span>
+            <span class="card-tag java">Java</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Bean Validation: @NotNull, @NotBlank, @Valid vs @Validated, BindingResult, кастомные валидаторы.</p>
+      <div class="card-footer">
+        <a href="pages/validation.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="validation" title="В избранное">☆</button>
+      </div>
+    </article>
+
+  </div><!-- /grid-data -->
+
+  <!-- ────────── Tools & Config ────────── -->
+  <div class="section-label">🛠 Инструменты и конфигурация</div>
+  <div class="topic-grid" id="grid-tools">
+
+    <!-- YAML -->
+    <article class="card" data-tags="Spring,Backend" data-fav="yaml">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(184,139,250,0.12)">⚙</div>
+        <div>
+          <div class="card-title">YAML / application.yml</div>
+          <div class="card-tags">
+            <span class="card-tag spring">Spring</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Синтаксис YAML, profiles, @Value, @ConfigurationProperties, секреты, окружения.</p>
+      <div class="card-footer">
+        <a href="pages/yaml.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="yaml" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Maven -->
+    <article class="card" data-tags="Java,Backend" data-fav="maven">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(240,96,96,0.12)">📦</div>
+        <div>
+          <div class="card-title">Maven & pom.xml</div>
+          <div class="card-tags">
+            <span class="card-tag java">Java</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Жизненный цикл сборки, зависимости, плагины, pom.xml структура, profiles, multi-module.</p>
+      <div class="card-footer">
+        <a href="pages/maven.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="maven" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Builder Pattern -->
+    <article class="card" data-tags="Java,Core" data-fav="builder">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(91,206,250,0.12)">🏗</div>
+        <div>
+          <div class="card-title">Builder Pattern + Lombok</div>
+          <div class="card-tags">
+            <span class="card-tag java">Java</span>
+            <span class="card-tag core">Core</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Builder паттерн, @Builder, @Getter, @Setter, @Data, @NoArgsConstructor, @AllArgsConstructor, @Slf4j.</p>
+      <div class="card-footer">
+        <a href="pages/builder.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="builder" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Email Sender -->
+    <article class="card" data-tags="Spring,Backend" data-fav="email-sender">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(34,211,160,0.12)">📧</div>
+        <div>
+          <div class="card-title">Email Sender</div>
+          <div class="card-tags">
+            <span class="card-tag spring">Spring</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">JavaMailSender, MimeMessage, HTML письма, Thymeleaf шаблоны, отправка с вложениями.</p>
+      <div class="card-footer">
+        <a href="pages/email-sender.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="email-sender" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- HTTP & REST -->
+    <article class="card" data-tags="Backend,Java" data-fav="http-rest">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(79,142,247,0.12)">🌐</div>
+        <div>
+          <div class="card-title">HTTP & REST API</div>
+          <div class="card-tags">
+            <span class="card-tag backend">Backend</span>
+            <span class="card-tag java">Java</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">HTTP методы, статус-коды, заголовки, REST принципы, WebClient, RestTemplate, OpenFeign.</p>
+      <div class="card-footer">
+        <a href="pages/http-rest.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="http-rest" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Testing -->
+    <article class="card" data-tags="Java,Spring,Backend" data-fav="testing">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(34,211,160,0.12)">🧪</div>
+        <div>
+          <div class="card-title">Тестирование (Testing)</div>
+          <div class="card-tags">
+            <span class="card-tag java">Java</span>
+            <span class="card-tag spring">Spring</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">JUnit 5, Mockito, @SpringBootTest, @WebMvcTest, MockMvc, AssertJ, TDD, Integration tests.</p>
+      <div class="card-footer">
+        <a href="pages/testing.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="testing" title="В избранное">☆</button>
+      </div>
+    </article>
+
+  </div><!-- /grid-tools -->
+
+  <!-- ────────── DevOps ────────── -->
+  <div class="section-label">🐳 DevOps и Инфраструктура</div>
+  <div class="topic-grid" id="grid-devops">
+
+    <!-- Docker -->
+    <article class="card" data-tags="DevOps,Backend" data-fav="docker">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(91,206,250,0.12)">🐳</div>
+        <div>
+          <div class="card-title">Docker</div>
+          <div class="card-tags">
+            <span class="card-tag devops">DevOps</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Dockerfile, образы, контейнеры, volumes, networks, команды CLI, multi-stage builds.</p>
+      <div class="card-footer">
+        <a href="pages/docker.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="docker" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Docker Compose -->
+    <article class="card" data-tags="DevOps,Backend" data-fav="docker-compose">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(184,139,250,0.12)">🔧</div>
+        <div>
+          <div class="card-title">Docker Compose</div>
+          <div class="card-tags">
+            <span class="card-tag devops">DevOps</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">docker-compose.yml, сервисы, базы данных, depends_on, env_file, networks, volumes.</p>
+      <div class="card-footer">
+        <a href="pages/docker-compose.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="docker-compose" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Kubernetes -->
+    <article class="card" data-tags="DevOps" data-fav="kubernetes">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(79,142,247,0.12)">☸</div>
+        <div>
+          <div class="card-title">Kubernetes</div>
+          <div class="card-tags">
+            <span class="card-tag devops">DevOps</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Pod, Deployment, Service, Ingress, ConfigMap, Secret, kubectl, HPA, namespace.</p>
+      <div class="card-footer">
+        <a href="pages/kubernetes.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="kubernetes" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Kafka -->
+    <article class="card" data-tags="DevOps,Backend" data-fav="kafka">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(245,166,35,0.12)">📨</div>
+        <div>
+          <div class="card-title">Apache Kafka</div>
+          <div class="card-tags">
+            <span class="card-tag devops">DevOps</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Producer, Consumer, Topic, Partition, @KafkaListener, KafkaTemplate, offset, группы.</p>
+      <div class="card-footer">
+        <a href="pages/kafka.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="kafka" title="В избранное">☆</button>
+      </div>
+    </article>
+
+    <!-- Redis -->
+    <article class="card" data-tags="DevOps,Backend" data-fav="redis">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(240,96,96,0.12)">⚡</div>
+        <div>
+          <div class="card-title">Redis</div>
+          <div class="card-tags">
+            <span class="card-tag devops">DevOps</span>
+            <span class="card-tag backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p class="card-desc">Кэширование, @Cacheable, @CacheEvict, RedisTemplate, структуры данных, TTL, Pub/Sub.</p>
+      <div class="card-footer">
+        <a href="pages/redis.html" class="card-link">Открыть →</a>
+        <button class="fav-btn" data-topic="redis" title="В избранное">☆</button>
+      </div>
+    </article>
+
+  </div><!-- /grid-devops -->
+
+  <!-- Empty state (показывается если ничего не найдено) -->
+  <div class="topic-grid">
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="e-icon">🔍</div>
+      <p>Ничего не найдено по запросу.<br>Попробуйте другой поисковый запрос или тег.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- Кнопка "Наверх" -->
+<button id="scrollTop" title="Наверх">↑</button>
+
+<script src="app.js"></script>
+<script>
+  // Показываем/скрываем empty state
+  const grid = document.querySelectorAll('.topic-grid');
+  const empty = document.getElementById('emptyState');
+
+  // Переопределяем applyFilter чтобы показывать empty state
+  const _origApply = window.__apply__;
+
+  const observer = new MutationObserver(() => {
+    const allCards = document.querySelectorAll('.card');
+    const visible  = [...allCards].filter(c => c.dataset.hidden !== 'true').length;
+    if (empty) empty.style.display = visible === 0 ? 'block' : 'none';
+  });
+
+  // Наблюдаем за изменениями data-hidden
+  document.querySelectorAll('.card').forEach(c => {
+    observer.observe(c, { attributes: true, attributeFilter: ['data-hidden'] });
+  });
+</script>
+</body>
+</html>

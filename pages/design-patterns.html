@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Паттерны проектирования | Java Mega Cheatsheet</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../app.js" defer></script>
+</head>
+<body>
+    <div class="page-layout">
+        <!-- Sidebar -->
+        <aside class="page-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">J</div>
+                    <span>Java Cheatsheet</span>
+                </a>
+                <input type="text" class="sidebar-search" id="sideSearch" placeholder="Поиск в навигации...">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">На этой странице</div>
+                <ul>
+                    <li><a href="#summary" class="nav-link"><span class="nav-dot" style="background:var(--primary)"></span>📌 Краткий конспект</a></li>
+                    <li><a href="#creational" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔨 Порождающие</a></li>
+                    <li><a href="#structural" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🧱 Структурные</a></li>
+                    <li><a href="#behavioral" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔄 Поведенческие</a></li>
+                    <li><a href="#spring" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🌱 Spring Patterns</a></li>
+                    <li><a href="#practices" class="nav-link"><span class="nav-dot" style="background:var(--warn)"></span>✅ Best / ⚠️ Anti</a></li>
+                    <li><a href="#code" class="nav-link"><span class="nav-dot" style="background:var(--error)"></span>💻 Примеры</a></li>
+                    <li><a href="#interview" class="nav-link"><span class="nav-dot" style="background:var(--purple)"></span>❓ Интервью</a></li>
+                </ul>
+                <div class="nav-section" style="margin-top:24px">Другие темы</div>
+                <ul>
+                    <li><a href="../index.html" class="nav-link"><span class="nav-dot" style="background:var(--cyan)"></span>🏠 Все темы</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="page-main">
+            <header class="page-header">
+                <a href="../index.html" class="page-back">← Главная</a>
+                <span class="page-header-title">Паттерны проектирования</span>
+                <div class="page-search-wrap">
+                    <input type="text" id="pageSearch" class="page-search" placeholder="Поиск по странице...">
+                    <button id="searchClear" class="search-clear">✕</button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-header">
+                        <div class="hero-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🎨</div>
+                        <div>
+                            <h1>Паттерны проектирования — Java & Spring Boot</h1>
+                            <p>Полный справочник по паттернам: от классических GoF до Spring-specific решений. Код, примеры, когда использовать, а когда — нет.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                        <span class="chip chip-blue">GoF Patterns</span>
+                        <span class="chip chip-green">Spring Boot</span>
+                        <span class="chip chip-warn">25+ Паттернов</span>
+                        <span class="chip chip-purple">Примеры</span>
+                    </div>
+                </div>
+
+                <!-- TOC -->
+                <div class="toc">
+                    <div class="toc-title">Содержание</div>
+                    <div class="toc-list">
+                        <a href="#summary" class="toc-link">📌 Конспект</a>
+                        <a href="#creational" class="toc-link">🔨 Порождающие</a>
+                        <a href="#structural" class="toc-link">🧱 Структурные</a>
+                        <a href="#behavioral" class="toc-link">🔄 Поведенческие</a>
+                        <a href="#spring" class="toc-link">🌱 Spring</a>
+                        <a href="#practices" class="toc-link">Best/Bad</a>
+                        <a href="#code" class="toc-link">💻 Код</a>
+                        <a href="#interview" class="toc-link">❓ Вопросы</a>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="section" id="summary">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">📌</span> Краткий конспект</h2>
+                    <div class="box box-blue" style="margin-bottom:16px">
+                        <div class="box-label">Что такое паттерн?</div>
+                        <b>Паттерн (шаблон проектирования)</b> — это проверенное решение типовой проблемы в определённом контексте. Это не готовый код, а <i>идея</i>, которую можно адаптировать под свою задачу.
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Категория</th><th>Назначение</th><th>Примеры</th><th>Spring-аналог</th></tr></thead>
+                            <tbody>
+                                <tr><td><b>🔨 Порождающие</b></td><td>Создание объектов</td><td>Singleton, Factory, Builder</td><td>@Bean, @Configuration</td></tr>
+                                <tr><td><b>🧱 Структурные</b></td><td>Композиция классов</td><td>Adapter, Proxy, Decorator</td><td>@RestController, AOP</td></tr>
+                                <tr><td><b>🔄 Поведенческие</b></td><td>Взаимодействие объектов</td><td>Strategy, Observer, Command</td><td>@EventListener, @Async</td></tr>
+                                <tr><td><b>🌱 Spring-specific</b></td><td>Архитектура приложений</td><td>DI, Front Controller, Template</td><td>Встроено во фреймворк</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Creational Patterns -->
+                <div class="section" id="creational">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🔨</span> Порождающие паттерны</h2>
+                    
+                    <div class="section-subtitle">Singleton — единственный экземпляр</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Нужно гарантировать, что у класса только один экземпляр, и предоставить глобальную точку доступа к нему.</p>
+                        <p><b>Решение:</b> Приватный конструктор + статический метод/поле.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// ✅ Thread-safe Singleton (Bill Pugh)</span>
+<span class="kw">public class</span> <span class="cl">DatabaseConnection</span> {
+    <span class="kw">private</span> <span class="cl">DatabaseConnection</span>() {}  <span class="cm">// Приватный конструктор</span>
+
+    <span class="kw">private static class</span> <span class="cl">Holder</span> {
+        <span class="kw">static final</span> <span class="cl">DatabaseConnection</span> <span class="fn">INSTANCE</span> = <span class="kw">new</span> <span class="cl">DatabaseConnection</span>();
+    }
+
+    <span class="kw">public static</span> <span class="cl">DatabaseConnection</span> <span class="fn">getInstance</span>() {
+        <span class="kw">return</span> <span class="cl">Holder</span>.<span class="fn">INSTANCE</span>;  <span class="cm">// Ленивая инициализация, thread-safe</span>
+    }
+}
+
+<span class="cm">// 💡 В Spring: Singleton — default scope для всех @Component/@Service</span>
+<span class="cm">// Не пиши Singleton вручную — используй DI!</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Factory Method — фабрика объектов</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Не знаем заранее, какой класс нужно создать.</p>
+                        <p><b>Решение:</b> Делегируем создание подклассам или отдельному методу.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Интерфейс продукта</span>
+<span class="kw">interface</span> <span class="cl">Notification</span> { <span class="kw">void</span> <span class="fn">send</span>(<span class="ty">String</span> <span class="fn">message</span>); }
+
+<span class="cm">// Конкретные продукты</span>
+<span class="kw">class</span> <span class="cl">EmailNotification</span> <span class="kw">implements</span> <span class="cl">Notification</span> {
+    <span class="kw">public void</span> <span class="fn">send</span>(<span class="ty">String</span> <span class="fn">msg</span>) { <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"Email: "</span> + <span class="fn">msg</span>); }
+}
+<span class="kw">class</span> <span class="cl">SmsNotification</span> <span class="kw">implements</span> <span class="cl">Notification</span> {
+    <span class="kw">public void</span> <span class="fn">send</span>(<span class="ty">String</span> <span class="fn">msg</span>) { <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"SMS: "</span> + <span class="fn">msg</span>); }
+}
+
+<span class="cm">// Фабрика</span>
+<span class="kw">public class</span> <span class="cl">NotificationFactory</span> {
+    <span class="kw">public static</span> <span class="cl">Notification</span> <span class="fn">create</span>(<span class="ty">String</span> <span class="fn">type</span>) {
+        <span class="kw">return switch</span> (<span class="fn">type</span>.<span class="fn">toLowerCase</span>()) {
+            <span class="kw">case</span> <span class="st">"email"</span> -> <span class="kw">new</span> <span class="cl">EmailNotification</span>();
+            <span class="kw">case</span> <span class="st">"sms"</span>   -> <span class="kw">new</span> <span class="cl">SmsNotification</span>();
+            <span class="kw">default</span> -> <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Unknown type: "</span> + <span class="fn">type</span>);
+        };
+    }
+}
+
+<span class="cm">// 💡 В Spring: @Bean-методы в @Configuration — это Factory Method!</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Builder — пошаговое создание сложных объектов</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Конструктор с 10+ параметрами — нечитаемо и ошибкоопасно.</p>
+                        <p><b>Решение:</b> Отдельный Builder-класс для пошаговой сборки.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// ✅ Lombok @Builder — автоматически генерирует Builder</span>
+<span class="an">@Data</span> <span class="an">@Builder</span> <span class="an">@NoArgsConstructor</span> <span class="an">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">User</span> {
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">email</span>;
+    <span class="kw">private</span> <span class="ty">LocalDateTime</span> <span class="fn">createdAt</span>;
+    <span class="kw">private</span> <span class="ty">Set</span>&lt;<span class="ty">String</span>&gt; <span class="fn">roles</span>;
+}
+
+<span class="cm">// Использование:</span>
+<span class="ty">User</span> <span class="fn">user</span> = <span class="cl">User</span>.<span class="fn">builder</span>()
+    .<span class="fn">username</span>(<span class="st">"admin"</span>)
+    .<span class="fn">email</span>(<span class="st">"admin@company.ru"</span>)
+    .<span class="fn">createdAt</span>(<span class="cl">LocalDateTime</span>.<span class="fn">now</span>())
+    .<span class="fn">roles</span>(<span class="cl">Set</span>.<span class="fn">of</span>(<span class="st">"ADMIN"</span>, <span class="st">"USER"</span>))
+    .<span class="fn">build</span>();
+
+<span class="cm">// 💡 Spring: ResponseEntity.builder(), UriComponentsBuilder</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Prototype — клонирование объектов</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Создание объекта дорого (тяжёлые вычисления, БД-запросы).</p>
+                        <p><b>Решение:</b> Клонировать готовый прототип вместо создания с нуля.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">public class</span> <span class="cl">Config</span> <span class="kw">implements</span> <span class="cl">Cloneable</span> {
+    <span class="kw">private</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt; <span class="fn">settings</span> = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+
+    <span class="an">@Override</span>
+    <span class="kw">protected</span> <span class="cl">Config</span> <span class="fn">clone</span>() {
+        <span class="kw">try</span> {
+            <span class="cl">Config</span> <span class="fn">copy</span> = (<span class="cl">Config</span>) <span class="kw">super</span>.<span class="fn">clone</span>();
+            <span class="fn">copy</span>.<span class="fn">settings</span> = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;(<span class="kw">this</span>.<span class="fn">settings</span>);  <span class="cm">// Глубокое копирование</span>
+            <span class="kw">return</span> <span class="fn">copy</span>;
+        } <span class="kw">catch</span> (<span class="cl">CloneNotSupportedException</span> <span class="fn">e</span>) {
+            <span class="kw">throw new</span> <span class="cl">RuntimeException</span>(<span class="fn">e</span>);
+        }
+    }
+}
+
+<span class="cm">// 💡 В Spring: @Scope("prototype") — создаёт новый бин при каждом запросе</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Abstract Factory — семейство связанных объектов</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Нужно создавать группы связанных объектов (кнопки + чекбоксы для разных ОС).</p>
+                        <p><b>Решение:</b> Интерфейс фабрики, который создаёт целое семейство продуктов.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Абстрактные продукты</span>
+<span class="kw">interface</span> <span class="cl">Button</span> { <span class="kw">void</span> <span class="fn">render</span>(); }
+<span class="kw">interface</span> <span class="cl">Checkbox</span> { <span class="kw">void</span> <span class="fn">render</span>(); }
+
+<span class="cm">// Абстрактная фабрика</span>
+<span class="kw">interface</span> <span class="cl">GUIFactory</span> {
+    <span class="cl">Button</span> <span class="fn">createButton</span>();
+    <span class="cl">Checkbox</span> <span class="fn">createCheckbox</span>();
+}
+
+<span class="cm">// Конкретная фабрика для Windows</span>
+<span class="kw">class</span> <span class="cl">WindowsFactory</span> <span class="kw">implements</span> <span class="cl">GUIFactory</span> {
+    <span class="kw">public</span> <span class="cl">Button</span> <span class="fn">createButton</span>() { <span class="kw">return new</span> <span class="cl">WindowsButton</span>(); }
+    <span class="kw">public</span> <span class="cl">Checkbox</span> <span class="fn">createCheckbox</span>() { <span class="kw">return new</span> <span class="cl">WindowsCheckbox</span>(); }
+}
+
+<span class="cm">// Клиентский код не знает, какая фабрика используется</span>
+<span class="kw">public void</span> <span class="fn">renderUI</span>(<span class="cl">GUIFactory</span> <span class="fn">factory</span>) {
+    <span class="fn">factory</span>.<span class="fn">createButton</span>().<span class="fn">render</span>();
+    <span class="fn">factory</span>.<span class="fn">createCheckbox</span>().<span class="fn">render</span>();
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Structural Patterns -->
+                <div class="section" id="structural">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">🧱</span> Структурные паттерны</h2>
+                    
+                    <div class="section-subtitle">Adapter — адаптер интерфейсов</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Классы с несовместимыми интерфейсами не могут работать вместе.</p>
+                        <p><b>Решение:</b> Обёртка, которая преобразует интерфейс одного класса в интерфейс, ожидаемый клиентом.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Целевой интерфейс</span>
+<span class="kw">interface</span> <span class="cl">PaymentProcessor</span> {
+    <span class="kw">void</span> <span class="fn">processPayment</span>(<span class="ty">double</span> <span class="fn">amount</span>);
+}
+
+<span class="cm">// Существующий класс с другим интерфейсом</span>
+<span class="kw">class</span> <span class="cl">LegacyPayPal</span> {
+    <span class="kw">public void</span> <span class="fn">makePayment</span>(<span class="ty">String</span> <span class="fn">currency</span>, <span class="ty">double</span> <span class="fn">amount</span>) {
+        <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"PayPal: "</span> + <span class="fn">amount</span> + <span class="st">" "</span> + <span class="fn">currency</span>);
+    }
+}
+
+<span class="cm">// Адаптер</span>
+<span class="kw">class</span> <span class="cl">PayPalAdapter</span> <span class="kw">implements</span> <span class="cl">PaymentProcessor</span> {
+    <span class="kw">private final</span> <span class="cl">LegacyPayPal</span> <span class="fn">payPal</span> = <span class="kw">new</span> <span class="cl">LegacyPayPal</span>();
+
+    <span class="kw">public void</span> <span class="fn">processPayment</span>(<span class="ty">double</span> <span class="fn">amount</span>) {
+        <span class="fn">payPal</span>.<span class="fn">makePayment</span>(<span class="st">"USD"</span>, <span class="fn">amount</span>);  <span class="cm">// Адаптируем вызов</span>
+    }
+}
+
+<span class="cm">// 💡 В Spring: @RestController — адаптер между контроллером и HTTP</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Proxy — прокси-объект</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Нужно добавить поведение (логирование, кэш, проверка прав) без изменения основного класса.</p>
+                        <p><b>Решение:</b> Прокси-класс, который контролирует доступ к реальному объекту.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Реальный сервис</span>
+<span class="kw">interface</span> <span class="cl">UserService</span> { <span class="ty">String</span> <span class="fn">getUser</span>(<span class="ty">Long</span> <span class="fn">id</span>); }
+
+<span class="kw">class</span> <span class="cl">UserServiceImpl</span> <span class="kw">implements</span> <span class="cl">UserService</span> {
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getUser</span>(<span class="ty">Long</span> <span class="fn">id</span>) {
+        <span class="kw">return</span> <span class="st">"User_"</span> + <span class="fn">id</span>;  <span class="cm">// Тяжёлый запрос к БД</span>
+    }
+}
+
+<span class="cm">// Прокси с кэшированием</span>
+<span class="kw">class</span> <span class="cl">UserServiceProxy</span> <span class="kw">implements</span> <span class="cl">UserService</span> {
+    <span class="kw">private final</span> <span class="cl">UserService</span> <span class="fn">realService</span> = <span class="kw">new</span> <span class="cl">UserServiceImpl</span>();
+    <span class="kw">private final</span> <span class="ty">Map</span>&lt;<span class="ty">Long</span>, <span class="ty">String</span>&gt; <span class="fn">cache</span> = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getUser</span>(<span class="ty">Long</span> <span class="fn">id</span>) {
+        <span class="kw">if</span> (!<span class="fn">cache</span>.<span class="fn">containsKey</span>(<span class="fn">id</span>)) {
+            <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"Cache miss, loading from DB..."</span>);
+            <span class="fn">cache</span>.<span class="fn">put</span>(<span class="fn">id</span>, <span class="fn">realService</span>.<span class="fn">getUser</span>(<span class="fn">id</span>));
+        }
+        <span class="kw">return</span> <span class="fn">cache</span>.<span class="fn">get</span>(<span class="fn">id</span>);
+    }
+}
+
+<span class="cm">// 💡 В Spring: @Transactional, @Cacheable, @Secured — всё это Proxy через AOP!</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Decorator — динамическое добавление поведения</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Нужно гибко добавлять функциональность объектам без наследования.</p>
+                        <p><b>Решение:</b> Обёртка, которая добавляет поведение "на лету".</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Компонент</span>
+<span class="kw">interface</span> <span class="cl">Coffee</span> { <span class="ty">double</span> <span class="fn">getCost</span>(); <span class="ty">String</span> <span class="fn">getDescription</span>(); }
+
+<span class="cm">// Базовый компонент</span>
+<span class="kw">class</span> <span class="cl">SimpleCoffee</span> <span class="kw">implements</span> <span class="cl">Coffee</span> {
+    <span class="kw">public</span> <span class="ty">double</span> <span class="fn">getCost</span>() { <span class="kw">return</span> <span class="nu">5.0</span>; }
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getDescription</span>() { <span class="kw">return</span> <span class="st">"Simple coffee"</span>; }
+}
+
+<span class="cm">// Декоратор</span>
+<span class="kw">abstract class</span> <span class="cl">CoffeeDecorator</span> <span class="kw">implements</span> <span class="cl">Coffee</span> {
+    <span class="kw">protected final</span> <span class="cl">Coffee</span> <span class="fn">coffee</span>;
+    <span class="kw">public</span> <span class="cl">CoffeeDecorator</span>(<span class="cl">Coffee</span> <span class="fn">coffee</span>) { <span class="kw">this</span>.<span class="fn">coffee</span> = <span class="fn">coffee</span>; }
+    <span class="kw">public</span> <span class="ty">double</span> <span class="fn">getCost</span>() { <span class="kw">return</span> <span class="fn">coffee</span>.<span class="fn">getCost</span>(); }
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getDescription</span>() { <span class="kw">return</span> <span class="fn">coffee</span>.<span class="fn">getDescription</span>(); }
+}
+
+<span class="cm">// Конкретный декоратор</span>
+<span class="kw">class</span> <span class="cl">MilkDecorator</span> <span class="kw">extends</span> <span class="cl">CoffeeDecorator</span> {
+    <span class="kw">public</span> <span class="cl">MilkDecorator</span>(<span class="cl">Coffee</span> <span class="fn">coffee</span>) { <span class="kw">super</span>(<span class="fn">coffee</span>); }
+    <span class="kw">public</span> <span class="ty">double</span> <span class="fn">getCost</span>() { <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">getCost</span>() + <span class="nu">2.0</span>; }
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getDescription</span>() { <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">getDescription</span>() + <span class="st">", milk"</span>; }
+}
+
+<span class="cm">// Использование: можно комбинировать декораторы</span>
+<span class="cl">Coffee</span> <span class="fn">order</span> = <span class="kw">new</span> <span class="cl">MilkDecorator</span>(<span class="kw">new</span> <span class="cl">SimpleCoffee</span>());
+<span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="fn">order</span>.<span class="fn">getDescription</span>());  <span class="cm">// "Simple coffee, milk"</span>
+
+<span class="cm">// 💡 В Spring: @Cacheable, @Transactional — декораторы через AOP</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Facade — упрощённый интерфейс к сложной подсистеме</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Сложная библиотека с десятками классов — неудобно использовать.</p>
+                        <p><b>Решение:</b> Единый простой интерфейс, который скрывает сложность.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Сложная подсистема</span>
+<span class="kw">class</span> <span class="cl">VideoCodec</span> { <span class="kw">public void</span> <span class="fn">encode</span>() { ... } }
+<span class="kw">class</span> <span class="cl">AudioCodec</span> { <span class="kw">public void</span> <span class="fn">encode</span>() { ... } }
+<span class="kw">class</span> <span class="cl">StreamMuxer</span> { <span class="kw">public void</span> <span class="fn">mux</span>() { ... } }
+
+<span class="cm">// Фасад — простой интерфейс</span>
+<span class="kw">class</span> <span class="cl">VideoConverter</span> {
+    <span class="kw">public void</span> <span class="fn">convert</span>(<span class="ty">String</span> <span class="fn">filename</span>, <span class="ty">String</span> <span class="fn">format</span>) {
+        <span class="kw">new</span> <span class="cl">VideoCodec</span>().<span class="fn">encode</span>();
+        <span class="kw">new</span> <span class="cl">AudioCodec</span>().<span class="fn">encode</span>();
+        <span class="kw">new</span> <span class="cl">StreamMuxer</span>().<span class="fn">mux</span>();
+        <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"Конвертация завершена!"</span>);
+    }
+}
+
+<span class="cm">// Клиентский код — простой и понятный</span>
+<span class="kw">new</span> <span class="cl">VideoConverter</span>().<span class="fn">convert</span>(<span class="st">"video.mp4"</span>, <span class="st">"avi"</span>);
+
+<span class="cm">// 💡 В Spring: Spring Boot Auto-configuration — фасад к сложной настройке</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Behavioral Patterns -->
+                <div class="section" id="behavioral">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🔄</span> Поведенческие паттерны</h2>
+                    
+                    <div class="section-subtitle">Strategy — семейство алгоритмов</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Нужно менять алгоритм "на лету" без изменения контекста.</p>
+                        <p><b>Решение:</b> Вынести алгоритм в отдельный класс с общим интерфейсом.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Стратегия</span>
+<span class="kw">interface</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">void</span> <span class="fn">pay</span>(<span class="ty">double</span> <span class="fn">amount</span>);
+}
+
+<span class="cm">// Конкретные стратегии</span>
+<span class="kw">class</span> <span class="cl">CreditCardPayment</span> <span class="kw">implements</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">public void</span> <span class="fn">pay</span>(<span class="ty">double</span> <span class="fn">amount</span>) {
+        <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"Оплата картой: $"</span> + <span class="fn">amount</span>);
+    }
+}
+<span class="kw">class</span> <span class="cl">PayPalPayment</span> <span class="kw">implements</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">public void</span> <span class="fn">pay</span>(<span class="ty">double</span> <span class="fn">amount</span>) {
+        <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"Оплата через PayPal: $"</span> + <span class="fn">amount</span>);
+    }
+}
+
+<span class="cm">// Контекст</span>
+<span class="kw">class</span> <span class="cl">ShoppingCart</span> {
+    <span class="kw">private</span> <span class="cl">PaymentStrategy</span> <span class="fn">paymentStrategy</span>;
+
+    <span class="kw">public void</span> <span class="fn">setPaymentStrategy</span>(<span class="cl">PaymentStrategy</span> <span class="fn">strategy</span>) {
+        <span class="kw">this</span>.<span class="fn">paymentStrategy</span> = <span class="fn">strategy</span>;
+    }
+
+    <span class="kw">public void</span> <span class="fn">checkout</span>(<span class="ty">double</span> <span class="fn">amount</span>) {
+        <span class="fn">paymentStrategy</span>.<span class="fn">pay</span>(<span class="fn">amount</span>);  <span class="cm">// Делегируем стратегию</span>
+    }
+}
+
+<span class="cm">// 💡 В Spring: @Qualifier + DI — выбор стратегии через конфигурацию</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Observer — подписка на события</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Нужно уведомлять множество объектов об изменении состояния одного.</p>
+                        <p><b>Решение:</b> Механизм подписки: наблюдатели регистрируются и получают уведомления.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Наблюдатель</span>
+<span class="kw">interface</span> <span class="cl">Observer</span> {
+    <span class="kw">void</span> <span class="fn">update</span>(<span class="ty">String</span> <span class="fn">event</span>);
+}
+
+<span class="cm">// Субъект (издатель)</span>
+<span class="kw">class</span> <span class="cl">OrderService</span> {
+    <span class="kw">private final</span> <span class="ty">List</span>&lt;<span class="cl">Observer</span>&gt; <span class="fn">observers</span> = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="fn">attach</span>(<span class="cl">Observer</span> <span class="fn">observer</span>) {
+        <span class="fn">observers</span>.<span class="fn">add</span>(<span class="fn">observer</span>);
+    }
+
+    <span class="kw">public void</span> <span class="fn">placeOrder</span>(<span class="ty">String</span> <span class="fn">orderId</span>) {
+        <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"Заказ "</span> + <span class="fn">orderId</span> + <span class="st">" размещён"</span>);
+        <span class="fn">notifyObservers</span>(<span class="st">"ORDER_PLACED:"</span> + <span class="fn">orderId</span>);
+    }
+
+    <span class="kw">private void</span> <span class="fn">notifyObservers</span>(<span class="ty">String</span> <span class="fn">event</span>) {
+        <span class="kw">for</span> (<span class="cl">Observer</span> <span class="fn">obs</span> : <span class="fn">observers</span>) {
+            <span class="fn">obs</span>.<span class="fn">update</span>(<span class="fn">event</span>);
+        }
+    }
+}
+
+<span class="cm">// Конкретные наблюдатели</span>
+<span class="kw">class</span> <span class="cl">EmailNotifier</span> <span class="kw">implements</span> <span class="cl">Observer</span> {
+    <span class="kw">public void</span> <span class="fn">update</span>(<span class="ty">String</span> <span class="fn">event</span>) {
+        <span class="kw">if</span> (<span class="fn">event</span>.<span class="fn">startsWith</span>(<span class="st">"ORDER_PLACED"</span>)) {
+            <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"Email отправлен: "</span> + <span class="fn">event</span>);
+        }
+    }
+}
+
+<span class="cm">// 💡 В Spring: @EventListener, ApplicationEventPublisher — встроенный Observer</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Command — инкапсуляция запроса как объекта</div>
+                    <div class="prose">
+                        <p><b>Проблема:</b> Нужно параметризовать объекты операциями, поддерживать отмену/повтор, очередь команд.</p>
+                        <p><b>Решение:</b> Превратить запрос в объект с методами execute/undo.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Команда</span>
+<span class="kw">interface</span> <span class="cl">Command</span> {
+    <span class="kw">void</span> <span class="fn">execute</span>();
+    <span class="kw">void</span> <span class="fn">undo</span>();
+}
+
+<span class="cm">// Получатель</span>
+<span class="kw">class</span> <span class="cl">Light</span> {
+    <span class="kw">public void</span> <span class="fn">turnOn</span>() { <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"💡 Свет включён"</span>); }
+    <span class="kw">public void</span> <span class="fn">turnOff</span>() { <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"💡 Свет выключен"</span>); }
+}
+
+<span class="cm">// Конкретная команда</span>
+<span class="kw">class</span> <span class="cl">LightOnCommand</span> <span class="kw">implements</span> <span class="cl">Command</span> {
+    <span class="kw">private final</span> <span class="cl">Light</span> <span class="fn">light</span>;
+    <span class="kw">public</span> <span class="cl">LightOnCommand</span>(<span class="cl">Light</span> <span class="fn">light</span>) { <span class="kw">this</span>.<span class="fn">light</span> = <span class="fn">light</span>; }
+    <span class="kw">public void</span> <span class="fn">execute</span>() { <span class="fn">light</span>.<span class="fn">turnOn</span>(); }
+    <span class="kw">public void</span> <span class="fn">undo</span>() { <span class="fn">light</span>.<span class="fn">turnOff</span>(); }
+}
+
+<span class="cm">//.Invoker (вызывающий)</span>
+<span class="kw">class</span> <span class="cl">RemoteControl</span> {
+    <span class="kw">private</span> <span class="cl">Command</span> <span class="fn">command</span>;
+    <span class="kw">public void</span> <span class="fn">setCommand</span>(<span class="cl">Command</span> <span class="fn">cmd</span>) { <span class="kw">this</span>.<span class="fn">command</span> = <span class="fn">cmd</span>; }
+    <span class="kw">public void</span> <span class="fn">pressButton</span>() { <span class="fn">command</span>.<span class="fn">execute</span>(); }
+    <span class="kw">public void</span> <span class="fn">pressUndo</span>() { <span class="fn">command</span>.<span class="fn">undo</span>(); }
+}
+
+<span class="cm">// 💡 В Spring: @Async, @Scheduled — команды, выполняемые асинхронно</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Spring Patterns -->
+                <div class="section" id="spring">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🌱</span> Spring-specific паттерны</h2>
+                    
+                    <div class="section-subtitle">Dependency Injection (DI) — внедрение зависимостей</div>
+                    <div class="prose">
+                        <p><b>Суть:</b> Объекты не создают зависимости сами, а получают их извне (через конструктор, setter или поле).</p>
+                        <p><b>Зачем:</b> Упрощает тестирование, снижает связность, позволяет гибко конфигурировать приложение.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// ❌ Плохо: жёсткая зависимость</span>
+<span class="kw">class</span> <span class="cl">UserService</span> {
+    <span class="kw">private</span> <span class="cl">UserRepository</span> <span class="fn">repo</span> = <span class="kw">new</span> <span class="cl">UserRepositoryImpl</span>();  <span class="cm">// Жёстко привязан!</span>
+}
+
+<span class="cm">// ✅ Хорошо: внедрение через конструктор (рекомендуется!)</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>  <span class="cm">// Lombok генерирует конструктор</span>
+<span class="kw">class</span> <span class="cl">UserService</span> {
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> <span class="fn">repo</span>;  <span class="cm">// final = гарантированная инициализация</span>
+    <span class="cm">// Spring сам передаст реализацию при создании бина</span>
+}
+
+<span class="cm">// 💡 Types of DI:</span>
+<span class="cm">// • Constructor (✅ лучший): через конструктор, immutable зависимости</span>
+<span class="cm">// • Setter (⚠️ осторожно): через setter-метод, мутабельные зависимости</span>
+<span class="cm">// • Field (❌ не рекомендуется): @Autowired на поле, сложно тестировать</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Front Controller — единая точка входа</div>
+                    <div class="prose">
+                        <p><b>Суть:</b> Все запросы обрабатываются одним контроллером, который делегирует обработку.</p>
+                        <p><b>Зачем:</b> Централизованная обработка (аутентификация, логирование, маппинг).</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// В Spring MVC это DispatcherServlet + @RestController</span>
+
+<span class="cm">// Все запросы идут через DispatcherServlet (Front Controller)</span>
+<span class="cm">// Он находит подходящий @RequestMapping и вызывает метод контроллера</span>
+
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/users"</span>)
+<span class="kw">public class</span> <span class="cl">UserController</span> {
+    <span class="an">@GetMapping</span>                    <span class="cm">// GET /api/users</span>
+    <span class="kw">public</span> <span class="ty">List</span>&lt;<span class="cl">User</span>&gt; <span class="fn">getAll</span>() { ... }
+
+    <span class="an">@GetMapping</span>(<span class="st">"/{id}"</span>)          <span class="cm">// GET /api/users/5</span>
+    <span class="kw">public</span> <span class="cl">User</span> <span class="fn">getById</span>(<span class="an">@PathVariable</span> <span class="ty">Long</span> <span class="fn">id</span>) { ... }
+
+    <span class="an">@PostMapping</span>                  <span class="cm">// POST /api/users</span>
+    <span class="kw">public</span> <span class="cl">User</span> <span class="fn">create</span>(<span class="an">@RequestBody</span> <span class="cl">UserDTO</span> <span class="fn">dto</span>) { ... }
+}
+
+<span class="cm">// 💡 Преимущества:</span>
+<span class="cm">// • Единое место для @ControllerAdvice (обработка ошибок)</span>
+<span class="cm">// • Глобальные фильтры (CORS, security, logging)</span>
+<span class="cm">// • Автоматическая сериализация в JSON (@RestController)</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Template Method — скелет алгоритма</div>
+                    <div class="prose">
+                        <p><b>Суть:</b> Определяем скелет алгоритма в базовом классе, а шаги делегируем подклассам.</p>
+                        <p><b>Зачем:</b> Переиспользование кода с возможностью кастомизации.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Абстрактный шаблон</span>
+<span class="kw">abstract class</span> <span class="cl">DataImporter</span> {
+    <span class="cm">// Шаблонный метод — финальный алгоритм</span>
+    <span class="kw">public final void</span> <span class="fn">importData</span>(<span class="ty">String</span> <span class="fn">path</span>) {
+        <span class="fn">validatePath</span>(<span class="fn">path</span>);           <span class="cm">// Общий шаг</span>
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; <span class="fn">lines</span> = <span class="fn">readFile</span>(<span class="fn">path</span>);  <span class="cm">// Абстрактный шаг</span>
+        <span class="fn">processLines</span>(<span class="fn">lines</span>);          <span class="cm">// Общий шаг</span>
+        <span class="fn">saveToDatabase</span>(<span class="fn">lines</span>);        <span class="cm">// Общий шаг</span>
+    }
+
+    <span class="kw">protected abstract</span> <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; <span class="fn">readFile</span>(<span class="ty">String</span> <span class="fn">path</span>);  <span class="cm">// Реализуют подклассы</span>
+    <span class="kw">protected void</span> <span class="fn">validatePath</span>(<span class="ty">String</span> <span class="fn">path</span>) { ... }  <span class="cm">// Общий код</span>
+}
+
+<span class="cm">// Конкретная реализация для CSV</span>
+<span class="kw">class</span> <span class="cl">CsvImporter</span> <span class="kw">extends</span> <span class="cl">DataImporter</span> {
+    <span class="kw">protected</span> <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; <span class="fn">readFile</span>(<span class="ty">String</span> <span class="fn">path</span>) {
+        <span class="kw">return</span> <span class="cl">Files</span>.<span class="fn">readAllLines</span>(<span class="cl">Paths</span>.<span class="fn">get</span>(<span class="fn">path</span>));
+    }
+}
+
+<span class="cm">// 💡 В Spring: JdbcTemplate, RestTemplate — Template Method</span>
+<span class="cm">// Вы предоставляете RowMapper/ResponseExtractor, шаблон делает остальное</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">AOP (Aspect-Oriented Programming) — аспекты</div>
+                    <div class="prose">
+                        <p><b>Суть:</b> Выделяем сквозную функциональность (логирование, транзакции, безопасность) в отдельные аспекты.</p>
+                        <p><b>Зачем:</b> Не засорять бизнес-логику техническим кодом.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Аспект для логирования</span>
+<span class="an">@Aspect</span> <span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">LoggingAspect</span> {
+    <span class="an">@Around</span>(<span class="st">"@annotation(Loggable)"</span>)  <span class="cm">// Точка входа: методы с @Loggable</span>
+    <span class="kw">public</span> <span class="ty">Object</span> <span class="fn">logExecution</span>(<span class="cl">ProceedingJoinPoint</span> <span class="fn">joinPoint</span>) <span class="kw">throws</span> <span class="cl">Throwable</span> {
+        <span class="ty">String</span> <span class="fn">method</span> = <span class="fn">joinPoint</span>.<span class="fn">getSignature</span>().<span class="fn">toShortString</span>();
+        <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"▶ Начало: "</span> + <span class="fn">method</span>);
+
+        <span class="ty">long</span> <span class="fn">start</span> = <span class="cl">System</span>.<span class="fn">currentTimeMillis</span>();
+        <span class="ty">Object</span> <span class="fn">result</span> = <span class="fn">joinPoint</span>.<span class="fn">proceed</span>();  <span class="cm">// Выполняем целевой метод</span>
+        <span class="ty">long</span> <span class="fn">duration</span> = <span class="cl">System</span>.<span class="fn">currentTimeMillis</span>() - <span class="fn">start</span>;
+
+        <span class="cl">System</span>.<span class="fn">out</span>.<span class="fn">println</span>(<span class="st">"✅ Конец: "</span> + <span class="fn">method</span> + <span class="st">" ("</span> + <span class="fn">duration</span> + <span class="st">"ms)"</span>);
+        <span class="kw">return</span> <span class="fn">result</span>;
+    }
+}
+
+<span class="cm">// Использование: просто добавляем аннотацию</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">UserService</span> {
+    <span class="an">@Loggable</span>  <span class="cm">// Аспект автоматически применится!</span>
+    <span class="kw">public</span> <span class="cl">User</span> <span class="fn">getUser</span>(<span class="ty">Long</span> <span class="fn">id</span>) { ... }
+}
+
+<span class="cm">// 💡 Встроенные аспекты Spring:</span>
+<span class="cm">// • @Transactional — управление транзакциями</span>
+<span class="cm">// • @Cacheable/@CacheEvict — кэширование</span>
+<span class="cm">// • @Secured/@PreAuthorize — безопасность</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Best Practices -->
+                <div class="section" id="practices">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">✅</span> Best & ⚠️ Anti Patterns</h2>
+                    <div class="compare-grid">
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--accent)">✅ Best Practices</div>
+                            <ul class="compare-list">
+                                <li>Используй DI через конструктор (@RequiredArgsConstructor)</li>
+                                <li>Предпочитай композицию наследованию</li>
+                                <li>Применяй паттерны только когда есть реальная проблема</li>
+                                <li>Используй Spring-аналоги вместо ручных реализаций</li>
+                                <li>Документируй, почему выбран конкретный паттерн</li>
+                                <li>Тестируй каждый паттерн отдельно (особенно Strategy, Command)</li>
+                                <li>Избегай God Object — разбивай на мелкие классы</li>
+                                <li>Используй records (Java 16+) для DTO и Value Objects</li>
+                            </ul>
+                        </div>
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--error)">⚠️ Anti Patterns</div>
+                            <ul class="compare-list">
+                                <li>❌ Singleton через static поле — сложно тестировать</li>
+                                <li>❌ Factory без необходимости — over-engineering</li>
+                                <li>❌ Наследование ради наследования (используй композицию)</li>
+                                <li>❌ Анонимные классы вместо лямбд (до Java 8)</li>
+                                <li>❌ @Autowired на поле — скрытая зависимость, сложно тестировать</li>
+                                <li>❌ Pattern matching через if-else вместо полиморфизма</li>
+                                <li>❌ "Умные" данные, "глупые" сервисы (нарушение инкапсуляции)</li>
+                                <li>❌ Применение паттерна "потому что модно", а не по необходимости</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Examples -->
+                <div class="section" id="code">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">💻</span> Практические примеры</h2>
+                    
+                    <div class="accordion">
+                        <div class="acc-header">
+                            <span class="acc-title">1. Strategy + DI в Spring</span>
+                            <span class="acc-arrow">▼</span>
+                        </div>
+                        <div class="acc-body">
+                            <div class="code-wrap">
+                                <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                                <pre><code><span class="cm">// Интерфейс стратегии</span>
+<span class="kw">public interface</span> <span class="cl">DiscountStrategy</span> {
+    <span class="ty">double</span> <span class="fn">calculate</span>(<span class="ty">double</span> <span class="fn">price</span>);
+}
+
+<span class="cm">// Конкретные стратегии (все @Component)</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">NoDiscount</span> <span class="kw">implements</span> <span class="cl">DiscountStrategy</span> {
+    <span class="kw">public</span> <span class="ty">double</span> <span class="fn">calculate</span>(<span class="ty">double</span> <span class="fn">price</span>) { <span class="kw">return</span> <span class="fn">price</span>; }
+}
+
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">PercentDiscount</span> <span class="kw">implements</span> <span class="cl">DiscountStrategy</span> {
+    <span class="kw">private static final double</span> <span class="fn">PERCENT</span> = <span class="nu">0.1</span>;  <span class="cm">// 10%</span>
+    <span class="kw">public</span> <span class="ty">double</span> <span class="fn">calculate</span>(<span class="ty">double</span> <span class="fn">price</span>) { <span class="kw">return</span> <span class="fn">price</span> * (<span class="nu">1</span> - <span class="fn">PERCENT</span>); }
+}
+
+<span class="cm">// Фабрика стратегий через Map injection</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">DiscountService</span> {
+    <span class="kw">private final</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="cl">DiscountStrategy</span>&gt; <span class="fn">strategies</span>;
+
+    <span class="cm">// Spring автоматически соберёт все DiscountStrategy в Map по имени бина</span>
+    <span class="kw">public</span> <span class="ty">double</span> <span class="fn">applyDiscount</span>(<span class="ty">String</span> <span class="fn">type</span>, <span class="ty">double</span> <span class="fn">price</span>) {
+        <span class="kw">return</span> <span class="fn">strategies</span>.<span class="fn">getOrDefault</span>(<span class="fn">type</span>, <span class="fn">strategies</span>.<span class="fn">get</span>(<span class="st">"noDiscount"</span>))
+            .<span class="fn">calculate</span>(<span class="fn">price</span>);
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion">
+                        <div class="acc-header">
+                            <span class="acc-title">2. Builder + Validation</span>
+                            <span class="acc-arrow">▼</span>
+                        </div>
+                        <div class="acc-body">
+                            <div class="code-wrap">
+                                <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                                <pre><code><span class="cm">// Record с валидацией в компактном конструкторе (Java 16+)</span>
+<span class="kw">public record</span> <span class="cl">Order</span>(
+    <span class="ty">Long</span> <span class="fn">id</span>,
+    <span class="ty">String</span> <span class="fn">customerId</span>,
+    <span class="ty">List</span>&lt;<span class="cl">OrderItem</span>&gt; <span class="fn">items</span>,
+    <span class="ty">BigDecimal</span> <span class="fn">total</span>,
+    <span class="cl">OrderStatus</span> <span class="fn">status</span>,
+    <span class="ty">LocalDateTime</span> <span class="fn">createdAt</span>
+) {
+    <span class="cm">// Компактный конструктор для валидации</span>
+    <span class="kw">public</span> <span class="cl">Order</span> {
+        <span class="kw">if</span> (<span class="fn">customerId</span> == <span class="kw">null</span> || <span class="fn">customerId</span>.<span class="fn">isBlank</span>()) {
+            <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"customerId required"</span>);
+        }
+        <span class="kw">if</span> (<span class="fn">items</span> == <span class="kw">null</span> || <span class="fn">items</span>.<span class="fn">isEmpty</span>()) {
+            <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"items required"</span>);
+        }
+        <span class="kw">if</span> (<span class="fn">total</span>.<span class="fn">compareTo</span>(<span class="cl">BigDecimal</span>.<span class="cl">ZERO</span>) &lt; <span class="nu">0</span>) {
+            <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"total must be positive"</span>);
+        }
+    }
+
+    <span class="cm">// Статический фабричный метод для удобства</span>
+    <span class="kw">public static</span> <span class="cl">Order</span> <span class="fn">create</span>(<span class="ty">String</span> <span class="fn">customerId</span>, <span class="ty">List</span>&lt;<span class="cl">OrderItem</span>&gt; <span class="fn">items</span>) {
+        <span class="ty">BigDecimal</span> <span class="fn">total</span> = <span class="fn">items</span>.<span class="fn">stream</span>()
+            .<span class="fn">map</span>(<span class="cl">OrderItem</span>::<span class="fn">getPrice</span>)
+            .<span class="fn">reduce</span>(<span class="cl">BigDecimal</span>.<span class="cl">ZERO</span>, <span class="cl">BigDecimal</span>::<span class="fn">add</span>);
+        
+        <span class="kw">return new</span> <span class="cl">Order</span>(
+            <span class="kw">null</span>,  <span class="cm">// id сгенерирует БД</span>
+            <span class="fn">customerId</span>,
+            <span class="fn">items</span>,
+            <span class="fn">total</span>,
+            <span class="cl">OrderStatus</span>.<span class="cl">PENDING</span>,
+            <span class="cl">LocalDateTime</span>.<span class="fn">now</span>()
+        );
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Q&A -->
+                <div class="section" id="interview">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">❓</span> Вопросы для собеседования</h2>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">В чём разница между Factory Method и Abstract Factory?</div>
+                                <div class="qa-q-en">Difference between Factory Method and Abstract Factory?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><b>Factory Method</b> создаёт один продукт через наследование (подкласс решает, какой класс инстанцировать). <b>Abstract Factory</b> создаёт семейство связанных продуктов через композицию (интерфейс фабрики, который возвращает несколько типов объектов). Factory Method — про наследование, Abstract Factory — про композицию и группировку.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="patterns-1">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Зачем в Spring использовать constructor injection вместо @Autowired на поле?</div>
+                                <div class="qa-q-en">Why use constructor injection over field injection in Spring?</div>
+                            </div>
+                            <span class="qa-badge easy">Easy</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">1) <b>Immutable зависимости</b>: final поля гарантируют, что зависимость не изменится. 2) <b>Тестируемость</b>: в тестах можно передать mock через конструктор без Spring-контекста. 3) <b>Явность</b>: сразу видно, какие зависимости нужны классу. 4) <b>Защита от циклических зависимостей</b>: Spring обнаружит их при старте, а не в runtime. Field injection скрывает зависимости и усложняет тестирование.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="patterns-2">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Как работает @Transactional в Spring? Какой паттерн используется?</div>
+                                <div class="qa-q-en">How does @Transactional work? What pattern is used?</div>
+                            </div>
+                            <span class="qa-badge hard">Hard</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">Используется паттерн <b>Proxy + AOP</b>. При старте приложения Spring создаёт прокси-объект для @Transactional-класса. Когда вызывается метод, прокси: 1) Открывает транзакцию, 2) Вызывает реальный метод, 3) Коммитит при успехе или роллбэкает при исключении. Прокси создаётся через CGLIB (для классов) или JDK Dynamic Proxy (для интерфейсов). Важно: вызов @Transactional-метода из того же класса не сработает — прокси не перехватит self-invocation.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="patterns-3">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Когда НЕ стоит использовать паттерны?</div>
+                                <div class="qa-q-en">When should you NOT use design patterns?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">1) <b>YAGNI</b>: если проблема ещё не возникла — не добавляй абстракцию. 2) <b>Over-engineering</b>: простой if-else лучше сложной иерархии для 2-3 вариантов. 3) <b>Преждевременная оптимизация</b>: не делай Singleton, если не доказана необходимость единственного экземпляра. 4) <b>Сложность > польза</b>: если паттерн делает код менее читаемым — не используй его. Паттерны — инструменты, а не самоцель.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="patterns-4">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <button id="scrollTop" title="Наверх">↑</button>
+</body>
+</html>

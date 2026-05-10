@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Валидация | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#4f8ef7"></span>📌 Конспект</a>
+    <a class="nav-link" href="#annotations"><span class="nav-dot" style="background:#22d3a0"></span>Все аннотации</a>
+    <a class="nav-link" href="#notnull-diff"><span class="nav-dot" style="background:#f5a623"></span>NotNull vs NotBlank vs NotEmpty</a>
+    <a class="nav-link" href="#valid-vs-validated"><span class="nav-dot" style="background:#b88bfa"></span>@Valid vs @Validated</a>
+    <a class="nav-link" href="#binding-result"><span class="nav-dot" style="background:#5bcefa"></span>BindingResult</a>
+    <a class="nav-link" href="#custom-validator"><span class="nav-dot" style="background:#f06060"></span>Кастомный валидатор</a>
+    <a class="nav-link" href="#groups"><span class="nav-dot" style="background:#4f8ef7"></span>Группы валидации</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#f5a623"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="global-exception-handler.html"><span class="nav-dot" style="background:#f06060"></span>ExceptionHandler</a>
+    <a class="nav-link" href="restcontroller.html"><span class="nav-dot" style="background:#4f8ef7"></span>@RestController</a>
+    <a class="nav-link" href="dto.html"><span class="nav-dot" style="background:#5bcefa"></span>DTO Pattern</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">✅ Валидация (Bean Validation)</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#4f8ef7;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#0a1a5a,#4f8ef7)">✅</div>
+        <div>
+          <h1>Bean Validation</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-green">Spring</span>
+            <span class="chip chip-blue">Java</span>
+            <span class="chip chip-warn">@Valid</span>
+            <span class="chip chip-purple">@Validated</span>
+          </div>
+        </div>
+      </div>
+      <p>Полный разбор Bean Validation: все аннотации, разница @NotNull vs @NotBlank vs @NotEmpty, @Valid vs @Validated, BindingResult, кастомные валидаторы, группы валидации.</p>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#annotations">Аннотации</a>
+        <a class="toc-link" href="#notnull-diff">NotNull vs NotBlank</a>
+        <a class="toc-link" href="#valid-vs-validated">@Valid vs @Validated</a>
+        <a class="toc-link" href="#binding-result">BindingResult</a>
+        <a class="toc-link" href="#custom-validator">Кастомный</a>
+        <a class="toc-link" href="#groups">Группы</a>
+        <a class="toc-link" href="#code">💻 Код</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-blue">
+        <div class="box-label">Зависимость</div>
+        <code>spring-boot-starter-validation</code> — включает Hibernate Validator (реализация Jakarta Bean Validation 3.0).
+        Аннотации из пакета <code>jakarta.validation.constraints.*</code>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Сценарий</th><th>Что использовать</th></tr>
+          <tr><td>Валидация тела запроса (<code>@RequestBody</code>)</td><td><code>@Valid</code> перед параметром</td></tr>
+          <tr><td>Валидация параметров метода (<code>@PathVariable</code>, <code>@RequestParam</code>)</td><td><code>@Validated</code> на классе контроллера</td></tr>
+          <tr><td>Разные правила для create и update</td><td><code>@Validated(Group.class)</code> + интерфейсы групп</td></tr>
+          <tr><td>Кастомное правило валидации</td><td><code>@Constraint</code> + <code>ConstraintValidator</code></td></tr>
+          <tr><td>Обработка ошибок вручную</td><td><code>BindingResult</code> параметр после объекта</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. ВСЕ АННОТАЦИИ ═══ -->
+    <div class="section" id="annotations">
+      <div class="section-title"><span class="s-icon">🏷</span> Все аннотации валидации</div>
+
+      <div class="section-subtitle">Null / Empty / Blank</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Для типов</th><th>null</th><th>""</th><th>"  "</th><th>Описание</th></tr>
+          <tr><td><code>@NotNull</code></td><td>Любой</td><td>❌</td><td>✅</td><td>✅</td><td>Не null</td></tr>
+          <tr><td><code>@NotEmpty</code></td><td>String, Collection, Map, Array</td><td>❌</td><td>❌</td><td>✅</td><td>Не null и не пустой</td></tr>
+          <tr><td><code>@NotBlank</code></td><td>String</td><td>❌</td><td>❌</td><td>❌</td><td>Не null, не пустой, не пробелы</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Числа</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th><th>Пример</th></tr>
+          <tr><td><code>@Min(value)</code></td><td>Минимальное значение (включительно)</td><td><code>@Min(0)</code> — неотрицательное</td></tr>
+          <tr><td><code>@Max(value)</code></td><td>Максимальное значение (включительно)</td><td><code>@Max(120)</code> — возраст</td></tr>
+          <tr><td><code>@Positive</code></td><td>Строго больше 0</td><td>Цена товара</td></tr>
+          <tr><td><code>@PositiveOrZero</code></td><td>≥ 0</td><td>Количество товара</td></tr>
+          <tr><td><code>@Negative</code></td><td>Строго меньше 0</td><td>Скидка в минус</td></tr>
+          <tr><td><code>@NegativeOrZero</code></td><td>≤ 0</td><td>Долг или ноль</td></tr>
+          <tr><td><code>@DecimalMin("0.01")</code></td><td>Минимум для BigDecimal/String</td><td>Минимальная сумма</td></tr>
+          <tr><td><code>@DecimalMax("999.99")</code></td><td>Максимум для BigDecimal/String</td><td>Максимальная цена</td></tr>
+          <tr><td><code>@Digits(integer=5, fraction=2)</code></td><td>Точность числа</td><td>12345.99</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Строки</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th><th>Пример</th></tr>
+          <tr><td><code>@Size(min=2, max=50)</code></td><td>Длина строки / размер коллекции</td><td>Имя от 2 до 50 символов</td></tr>
+          <tr><td><code>@Email</code></td><td>Валидный email адрес</td><td><code>user@example.com</code></td></tr>
+          <tr><td><code>@Pattern(regexp="...")</code></td><td>Соответствие регулярному выражению</td><td>Телефон, UUID</td></tr>
+          <tr><td><code>@URL</code></td><td>Валидный URL (Hibernate)</td><td>Ссылка на сайт</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Дата и время</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th><th>Пример использования</th></tr>
+          <tr><td><code>@Past</code></td><td>Дата строго в прошлом</td><td>Дата рождения</td></tr>
+          <tr><td><code>@PastOrPresent</code></td><td>Дата в прошлом или сейчас</td><td>Дата создания</td></tr>
+          <tr><td><code>@Future</code></td><td>Дата строго в будущем</td><td>Дата доставки</td></tr>
+          <tr><td><code>@FutureOrPresent</code></td><td>Дата в будущем или сейчас</td><td>Дата начала события</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Логические</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@AssertTrue</code></td><td>Значение должно быть true</td></tr>
+          <tr><td><code>@AssertFalse</code></td><td>Значение должно быть false</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 3. NOTNULL vs NOTBLANK vs NOTEMPTY ═══ -->
+    <div class="section" id="notnull-diff">
+      <div class="section-title"><span class="s-icon">⚖️</span> @NotNull vs @NotEmpty vs @NotBlank</div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Самый частый вопрос на собеседовании</div>
+        Это различие спрашивают почти всегда. Запомни таблицу выше и примеры ниже.
+      </div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java — демонстрация разницы</span></div>
+        <pre><span class="cm">// ── @NotNull — только проверяет что не null</span>
+<span class="an">@NotNull</span>
+<span class="cl">String</span> field;
+
+<span class="cm">// field = null       → ОШИБКА валидации ❌</span>
+<span class="cm">// field = ""         → ОК ✅ (пустая строка не null)</span>
+<span class="cm">// field = "   "      → ОК ✅ (строка из пробелов не null)</span>
+<span class="cm">// field = "Иван"     → ОК ✅</span>
+
+<span class="cm">// ── @NotEmpty — не null И не пустая коллекция/строка</span>
+<span class="an">@NotEmpty</span>
+<span class="cl">String</span> field;
+
+<span class="cm">// field = null       → ОШИБКА валидации ❌</span>
+<span class="cm">// field = ""         → ОШИБКА валидации ❌ (пустая строка)</span>
+<span class="cm">// field = "   "      → ОК ✅ (пробелы считаются непустой строкой!)</span>
+<span class="cm">// field = "Иван"     → ОК ✅</span>
+
+<span class="an">@NotEmpty</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; items;
+<span class="cm">// items = null           → ОШИБКА ❌</span>
+<span class="cm">// items = []             → ОШИБКА ❌ (пустой список)</span>
+<span class="cm">// items = ["a"]          → ОК ✅</span>
+
+<span class="cm">// ── @NotBlank — не null, не пустая, не только пробелы (только для String!)</span>
+<span class="an">@NotBlank</span>
+<span class="cl">String</span> field;
+
+<span class="cm">// field = null       → ОШИБКА валидации ❌</span>
+<span class="cm">// field = ""         → ОШИБКА валидации ❌</span>
+<span class="cm">// field = "   "      → ОШИБКА валидации ❌ (только пробелы!)</span>
+<span class="cm">// field = " Иван "   → ОК ✅ (есть непробельный символ)</span>
+<span class="cm">// field = "Иван"     → ОК ✅</span>
+
+<span class="cm">// ── Практический вывод:</span>
+<span class="cm">// Для строк используй @NotBlank — самая строгая проверка</span>
+<span class="cm">// Для коллекций используй @NotEmpty</span>
+<span class="cm">// @NotNull только когда null недопустим, но "" и "  " разрешены</span></pre>
+      </div>
+    </div>
+
+    <!-- ═══ 4. @VALID vs @VALIDATED ═══ -->
+    <div class="section" id="valid-vs-validated">
+      <div class="section-title"><span class="s-icon">🆚</span> @Valid vs @Validated</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Критерий</th><th>@Valid (javax/jakarta)</th><th>@Validated (Spring)</th></tr>
+          <tr><td>Источник</td><td>Jakarta Validation</td><td>Spring Framework</td></tr>
+          <tr><td>Поддержка групп</td><td>❌ Нет</td><td>✅ Да — <code>@Validated(CreateGroup.class)</code></td></tr>
+          <tr><td>На @RequestBody</td><td>✅ Работает</td><td>✅ Работает</td></tr>
+          <tr><td>На @RequestParam / @PathVariable</td><td>❌ Не работает</td><td>✅ Работает (на классе)</td></tr>
+          <tr><td>Каскадная валидация</td><td>✅ @Valid на вложенных объектах</td><td>✅ Через @Valid внутри</td></tr>
+          <tr><td>Исключение при ошибке</td><td><code>MethodArgumentNotValidException</code></td><td><code>ConstraintViolationException</code></td></tr>
+        </table>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">💡 Когда что использовать</div>
+        <strong>@Valid</strong> — для валидации <code>@RequestBody</code> в контроллере. Стандарт Jakarta.<br>
+        <strong>@Validated</strong> — когда нужны группы валидации ИЛИ валидация параметров метода (<code>@RequestParam</code>, <code>@PathVariable</code>). Ставится на <strong>класс</strong> контроллера/сервиса.
+      </div>
+    </div>
+
+    <!-- ═══ 5. BINDINGRESULT ═══ -->
+    <div class="section" id="binding-result">
+      <div class="section-title"><span class="s-icon">🔍</span> BindingResult</div>
+      <div class="prose">
+        <p><code>BindingResult</code> — объект который содержит результат валидации. Если добавить его как параметр сразу после валидируемого объекта, Spring не будет кидать исключение при ошибках — вместо этого заполнит BindingResult, и ты сам решаешь что делать.</p>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Важно: порядок параметров</div>
+        <code>BindingResult</code> должен идти <strong>сразу после</strong> объекта с <code>@Valid</code>. Иначе Spring кинет исключение до того как ты получишь BindingResult.
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--primary)">Без BindingResult</div>
+          <ul class="compare-list">
+            <li>Spring автоматически кидает <code>MethodArgumentNotValidException</code></li>
+            <li>GlobalExceptionHandler перехватывает</li>
+            <li>Более чистый код контроллера</li>
+            <li>✅ Рекомендован для REST API</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--warn)">С BindingResult</div>
+          <ul class="compare-list">
+            <li>Исключение не кидается</li>
+            <li>Сам проверяешь <code>result.hasErrors()</code></li>
+            <li>Гибкость — можно добавить свою логику</li>
+            <li>⚠️ Нужно не забывать проверять ошибки</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 6. КАСТОМНЫЙ ВАЛИДАТОР ═══ -->
+    <div class="section" id="custom-validator">
+      <div class="section-title"><span class="s-icon">🔧</span> Кастомный валидатор</div>
+      <div class="prose">
+        <p>Когда стандартных аннотаций недостаточно — создаём свою. Нужно: 1) аннотация с <code>@Constraint</code>, 2) класс реализующий <code>ConstraintValidator&lt;A, T&gt;</code>.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Шаг</th><th>Что создать</th><th>Описание</th></tr>
+          <tr><td>1</td><td>Аннотация с <code>@Constraint(validatedBy = ...)</code></td><td>Объявляем новую аннотацию</td></tr>
+          <tr><td>2</td><td>Класс с <code>implements ConstraintValidator&lt;Ann, Type&gt;</code></td><td>Логика проверки в методе <code>isValid()</code></td></tr>
+          <tr><td>3</td><td>Применяем аннотацию к полю/классу</td><td>Как обычная аннотация</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 7. ГРУППЫ ═══ -->
+    <div class="section" id="groups">
+      <div class="section-title"><span class="s-icon">👥</span> Группы валидации</div>
+      <div class="prose">
+        <p>Разные правила для разных операций. Например: при создании пользователя пароль обязателен, при обновлении — нет.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Сценарий</th><th>Группа</th><th>Поля</th></tr>
+          <tr><td>POST /users (создание)</td><td><code>OnCreate</code></td><td>name, email, password — все обязательны</td></tr>
+          <tr><td>PUT /users/{id} (обновление)</td><td><code>OnUpdate</code></td><td>name, email — обязательны; password — нет</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 8. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. DTO с полным набором аннотаций</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="kw">import</span> jakarta.validation.constraints.*;
+
+<span class="kw">public record</span> <span class="cl">CreateUserRequest</span>(
+
+    <span class="an">@NotBlank</span>(message = <span class="st">"Имя не может быть пустым"</span>)   <span class="cm">// не null, не "", не "  "</span>
+    <span class="an">@Size</span>(min = <span class="nu">2</span>, max = <span class="nu">50</span>,
+          message = <span class="st">"Имя должно быть от 2 до 50 символов"</span>)
+    <span class="cl">String</span> name,
+
+    <span class="an">@NotBlank</span>(message = <span class="st">"Email обязателен"</span>)
+    <span class="an">@Email</span>(message = <span class="st">"Введите корректный email"</span>)        <span class="cm">// user@example.com</span>
+    <span class="cl">String</span> email,
+
+    <span class="an">@NotBlank</span>(message = <span class="st">"Пароль обязателен"</span>)
+    <span class="an">@Size</span>(min = <span class="nu">8</span>, max = <span class="nu">100</span>,
+          message = <span class="st">"Пароль должен быть от 8 до 100 символов"</span>)
+    <span class="cl">String</span> password,
+
+    <span class="an">@NotNull</span>(message = <span class="st">"Возраст обязателен"</span>)            <span class="cm">// null недопустим</span>
+    <span class="an">@Min</span>(value = <span class="nu">18</span>, message = <span class="st">"Минимальный возраст 18 лет"</span>)
+    <span class="an">@Max</span>(value = <span class="nu">120</span>, message = <span class="st">"Максимальный возраст 120 лет"</span>)
+    <span class="cl">Integer</span> age,
+
+    <span class="an">@Pattern</span>(                                             <span class="cm">// регулярное выражение</span>
+        regexp = <span class="st">"^\\+?[0-9]{10,15}$"</span>,
+        message = <span class="st">"Неверный формат телефона"</span>)
+    <span class="cl">String</span> phone,                                        <span class="cm">// опционально (null допустим)</span>
+
+    <span class="an">@NotNull</span>(message = <span class="st">"Дата рождения обязательна"</span>)
+    <span class="an">@Past</span>(message = <span class="st">"Дата рождения должна быть в прошлом"</span>) <span class="cm">// строго в прошлом</span>
+    <span class="cl">LocalDate</span> birthDate,
+
+    <span class="an">@Future</span>(message = <span class="st">"Дата доставки должна быть в будущем"</span>)
+    <span class="cl">LocalDate</span> deliveryDate,                              <span class="cm">// опционально</span>
+
+    <span class="an">@NotEmpty</span>(message = <span class="st">"Укажите хотя бы одну роль"</span>)     <span class="cm">// не null и не пустой список</span>
+    <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; roles,
+
+    <span class="an">@NotNull</span>
+    <span class="an">@Positive</span>(message = <span class="st">"Цена должна быть положительной"</span>)  <span class="cm">// строго > 0</span>
+    <span class="cl">BigDecimal</span> price,
+
+    <span class="an">@PositiveOrZero</span>(message = <span class="st">"Количество не может быть отрицательным"</span>) <span class="cm">// >= 0</span>
+    <span class="kw">int</span> quantity,
+
+    <span class="an">@AssertTrue</span>(message = <span class="st">"Необходимо принять условия использования"</span>)
+    <span class="kw">boolean</span> termsAccepted                                <span class="cm">// должно быть true</span>
+) {}</pre>
+      </div>
+
+      <div class="section-subtitle">2. @Valid в контроллере и @Validated для параметров</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── @Valid для @RequestBody</span>
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/v1/users"</span>)
+<span class="kw">public class</span> <span class="cl">UserController</span> {
+
+    <span class="an">@PostMapping</span>
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">UserResponse</span>&gt; <span class="fn">create</span>(
+            <span class="an">@RequestBody</span> <span class="an">@Valid</span> <span class="cl">CreateUserRequest</span> request) { <span class="cm">// @Valid запускает валидацию</span>
+        <span class="cm">// если валидация провалилась — Spring кидает MethodArgumentNotValidException</span>
+        <span class="cm">// GlobalExceptionHandler перехватит и вернёт 400 с описанием ошибок</span>
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">status</span>(<span class="nu">201</span>).<span class="fn">body</span>(userService.<span class="fn">create</span>(request));
+    }
+}
+
+<span class="cm">// ── @Validated на классе — для валидации @PathVariable и @RequestParam</span>
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/v1/products"</span>)
+<span class="an">@Validated</span>                                            <span class="cm">// ОБЯЗАТЕЛЬНО на классе для параметров</span>
+<span class="kw">public class</span> <span class="cl">ProductController</span> {
+
+    <span class="cm">// GET /api/v1/products/0 → ConstraintViolationException → 400</span>
+    <span class="an">@GetMapping</span>(<span class="st">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">ProductResponse</span>&gt; <span class="fn">getById</span>(
+            <span class="an">@PathVariable</span>
+            <span class="an">@Positive</span>(message = <span class="st">"ID должен быть положительным"</span>) <span class="cm">// валидация PathVariable</span>
+            <span class="cl">Long</span> id) {
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">ok</span>(productService.<span class="fn">findById</span>(id));
+    }
+
+    <span class="cm">// GET /api/v1/products?size=-1 → ConstraintViolationException → 400</span>
+    <span class="an">@GetMapping</span>
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">List</span>&lt;<span class="cl">ProductResponse</span>&gt;&gt; <span class="fn">getAll</span>(
+            <span class="an">@RequestParam</span>(defaultValue = <span class="st">"0"</span>)
+            <span class="an">@Min</span>(value = <span class="nu">0</span>, message = <span class="st">"Страница >= 0"</span>)          <span class="cm">// валидация RequestParam</span>
+            <span class="kw">int</span> page,
+
+            <span class="an">@RequestParam</span>(defaultValue = <span class="st">"10"</span>)
+            <span class="an">@Min</span>(<span class="nu">1</span>) <span class="an">@Max</span>(<span class="nu">100</span>)                                  <span class="cm">// размер страницы 1-100</span>
+            <span class="kw">int</span> size) {
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">ok</span>(productService.<span class="fn">findAll</span>(page, size));
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">3. BindingResult — ручная обработка ошибок</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@PostMapping</span>(<span class="st">"/register"</span>)
+<span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;?&gt; <span class="fn">register</span>(
+        <span class="an">@RequestBody</span> <span class="an">@Valid</span> <span class="cl">RegisterRequest</span> request,
+        <span class="cl">BindingResult</span> bindingResult) {    <span class="cm">// СРАЗУ после @Valid объекта — порядок важен!</span>
+
+    <span class="cm">// ── Если есть ошибки — обрабатываем сами (не кидается исключение)</span>
+    <span class="kw">if</span> (bindingResult.<span class="fn">hasErrors</span>()) {
+        <span class="cm">// Собираем все ошибки в Map</span>
+        <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; errors = bindingResult
+            .<span class="fn">getFieldErrors</span>()                              <span class="cm">// ошибки конкретных полей</span>
+            .<span class="fn">stream</span>()
+            .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">toMap</span>(
+                <span class="cl">FieldError</span>::<span class="fn">getField</span>,                       <span class="cm">// "email", "password"</span>
+                fe -> <span class="cl">Objects</span>.<span class="fn">requireNonNullElse</span>(
+                    fe.<span class="fn">getDefaultMessage</span>(), <span class="st">"Ошибка"</span>),      <span class="cm">// сообщение аннотации</span>
+                (a, b) -> a                                    <span class="cm">// при дубле ключа берём первый</span>
+            ));
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">badRequest</span>().<span class="fn">body</span>(errors); <span class="cm">// 400 с картой ошибок</span>
+    }
+
+    <span class="cm">// ── Можно проверить только конкретное поле</span>
+    <span class="kw">if</span> (bindingResult.<span class="fn">hasFieldErrors</span>(<span class="st">"email"</span>)) {
+        <span class="cl">String</span> emailError = bindingResult
+            .<span class="fn">getFieldError</span>(<span class="st">"email"</span>)
+            .<span class="fn">getDefaultMessage</span>();
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">badRequest</span>().<span class="fn">body</span>(emailError);
+    }
+
+    <span class="cm">// ── Добавить ошибку вручную (cross-field validation)</span>
+    <span class="kw">if</span> (!request.<span class="fn">password</span>().<span class="fn">equals</span>(request.<span class="fn">confirmPassword</span>())) {
+        bindingResult.<span class="fn">rejectValue</span>(
+            <span class="st">"confirmPassword"</span>,                            <span class="cm">// поле</span>
+            <span class="st">"password.mismatch"</span>,                          <span class="cm">// код ошибки</span>
+            <span class="st">"Пароли не совпадают"</span>);                        <span class="cm">// сообщение</span>
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">badRequest</span>()
+            .<span class="fn">body</span>(<span class="cl">Map</span>.<span class="fn">of</span>(<span class="st">"confirmPassword"</span>, <span class="st">"Пароли не совпадают"</span>));
+    }
+
+    <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">ok</span>(authService.<span class="fn">register</span>(request));
+}</pre>
+      </div>
+
+      <div class="section-subtitle">4. Кастомный валидатор — @UniqueEmail</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Шаг 1: создаём аннотацию</span>
+<span class="an">@Documented</span>                                        <span class="cm">// включить в Javadoc</span>
+<span class="an">@Constraint</span>(validatedBy = <span class="cl">UniqueEmailValidator</span>.<span class="kw">class</span>) <span class="cm">// класс с логикой</span>
+<span class="an">@Target</span>({ <span class="cl">ElementType</span>.FIELD, <span class="cl">ElementType</span>.PARAMETER })
+<span class="an">@Retention</span>(<span class="cl">RetentionPolicy</span>.RUNTIME)
+<span class="kw">public @interface</span> <span class="cl">UniqueEmail</span> {
+    <span class="cl">String</span> <span class="fn">message</span>() <span class="kw">default</span> <span class="st">"Email уже используется"</span>; <span class="cm">// дефолтное сообщение</span>
+    <span class="cl">Class</span>&lt;?&gt;[] <span class="fn">groups</span>() <span class="kw">default</span> {};                   <span class="cm">// для групп валидации</span>
+    <span class="cl">Class</span>&lt;? <span class="kw">extends</span> <span class="cl">Payload</span>&gt;[] <span class="fn">payload</span>() <span class="kw">default</span> {};  <span class="cm">// метаданные (обязательное поле)</span>
+}
+
+<span class="cm">// ── Шаг 2: реализуем логику</span>
+<span class="an">@Component</span>                                         <span class="cm">// Spring бин — можно инжектировать</span>
+<span class="kw">public class</span> <span class="cl">UniqueEmailValidator</span>
+        <span class="kw">implements</span> <span class="cl">ConstraintValidator</span>&lt;<span class="cl">UniqueEmail</span>, <span class="cl">String</span>&gt; { <span class="cm">// <Аннотация, ТипПоля></span>
+
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> userRepository;   <span class="cm">// инжектируем репозиторий</span>
+
+    <span class="kw">public</span> <span class="fn">UniqueEmailValidator</span>(<span class="cl">UserRepository</span> userRepository) {
+        <span class="kw">this</span>.userRepository = userRepository;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">initialize</span>(<span class="cl">UniqueEmail</span> constraintAnnotation) {
+        <span class="cm">// вызывается при создании — можно считать параметры аннотации</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">isValid</span>(<span class="cl">String</span> email, <span class="cl">ConstraintValidatorContext</span> context) {
+        <span class="kw">if</span> (email == <span class="kw">null</span>) <span class="kw">return true</span>;              <span class="cm">// null проверяет @NotNull отдельно</span>
+        <span class="kw">return</span> !userRepository.<span class="fn">existsByEmail</span>(email); <span class="cm">// false → ошибка валидации</span>
+    }
+}
+
+<span class="cm">// ── Шаг 3: используем в DTO</span>
+<span class="kw">public record</span> <span class="cl">RegisterRequest</span>(
+    <span class="an">@NotBlank</span>
+    <span class="an">@Email</span>
+    <span class="an">@UniqueEmail</span>                                    <span class="cm">// наша кастомная аннотация!</span>
+    <span class="cl">String</span> email,
+
+    <span class="an">@NotBlank</span>
+    <span class="an">@Size</span>(min = <span class="nu">8</span>)
+    <span class="cl">String</span> password
+) {}</pre>
+      </div>
+
+      <div class="section-subtitle">5. Кастомный валидатор на уровне класса — проверка паролей</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Аннотация на уровне класса (cross-field validation)</span>
+<span class="an">@Documented</span>
+<span class="an">@Constraint</span>(validatedBy = <span class="cl">PasswordMatchValidator</span>.<span class="kw">class</span>)
+<span class="an">@Target</span>(<span class="cl">ElementType</span>.TYPE)                          <span class="cm">// TYPE — на весь класс/record</span>
+<span class="an">@Retention</span>(<span class="cl">RetentionPolicy</span>.RUNTIME)
+<span class="kw">public @interface</span> <span class="cl">PasswordMatch</span> {
+    <span class="cl">String</span> <span class="fn">message</span>() <span class="kw">default</span> <span class="st">"Пароли не совпадают"</span>;
+    <span class="cl">Class</span>&lt;?&gt;[] <span class="fn">groups</span>() <span class="kw">default</span> {};
+    <span class="cl">Class</span>&lt;? <span class="kw">extends</span> <span class="cl">Payload</span>&gt;[] <span class="fn">payload</span>() <span class="kw">default</span> {};
+    <span class="cl">String</span> <span class="fn">field</span>()        <span class="kw">default</span> <span class="st">"password"</span>;       <span class="cm">// имя поля пароля</span>
+    <span class="cl">String</span> <span class="fn">matchField</span>()  <span class="kw">default</span> <span class="st">"confirmPassword"</span>; <span class="cm">// имя поля подтверждения</span>
+}
+
+<span class="cm">// ── Реализатор</span>
+<span class="kw">public class</span> <span class="cl">PasswordMatchValidator</span>
+        <span class="kw">implements</span> <span class="cl">ConstraintValidator</span>&lt;<span class="cl">PasswordMatch</span>, <span class="cl">Object</span>&gt; { <span class="cm">// Object = весь класс</span>
+
+    <span class="kw">private</span> <span class="cl">String</span> field;
+    <span class="kw">private</span> <span class="cl">String</span> matchField;
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">initialize</span>(<span class="cl">PasswordMatch</span> ann) {
+        <span class="kw">this</span>.field      = ann.<span class="fn">field</span>();               <span class="cm">// читаем параметры аннотации</span>
+        <span class="kw">this</span>.matchField = ann.<span class="fn">matchField</span>();
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">isValid</span>(<span class="cl">Object</span> value, <span class="cl">ConstraintValidatorContext</span> ctx) {
+        <span class="kw">try</span> {
+            <span class="cm">// Читаем поля через рефлексию</span>
+            <span class="cl">String</span> pwd  = (<span class="cl">String</span>) value.<span class="fn">getClass</span>().<span class="fn">getMethod</span>(field).<span class="fn">invoke</span>(value);
+            <span class="cl">String</span> conf = (<span class="cl">String</span>) value.<span class="fn">getClass</span>().<span class="fn">getMethod</span>(matchField).<span class="fn">invoke</span>(value);
+            <span class="kw">boolean</span> match = <span class="cl">Objects</span>.<span class="fn">equals</span>(pwd, conf); <span class="cm">// сравниваем пароли</span>
+            <span class="kw">if</span> (!match) {
+                <span class="cm">// Ошибка привязывается к конкретному полю</span>
+                ctx.<span class="fn">disableDefaultConstraintViolation</span>();
+                ctx.<span class="fn">buildConstraintViolationWithTemplate</span>(ctx.<span class="fn">getDefaultConstraintMessageTemplate</span>())
+                   .<span class="fn">addPropertyNode</span>(matchField)     <span class="cm">// на поле confirmPassword</span>
+                   .<span class="fn">addConstraintViolation</span>();
+            }
+            <span class="kw">return</span> match;
+        } <span class="kw">catch</span> (<span class="cl">Exception</span> e) {
+            <span class="kw">return false</span>;
+        }
+    }
+}
+
+<span class="cm">// ── Использование на DTO</span>
+<span class="an">@PasswordMatch</span>                                     <span class="cm">// на классе — проверяет два поля</span>
+<span class="kw">public record</span> <span class="cl">ChangePasswordRequest</span>(
+    <span class="an">@NotBlank</span> <span class="cl">String</span> password,
+    <span class="an">@NotBlank</span> <span class="cl">String</span> confirmPassword
+) {}</pre>
+      </div>
+
+      <div class="section-subtitle">6. Группы валидации</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Шаг 1: интерфейсы-маркеры для групп</span>
+<span class="kw">public interface</span> <span class="cl">OnCreate</span> {}   <span class="cm">// группа для создания</span>
+<span class="kw">public interface</span> <span class="cl">OnUpdate</span> {}   <span class="cm">// группа для обновления</span>
+
+<span class="cm">// ── Шаг 2: DTO с группами</span>
+<span class="kw">public class</span> <span class="cl">UserRequest</span> {
+
+    <span class="an">@NotBlank</span>(groups = { <span class="cl">OnCreate</span>.<span class="kw">class</span>, <span class="cl">OnUpdate</span>.<span class="kw">class</span> }) <span class="cm">// обязателен в обоих случаях</span>
+    <span class="kw">private</span> <span class="cl">String</span> name;
+
+    <span class="an">@NotBlank</span>(groups = { <span class="cl">OnCreate</span>.<span class="kw">class</span>, <span class="cl">OnUpdate</span>.<span class="kw">class</span> })
+    <span class="an">@Email</span>(groups = { <span class="cl">OnCreate</span>.<span class="kw">class</span>, <span class="cl">OnUpdate</span>.<span class="kw">class</span> })
+    <span class="kw">private</span> <span class="cl">String</span> email;
+
+    <span class="an">@NotBlank</span>(groups = <span class="cl">OnCreate</span>.<span class="kw">class</span>)              <span class="cm">// обязателен ТОЛЬКО при создании</span>
+    <span class="an">@Size</span>(min = <span class="nu">8</span>, groups = <span class="cl">OnCreate</span>.<span class="kw">class</span>)
+    <span class="kw">private</span> <span class="cl">String</span> password;                        <span class="cm">// при обновлении — опционально</span>
+    <span class="cm">// геттеры/сеттеры...</span>
+}
+
+<span class="cm">// ── Шаг 3: @Validated с группой в контроллере</span>
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/v1/users"</span>)
+<span class="kw">public class</span> <span class="cl">UserController</span> {
+
+    <span class="an">@PostMapping</span>
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">UserResponse</span>&gt; <span class="fn">create</span>(
+            <span class="an">@RequestBody</span>
+            <span class="an">@Validated</span>(<span class="cl">OnCreate</span>.<span class="kw">class</span>)               <span class="cm">// только аннотации группы OnCreate</span>
+            <span class="cl">UserRequest</span> request) {                   <span class="cm">// password обязателен</span>
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">status</span>(<span class="nu">201</span>).<span class="fn">body</span>(userService.<span class="fn">create</span>(request));
+    }
+
+    <span class="an">@PutMapping</span>(<span class="st">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">UserResponse</span>&gt; <span class="fn">update</span>(
+            <span class="an">@PathVariable</span> <span class="cl">Long</span> id,
+            <span class="an">@RequestBody</span>
+            <span class="an">@Validated</span>(<span class="cl">OnUpdate</span>.<span class="kw">class</span>)               <span class="cm">// только аннотации группы OnUpdate</span>
+            <span class="cl">UserRequest</span> request) {                   <span class="cm">// password НЕ обязателен</span>
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">ok</span>(userService.<span class="fn">update</span>(id, request));
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- ═══ 9. ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">В чём разница между @NotNull, @NotEmpty и @NotBlank?</div>
+            <div class="qa-q-en">What is the difference between @NotNull, @NotEmpty, and @NotBlank?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">
+              <code>@NotNull</code> — только проверяет что значение не <code>null</code>. Пустая строка <code>""</code> и <code>"   "</code> — пройдут.<br>
+              <code>@NotEmpty</code> — не <code>null</code> и не пустой. Работает для String, Collection, Map, Array. Строка из пробелов <code>"   "</code> пройдёт!<br>
+              <code>@NotBlank</code> — только для String. Не <code>null</code>, не <code>""</code>, не только пробелы. Самая строгая — используй по умолчанию для строковых полей.
+            </div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="val-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">В чём разница между @Valid и @Validated?</div>
+            <div class="qa-q-en">What is the difference between @Valid and @Validated?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">
+              <code>@Valid</code> — из Jakarta Validation. Используется для валидации <code>@RequestBody</code>. Не поддерживает группы. Кидает <code>MethodArgumentNotValidException</code>.<br>
+              <code>@Validated</code> — из Spring. Поддерживает группы (<code>@Validated(OnCreate.class)</code>). Для валидации <code>@PathVariable</code> и <code>@RequestParam</code> — ставится на весь класс контроллера. Кидает <code>ConstraintViolationException</code>.
+            </div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="val-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как создать кастомный валидатор?</div>
+            <div class="qa-q-en">How do you create a custom validator in Spring?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">
+              1. Создать аннотацию с <code>@Constraint(validatedBy = MyValidator.class)</code> и обязательными полями <code>message()</code>, <code>groups()</code>, <code>payload()</code>.<br>
+              2. Создать класс реализующий <code>ConstraintValidator&lt;MyAnnotation, FieldType&gt;</code> с методом <code>isValid(value, context)</code>.<br>
+              3. Пометить класс <code>@Component</code> если нужен DI (например, обращение к БД).<br>
+              4. Применить аннотацию к полю или классу DTO.
+            </div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="val-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое BindingResult и зачем он нужен?</div>
+            <div class="qa-q-en">What is BindingResult and when would you use it?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>BindingResult</code> — объект содержащий результаты валидации. Если добавить его параметром сразу после <code>@Valid</code> объекта, Spring не кидает исключение при ошибках. Вместо этого заполняет BindingResult. Используется когда нужна особая логика при ошибках: дополнительные проверки, частичное сохранение, специальный ответ. В большинстве REST API лучше использовать GlobalExceptionHandler — он чище.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="val-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как работают группы валидации?</div>
+            <div class="qa-q-en">How do validation groups work in Spring?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Группы позволяют применять разные правила валидации для разных операций. Создаются как интерфейсы-маркеры (<code>interface OnCreate {}</code>). На аннотациях указывается группа: <code>@NotBlank(groups = OnCreate.class)</code>. В контроллере используется <code>@Validated(OnCreate.class)</code> вместо <code>@Valid</code> — Spring применит только правила указанной группы. Пример: пароль обязателен при создании, но не при обновлении профиля.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="val-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>

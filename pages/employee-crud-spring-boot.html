@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание Employee-CRUD приложения на Spring Boot | Java Mega Cheatsheet</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../app.js" defer></script>
+</head>
+<body>
+    <div class="page-layout">
+        <!-- Sidebar -->
+        <aside class="page-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">J</div>
+                    <span>Java Cheatsheet</span>
+                </a>
+                <input type="text" class="sidebar-search" id="sideSearch" placeholder="Поиск в навигации...">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">На этой странице</div>
+                <ul>
+                    <li><a href="#summary" class="nav-link"><span class="nav-dot" style="background:var(--primary)"></span>📌 Краткий конспект</a></li>
+                    <li><a href="#step1" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>📦 Шаг 1: pom.xml</a></li>
+                    <li><a href="#step2" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>⚙️ Шаг 2: application.yml/properties</a></li>
+                    <li><a href="#step3" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🚀 Шаг 3: Точка входа</a></li>
+                    <li><a href="#step4" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🗃️ Шаг 4: Entity (Модель)</a></li>
+                    <li><a href="#step5" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔄 Шаг 5: DTO & Response</a></li>
+                    <li><a href="#step6" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>📊 Шаг 6: Repository</a></li>
+                    <li><a href="#step7" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔗 Шаг 7: Mapper</a></li>
+                    <li><a href="#step8" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>⚙️ Шаг 8: Service</a></li>
+                    <li><a href="#step9" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🌐 Шаг 9: Controller</a></li>
+                    <li><a href="#step10" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🚨 Шаг 10: Обработка ошибок</a></li>
+                    <li><a href="#step11" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🗂️ Шаг 11: Начальные данные</a></li>
+                    <li><a href="#step12" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🧪 Шаг 12: Тестирование</a></li>
+                    <li><a href="#code" class="nav-link"><span class="nav-dot" style="background:var(--warn)"></span>💻 Полный код</a></li>
+                    <li><a href="#practices" class="nav-link"><span class="nav-dot" style="background:var(--error)"></span>✅ Best / ⚠️ Anti</a></li>
+                    <li><a href="#interview" class="nav-link"><span class="nav-dot" style="background:var(--purple)"></span>❓ Интервью</a></li>
+                </ul>
+                <div class="nav-section" style="margin-top:24px">Другие темы</div>
+                <ul>
+                    <li><a href="../index.html" class="nav-link"><span class="nav-dot" style="background:var(--cyan)"></span>🏠 Все темы</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="page-main">
+            <header class="page-header">
+                <a href="../index.html" class="page-back">← Главная</a>
+                <span class="page-header-title">Создание Employee-CRUD приложения</span>
+                <div class="page-search-wrap">
+                    <input type="text" id="pageSearch" class="page-search" placeholder="Поиск по странице...">
+                    <button id="searchClear" class="search-clear">✕</button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-header">
+                        <div class="hero-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🌱</div>
+                        <div>
+                            <h1>Создание Employee-CRUD приложения на Spring Boot</h1>
+                            <p>Пошаговое руководство по созданию полноценного REST API с 3-слойной архитектурой, JPA/Hibernate, DTO-паттерном, валидацией и юнит-тестами.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                        <span class="chip chip-green">Spring Boot 3.2</span>
+                        <span class="chip chip-blue">Java 17</span>
+                        <span class="chip chip-warn">REST API</span>
+                        <span class="chip chip-purple">JPA/Hibernate</span>
+                        <span class="chip chip-red">Testing</span>
+                    </div>
+                </div>
+
+                <!-- TOC -->
+                <div class="toc">
+                    <div class="toc-title">Содержание</div>
+                    <div class="toc-list">
+                        <a href="#summary" class="toc-link">📌 Конспект</a>
+                        <a href="#step1" class="toc-link">pom.xml</a>
+                        <a href="#step2" class="toc-link">application.yml/properties</a>
+                        <a href="#step3" class="toc-link">Main Class</a>
+                        <a href="#step4" class="toc-link">Entity</a>
+                        <a href="#step5" class="toc-link">DTO/Response</a>
+                        <a href="#step6" class="toc-link">Repository</a>
+                        <a href="#step7" class="toc-link">Mapper</a>
+                        <a href="#step8" class="toc-link">Service</a>
+                        <a href="#step9" class="toc-link">Controller</a>
+                        <a href="#step10" class="toc-link">Exceptions</a>
+                        <a href="#step11" class="toc-link">data.sql</a>
+                        <a href="#step12" class="toc-link">Тесты</a>
+                        <a href="#code" class="toc-link">💻 Код</a>
+                        <a href="#interview" class="toc-link">❓ Вопросы</a>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="section" id="summary">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">📌</span> Краткий конспект</h2>
+                    <div class="box box-blue" style="margin-bottom:16px">
+                        <div class="box-label">Архитектура приложения</div>
+                        Клиент → <b>Controller</b> (HTTP) → <b>Service</b> (Бизнес-логика) → <b>Repository</b> (JPA/SQL) → <b>БД</b>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Слой</th><th>Задача</th><th>Ключевые аннотации</th><th>Возвращает</th></tr></thead>
+                            <tbody>
+                                <tr><td><b>Controller</b></td><td>Приём HTTP, валидация, маппинг в Response</td><td><code class="an">@RestController</code>, <code class="an">@RequestMapping</code></td><td><code class="cl">ResponseEntity&lt;T&gt;</code></td></tr>
+                                <tr><td><b>Service</b></td><td>Бизнес-правила, транзакции, координация</td><td><code class="an">@Service</code>, <code class="an">@Transactional</code></td><td><code class="cl">DTO</code> или <code class="cl">Response</code></td></tr>
+                                <tr><td><b>Repository</b></td><td>Работа с БД, генерация SQL</td><td><code class="an">@Repository</code>, <code class="cl">JpaRepository</code></td><td><code class="cl">Entity</code> или <code class="cl">Optional</code></td></tr>
+                                <tr><td><b>Mapper</b></td><td>Преобразование DTO ↔ Entity ↔ Response</td><td><code class="an">@Component</code></td><td>Преобразованные объекты</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Step 1: pom.xml -->
+                <div class="section" id="step1">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">📦</span> Шаг 1: Зависимости (pom.xml)</h2>
+                    <div class="prose">
+                        <p>Maven управляет сборкой и зависимостями. <code class="cl">spring-boot-starter-parent</code> задаёт версии и настройки по умолчанию.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header">
+                            <span class="code-lang">pom.xml</span>
+                            <button class="copy-btn">⎘ Копировать</button>
+                        </div>
+                        <pre><code><span class="cm">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="cm">&lt;!-- pom.xml — "сердце" Maven-проекта. Управляет сборкой, зависимостями, плагинами --&gt;</span>
+<span class="pk">&lt;project</span> <span class="fn">xmlns</span>=<span class="st">"http://maven.apache.org/POM/4.0.0"</span>
+         <span class="fn">xmlns:xsi</span>=<span class="st">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="fn">xsi:schemaLocation</span>=<span class="st">"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="pk">&gt;</span>
+
+    <span class="cm">&lt;!-- Наследуемся от spring-boot-starter-parent: версии, плагины, настройки по умолчанию --&gt;</span>
+    <span class="pk">&lt;parent&gt;</span>
+        <span class="pk">&lt;groupId&gt;</span><span class="cl">org.springframework.boot</span><span class="pk">&lt;/groupId&gt;</span>
+        <span class="pk">&lt;artifactId&gt;</span><span class="cl">spring-boot-starter-parent</span><span class="pk">&lt;/artifactId&gt;</span>
+        <span class="pk">&lt;version&gt;</span><span class="nu">3.2.5</span><span class="pk">&lt;/version&gt;</span>
+    <span class="pk">&lt;/parent&gt;</span>
+
+    <span class="cm">&lt;!-- Координаты проекта: уникальный идентификатор в репозитории --&gt;</span>
+    <span class="pk">&lt;groupId&gt;</span><span class="cl">com.example</span><span class="pk">&lt;/groupId&gt;</span>
+    <span class="pk">&lt;artifactId&gt;</span><span class="cl">employee-crud</span><span class="pk">&lt;/artifactId&gt;</span>
+    <span class="pk">&lt;version&gt;</span><span class="nu">0.0.1-SNAPSHOT</span><span class="pk">&lt;/version&gt;</span>
+    <span class="pk">&lt;name&gt;</span><span class="st">Employee CRUD</span><span class="pk">&lt;/name&gt;</span>
+    <span class="pk">&lt;description&gt;</span><span class="st">Учебное Spring Boot приложение — CRUD операции с сотрудниками</span><span class="pk">&lt;/description&gt;</span>
+
+    <span class="cm">&lt;!-- Свойства: версия Java, кодировка и т.д. --&gt;</span>
+    <span class="pk">&lt;properties&gt;</span>
+        <span class="pk">&lt;java.version&gt;</span><span class="nu">17</span><span class="pk">&lt;/java.version&gt;</span>
+    <span class="pk">&lt;/properties&gt;</span>
+
+    <span class="cm">&lt;!-- ЗАВИСИМОСТИ: библиотеки, которые Maven скачает автоматически --&gt;</span>
+    <span class="pk">&lt;dependencies&gt;</span>
+
+        <span class="cm">&lt;!-- spring-boot-starter-web: Tomcat + Spring MVC + Jackson (JSON) --&gt;</span>
+        <span class="pk">&lt;dependency&gt;</span>
+            <span class="pk">&lt;groupId&gt;</span><span class="cl">org.springframework.boot</span><span class="pk">&lt;/groupId&gt;</span>
+            <span class="pk">&lt;artifactId&gt;</span><span class="cl">spring-boot-starter-web</span><span class="pk">&lt;/artifactId&gt;</span>
+        <span class="pk">&lt;/dependency&gt;</span>
+
+        <span class="cm">&lt;!-- spring-boot-starter-data-jpa: Hibernate + Spring Data JPA (автогенерация SQL!) --&gt;</span>
+        <span class="pk">&lt;dependency&gt;</span>
+            <span class="pk">&lt;groupId&gt;</span><span class="cl">org.springframework.boot</span><span class="pk">&lt;/groupId&gt;</span>
+            <span class="pk">&lt;artifactId&gt;</span><span class="cl">spring-boot-starter-data-jpa</span><span class="pk">&lt;/artifactId&gt;</span>
+        <span class="pk">&lt;/dependency&gt;</span>
+
+        <span class="cm">&lt;!-- spring-boot-starter-validation: @NotBlank, @Email, @Min, @Max --&gt;</span>
+        <span class="pk">&lt;dependency&gt;</span>
+            <span class="pk">&lt;groupId&gt;</span><span class="cl">org.springframework.boot</span><span class="pk">&lt;/groupId&gt;</span>
+            <span class="pk">&lt;artifactId&gt;</span><span class="cl">spring-boot-starter-validation</span><span class="pk">&lt;/artifactId&gt;</span>
+        <span class="pk">&lt;/dependency&gt;</span>
+
+        <span class="cm">&lt;!-- H2 Database: in-memory БД для разработки/тестов (данные пропадают при перезапуске) --&gt;</span>
+        <span class="pk">&lt;dependency&gt;</span>
+            <span class="pk">&lt;groupId&gt;</span><span class="cl">com.h2database</span><span class="pk">&lt;/groupId&gt;</span>
+            <span class="pk">&lt;artifactId&gt;</span><span class="cl">h2</span><span class="pk">&lt;/artifactId&gt;</span>
+            <span class="pk">&lt;scope&gt;</span><span class="kw">runtime</span><span class="pk">&lt;/scope&gt;</span>
+        <span class="pk">&lt;/dependency&gt;</span>
+
+        <span class="cm">&lt;!-- Lombok: @Data, @Builder, @NoArgsConstructor — убирает шаблонный код --&gt;</span>
+        <span class="pk">&lt;dependency&gt;</span>
+            <span class="pk">&lt;groupId&gt;</span><span class="cl">org.projectlombok</span><span class="pk">&lt;/groupId&gt;</span>
+            <span class="pk">&lt;artifactId&gt;</span><span class="cl">lombok</span><span class="pk">&lt;/artifactId&gt;</span>
+            <span class="pk">&lt;optional&gt;</span><span class="kw">true</span><span class="pk">&lt;/optional&gt;</span>
+        <span class="pk">&lt;/dependency&gt;</span>
+
+        <span class="cm">&lt;!-- spring-boot-starter-test: JUnit 5, Mockito, AssertJ — для тестов --&gt;</span>
+        <span class="pk">&lt;dependency&gt;</span>
+            <span class="pk">&lt;groupId&gt;</span><span class="cl">org.springframework.boot</span><span class="pk">&lt;/groupId&gt;</span>
+            <span class="pk">&lt;artifactId&gt;</span><span class="cl">spring-boot-starter-test</span><span class="pk">&lt;/artifactId&gt;</span>
+            <span class="pk">&lt;scope&gt;</span><span class="kw">test</span><span class="pk">&lt;/scope&gt;</span>
+        <span class="pk">&lt;/dependency&gt;</span>
+
+    <span class="pk">&lt;/dependencies&gt;</span>
+
+    <span class="cm">&lt;!-- СБОРКА: плагины для Maven --&gt;</span>
+    <span class="pk">&lt;build&gt;</span>
+        <span class="pk">&lt;plugins&gt;</span>
+            <span class="cm">&lt;!-- spring-boot-maven-plugin: запуск, упаковка в fat JAR --&gt;</span>
+            <span class="pk">&lt;plugin&gt;</span>
+                <span class="pk">&lt;groupId&gt;</span><span class="cl">org.springframework.boot</span><span class="pk">&lt;/groupId&gt;</span>
+                <span class="pk">&lt;artifactId&gt;</span><span class="cl">spring-boot-maven-plugin</span><span class="pk">&lt;/artifactId&gt;</span>
+                <span class="pk">&lt;configuration&gt;</span>
+                    <span class="pk">&lt;excludes&gt;</span>
+                        <span class="pk">&lt;exclude&gt;</span>
+                            <span class="pk">&lt;groupId&gt;</span><span class="cl">org.projectlombok</span><span class="pk">&lt;/groupId&gt;</span>
+                            <span class="pk">&lt;artifactId&gt;</span><span class="cl">lombok</span><span class="pk">&lt;/artifactId&gt;</span>
+                        <span class="pk">&lt;/exclude&gt;</span>
+                    <span class="pk">&lt;/excludes&gt;</span>
+                <span class="pk">&lt;/configuration&gt;</span>
+            <span class="pk">&lt;/plugin&gt;</span>
+        <span class="pk">&lt;/plugins&gt;</span>
+    <span class="pk">&lt;/build&gt;</span>
+<span class="pk">&lt;/project&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 2b: application.properties -->
+                <div class="section" id="step2">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">⚙️</span> Шаг 2б: Конфигурация (application.properties)</h2>
+                    <div class="box box-blue" style="margin-bottom:16px">
+                        <div class="box-label">💡 YAML vs Properties</div>
+                        <code>application.yml</code> — читаемый, с вложенностью (отступы).<br>
+                        <code>application.properties</code> — плоский формат, ключ=значение. Оба работают одинаково!
+                    </div>
+                    
+                    <div class="section-subtitle">🟢 H2 (In-Memory) — для разработки</div>
+                    <div class="code-wrap">
+                        <div class="code-header">
+                            <span class="code-lang">application.properties — H2</span>
+                            <button class="copy-btn">⎘ Копировать</button>
+                        </div>
+                        <pre><code><span class="cm"># =====================================================================</span>
+<span class="cm"># H2 IN-MEMORY DATABASE — для разработки и тестов</span>
+<span class="cm"># Данные пропадают при перезапуске приложения</span>
+<span class="cm"># =====================================================================</span>
+
+<span class="cm"># --- Общие настройки ---</span>
+<span class="kw">spring.application.name</span>=<span class="st">employee-crud</span>
+
+<span class="cm"># --- DataSource: H2 in-memory ---</span>
+<span class="kw">spring.datasource.url</span>=<span class="st">jdbc:h2:mem:employeedb;DB_CLOSE_DELAY=-1</span>
+<span class="kw">spring.datasource.driver-class-name</span>=<span class="st">org.h2.Driver</span>
+<span class="kw">spring.datasource.username</span>=<span class="st">sa</span>
+<span class="kw">spring.datasource.password</span>=
+
+<span class="cm"># --- JPA/Hibernate ---</span>
+<span class="kw">spring.jpa.hibernate.ddl-auto</span>=<span class="st">update</span>
+<span class="kw">spring.jpa.defer-datasource-initialization</span>=<span class="st">true</span>
+<span class="kw">spring.jpa.show-sql</span>=<span class="st">true</span>
+<span class="kw">spring.jpa.properties.hibernate.format_sql</span>=<span class="st">true</span>
+
+<span class="cm"># --- H2 Console (веб-интерфейс) ---</span>
+<span class="kw">spring.h2.console.enabled</span>=<span class="st">true</span>
+<span class="kw">spring.h2.console.path</span>=<span class="st">/h2-console</span>
+
+<span class="cm"># --- Server ---</span>
+<span class="kw">server.port</span>=<span class="nu">8080</span>
+
+<span class="cm"># --- Logging ---</span>
+<span class="kw">logging.level.org.hibernate.type.descriptor.sql.BasicBinder</span>=<span class="st">TRACE</span>
+<span class="kw">logging.level.com.example.employeecrud</span>=<span class="st">DEBUG</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">🔵 PostgreSQL — для продакшена</div>
+                    <div class="code-wrap">
+                        <div class="code-header">
+                            <span class="code-lang">application.properties — PostgreSQL</span>
+                            <button class="copy-btn">⎘ Копировать</button>
+                        </div>
+                        <pre><code><span class="cm"># =====================================================================</span>
+<span class="cm"># POSTGRESQL — для продакшена</span>
+<span class="cm"># Требуется зависимость: org.postgresql:postgresql в pom.xml</span>
+<span class="cm"># =====================================================================</span>
+
+<span class="cm"># --- Общие настройки ---</span>
+<span class="kw">spring.application.name</span>=<span class="st">employee-crud</span>
+
+<span class="cm"># --- DataSource: PostgreSQL ---</span>
+<span class="cm"># Формат: jdbc:postgresql://host:port/database?параметры</span>
+<span class="kw">spring.datasource.url</span>=<span class="st">jdbc:postgresql://localhost:5432/employeedb?currentSchema=public</span>
+<span class="kw">spring.datasource.driver-class-name</span>=<span class="st">org.postgresql.Driver</span>
+<span class="kw">spring.datasource.username</span>=<span class="st">postgres</span>
+<span class="kw">spring.datasource.password</span>=<span class="st">${DB_PASSWORD:your_password_here}</span>  <span class="cm"># 🔐 Лучше брать из переменной окружения!</span>
+
+<span class="cm"># --- JPA/Hibernate ---</span>
+<span class="cm"># В продакшене: validate (только проверка) или none (миграции через Flyway/Liquibase)</span>
+<span class="kw">spring.jpa.hibernate.ddl-auto</span>=<span class="st">validate</span>
+<span class="kw">spring.jpa.show-sql</span>=<span class="st">true</span>
+<span class="kw">spring.jpa.properties.hibernate.format_sql</span>=<span class="st">true</span>
+<span class="kw">spring.jpa.properties.hibernate.dialect</span>=<span class="st">org.hibernate.dialect.PostgreSQLDialect</span>
+
+<span class="cm"># --- Connection Pool (HikariCP — по умолчанию) ---</span>
+<span class="kw">spring.datasource.hikari.maximum-pool-size</span>=<span class="nu">10</span>
+<span class="kw">spring.datasource.hikari.minimum-idle</span>=<span class="nu">5</span>
+<span class="kw">spring.datasource.hikari.connection-timeout</span>=<span class="nu">30000</span>
+
+<span class="cm"># --- Server ---</span>
+<span class="kw">server.port</span>=<span class="nu">8080</span>
+
+<span class="cm"># --- Logging ---</span>
+<span class="kw">logging.level.org.hibernate.type.descriptor.sql.BasicBinder</span>=<span class="st">TRACE</span>
+<span class="kw">logging.level.com.example.employeecrud</span>=<span class="st">INFO</span>  <span class="cm"># В продакшене меньше логов</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">🟡 MySQL / MariaDB — для продакшена</div>
+                    <div class="code-wrap">
+                        <div class="code-header">
+                            <span class="code-lang">application.properties — MySQL</span>
+                            <button class="copy-btn">⎘ Копировать</button>
+                        </div>
+                        <pre><code><span class="cm"># =====================================================================</span>
+<span class="cm"># MYSQL / MariaDB — для продакшена</span>
+<span class="cm"># Требуется зависимость: mysql:mysql-connector-java в pom.xml</span>
+<span class="cm"># =====================================================================</span>
+
+<span class="cm"># --- Общие настройки ---</span>
+<span class="kw">spring.application.name</span>=<span class="st">employee-crud</span>
+
+<span class="cm"># --- DataSource: MySQL ---</span>
+<span class="cm"># Формат: jdbc:mysql://host:port/database?параметры</span>
+<span class="kw">spring.datasource.url</span>=<span class="st">jdbc:mysql://localhost:3306/employeedb?useSSL=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true</span>
+<span class="kw">spring.datasource.driver-class-name</span>=<span class="st">com.mysql.cj.jdbc.Driver</span>
+<span class="kw">spring.datasource.username</span>=<span class="st">root</span>
+<span class="kw">spring.datasource.password</span>=<span class="st">${DB_PASSWORD:your_password_here}</span>  <span class="cm"># 🔐 Лучше брать из переменной окружения!</span>
+
+<span class="cm"># --- JPA/Hibernate ---</span>
+<span class="kw">spring.jpa.hibernate.ddl-auto</span>=<span class="st">validate</span>
+<span class="kw">spring.jpa.show-sql</span>=<span class="st">true</span>
+<span class="kw">spring.jpa.properties.hibernate.format_sql</span>=<span class="st">true</span>
+<span class="kw">spring.jpa.properties.hibernate.dialect</span>=<span class="st">org.hibernate.dialect.MySQLDialect</span>
+
+<span class="cm"># --- Connection Pool (HikariCP) ---</span>
+<span class="kw">spring.datasource.hikari.maximum-pool-size</span>=<span class="nu">10</span>
+<span class="kw">spring.datasource.hikari.minimum-idle</span>=<span class="nu">5</span>
+<span class="kw">spring.datasource.hikari.connection-timeout</span>=<span class="nu">30000</span>
+
+<span class="cm"># --- Server ---</span>
+<span class="kw">server.port</span>=<span class="nu">8080</span>
+
+<span class="cm"># --- Logging ---</span>
+<span class="kw">logging.level.org.hibernate.type.descriptor.sql.BasicBinder</span>=<span class="st">TRACE</span>
+<span class="kw">logging.level.com.example.employeecrud</span>=<span class="st">INFO</span></code></pre>
+                    </div>
+
+                    <div class="box box-warn" style="margin-top:20px">
+                        <div class="box-label">⚠️ Профили (Profiles) — лучший способ</div>
+                        Вместо того чтобы менять файл вручную, используй <b>Spring Profiles</b>:<br><br>
+                        <code>application.yml</code> — общие настройки (порт, логирование)<br>
+                        <code>application-dev.yml</code> — H2 для разработки<br>
+                        <code>application-prod.yml</code> — PostgreSQL для продакшена<br><br>
+                        Запуск с профилем: <code>mvn spring-boot:run -Dspring.profiles.active=prod</code>
+                    </div>
+                </div>
+
+                <!-- Step 2c: YAML с примерами для всех БД -->
+                <div class="section" id="step2c">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">🗄️</span> Шаг 2в: application.yml — все базы данных</h2>
+                    <div class="box box-blue">
+                        <div class="box-label">💡 Как переключаться между БД</div>
+                        Закомментируй ненужные блоки и раскомментируй нужный. Или используй <code>@Profile</code> + отдельные файлы.
+                    </div>
+                    
+                    <div class="code-wrap">
+                        <div class="code-header">
+                            <span class="code-lang">application.yml — все варианты</span>
+                            <button class="copy-btn">⎘ Копировать</button>
+                        </div>
+                        <pre><code><span class="cm"># =====================================================================</span>
+<span class="cm"># application.yml — КОНФИГУРАЦИЯ для ВСЕХ баз данных</span>
+<span class="cm"># Закомментируй ненужное, раскомментируй нужное</span>
+<span class="cm"># =====================================================================</span>
+
+<span class="kw">spring</span>:
+  <span class="kw">application</span>:
+    <span class="kw">name</span>: <span class="st">employee-crud</span>
+
+  <span class="cm"># ═══════════════════════════════════════════════════════</span>
+  <span class="cm"># 🔵 H2 IN-MEMORY (для разработки)</span>
+  <span class="cm"># ═══════════════════════════════════════════════════════</span>
+  <span class="kw">datasource</span>:
+    <span class="kw">url</span>: <span class="st">jdbc:h2:mem:employeedb;DB_CLOSE_DELAY=-1</span>
+    <span class="kw">driver-class-name</span>: <span class="st">org.h2.Driver</span>
+    <span class="kw">username</span>: <span class="st">sa</span>
+    <span class="kw">password</span>: <span class="st"></span>
+
+  <span class="cm"># ═══════════════════════════════════════════════════════</span>
+  <span class="cm"># 🔵 POSTGRESQL (для продакшена)</span>
+  <span class="cm"># ═══════════════════════════════════════════════════════</span>
+  <span class="cm"># datasource:</span>
+  <span class="cm">#   url: jdbc:postgresql://localhost:5432/employeedb?currentSchema=public</span>
+  <span class="cm">#   driver-class-name: org.postgresql.Driver</span>
+  <span class="cm">#   username: ${DB_USER:postgres}</span>
+  <span class="cm">#   password: ${DB_PASSWORD:your_password}</span>
+  <span class="cm">#   hikari:</span>
+  <span class="cm">#     maximum-pool-size: 10</span>
+  <span class="cm">#     minimum-idle: 5</span>
+  <span class="cm">#     connection-timeout: 30000</span>
+
+  <span class="cm"># ═══════════════════════════════════════════════════════</span>
+  <span class="cm"># 🟡 MYSQL / MariaDB (для продакшена)</span>
+  <span class="cm"># ═══════════════════════════════════════════════════════</span>
+  <span class="cm"># datasource:</span>
+  <span class="cm">#   url: jdbc:mysql://localhost:3306/employeedb?useSSL=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true</span>
+  <span class="cm">#   driver-class-name: com.mysql.cj.jdbc.Driver</span>
+  <span class="cm">#   username: ${DB_USER:root}</span>
+  <span class="cm">#   password: ${DB_PASSWORD:your_password}</span>
+  <span class="cm">#   hikari:</span>
+  <span class="cm">#     maximum-pool-size: 10</span>
+  <span class="cm">#     minimum-idle: 5</span>
+  <span class="cm">#     connection-timeout: 30000</span>
+
+  <span class="cm"># ═══════════════════════════════════════════════════════</span>
+  <span class="cm"># JPA / Hibernate настройки (общие для всех БД)</span>
+  <span class="cm"># ═══════════════════════════════════════════════════════</span>
+  <span class="kw">jpa</span>:
+    <span class="kw">hibernate</span>:
+      <span class="kw">ddl-auto</span>: <span class="st">update</span>  <span class="cm"># Для prod: validate или none</span>
+    
+    <span class="kw">defer-datasource-initialization</span>: <span class="kw">true</span>
+    <span class="kw">show-sql</span>: <span class="kw">true</span>
+    
+    <span class="kw">properties</span>:
+      <span class="kw">hibernate</span>:
+        <span class="kw">format_sql</span>: <span class="kw">true</span>
+        <span class="cm"># Диалекты (обычно определяются автоматически, но можно задать явно):</span>
+        <span class="cm"># dialect: org.hibernate.dialect.PostgreSQLDialect</span>
+        <span class="cm"># dialect: org.hibernate.dialect.MySQLDialect</span>
+        <span class="cm"># dialect: org.hibernate.dialect.H2Dialect</span>
+
+  <span class="cm"># H2 Console (только для H2!)</span>
+  <span class="kw">h2</span>:
+    <span class="kw">console</span>:
+      <span class="kw">enabled</span>: <span class="kw">true</span>
+      <span class="kw">path</span>: <span class="st">/h2-console</span>
+
+<span class="kw">server</span>:
+  <span class="kw">port</span>: <span class="nu">8080</span>
+
+<span class="kw">logging</span>:
+  <span class="kw">level</span>:
+    <span class="cl">org.hibernate.type.descriptor.sql.BasicBinder</span>: <span class="st">TRACE</span>
+    <span class="cl">com.example.employeecrud</span>: <span class="st">DEBUG</span></code></pre>
+                    </div>
+
+                    <div class="table-wrap" style="margin-top:20px">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>База данных</th>
+                                    <th>Driver Class</th>
+                                    <th>URL Pattern</th>
+                                    <th>Диалект Hibernate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><b>H2</b></td>
+                                    <td><code>org.h2.Driver</code></td>
+                                    <td><code>jdbc:h2:mem:dbname</code></td>
+                                    <td><code>H2Dialect</code></td>
+                                </tr>
+                                <tr>
+                                    <td><b>PostgreSQL</b></td>
+                                    <td><code>org.postgresql.Driver</code></td>
+                                    <td><code>jdbc:postgresql://host:port/db</code></td>
+                                    <td><code>PostgreSQLDialect</code></td>
+                                </tr>
+                                <tr>
+                                    <td><b>MySQL 8+</b></td>
+                                    <td><code>com.mysql.cj.jdbc.Driver</code></td>
+                                    <td><code>jdbc:mysql://host:port/db</code></td>
+                                    <td><code>MySQLDialect</code></td>
+                                </tr>
+                                <tr>
+                                    <td><b>MariaDB</b></td>
+                                    <td><code>org.mariadb.jdbc.Driver</code></td>
+                                    <td><code>jdbc:mariadb://host:port/db</code></td>
+                                    <td><code>MariaDBDialect</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Step 3: Main Class -->
+                <div class="section" id="step3">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(240,96,96,0.12);color:var(--error)">🚀</span> Шаг 3: Точка входа</h2>
+                    <div class="prose">
+                        <p><code class="an">@SpringBootApplication</code> = <code class="an">@Configuration</code> + <code class="an">@EnableAutoConfiguration</code> + <code class="an">@ComponentScan</code>. Автоматически настраивает контекст и запускает встроенный Tomcat.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">EmployeeCrudApplication.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * EmployeeCrudApplication.java — ТОЧКА ВХОДА в приложение</span>
+<span class="cm"> * @SpringBootApplication — комбинация трёх аннотаций:</span>
+<span class="cm"> *   @Configuration — этот класс содержит настройки Spring</span>
+<span class="cm"> *   @EnableAutoConfiguration — Spring настраивает компоненты автоматически</span>
+<span class="cm"> *   @ComponentScan — сканирует пакет и находит @Controller, @Service, @Repository</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud</span>;
+
+<span class="kw">import</span> <span class="cl">org.springframework.boot.SpringApplication</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.boot.autoconfigure.SpringBootApplication</span>;
+
+<span class="an">@SpringBootApplication</span>
+<span class="kw">public class</span> <span class="cl">EmployeeCrudApplication</span> {
+    
+    <span class="cm">/*</span>
+<span class="cm">     * main() — стандартная точка входа Java.</span>
+<span class="cm">     * SpringApplication.run() делает ВСЮ магию:</span>
+<span class="cm">     *   1. Создаёт Spring-контекст (контейнер для всех объектов)</span>
+<span class="cm">     *   2. Сканирует и создаёт все бины (управляемые объекты)</span>
+<span class="cm">     *   3. Запускает встроенный веб-сервер Tomcat</span>
+<span class="cm">     *   4. Приложение готово принимать HTTP-запросы!</span>
+<span class="cm">     */</span>
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] <span class="fn">args</span>) {
+        <span class="cl">SpringApplication</span>.<span class="fn">run</span>(<span class="cl">EmployeeCrudApplication</span>.<span class="kw">class</span>, <span class="fn">args</span>);
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 4: Entity -->
+                <div class="section" id="step4">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">🗃️</span> Шаг 4: Модель / Entity</h2>
+                    <div class="box box-blue">
+                        <div class="box-label">🔑 JPA Callbacks</div>
+                        <code class="an">@PrePersist</code> и <code class="an">@PreUpdate</code> автоматически проставляют даты создания/обновления перед вставкой или изменением в БД.
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Employee.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * Employee.java — МОДЕЛЬ (Entity) — представление сотрудника в БД</span>
+<span class="cm"> * Entity — Java-класс, который представляет таблицу в базе данных.</span>
+<span class="cm"> * Каждый экземпляр = одна строка в таблице "employees".</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud.model</span>;
+
+<span class="kw">import</span> <span class="cl">jakarta.persistence.*</span>;
+<span class="kw">import</span> <span class="cl">jakarta.validation.constraints.*</span>;
+<span class="kw">import</span> <span class="cl">lombok.*</span>;
+<span class="kw">import</span> <span class="cl">java.time.LocalDateTime</span>;
+
+<span class="cm">/*</span>
+<span class="cm"> * === АННОТАЦИИ LOMBOK (генерация кода при компиляции) ===</span>
+<span class="cm"> * @Data — генерирует getters, setters, toString(), equals(), hashCode()</span>
+<span class="cm"> * @Builder — паттерн Builder для удобного создания объектов</span>
+<span class="cm"> * @NoArgsConstructor — пустой конструктор (нужен для JPA/Hibernate)</span>
+<span class="cm"> * @AllArgsConstructor — конструктор со всеми полями (нужен для @Builder)</span>
+<span class="cm"> */</span>
+<span class="an">@Data</span>
+<span class="an">@Builder</span>
+<span class="an">@NoArgsConstructor</span>
+<span class="an">@AllArgsConstructor</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * === АННОТАЦИИ JPA (связь с базой данных) ===</span>
+<span class="cm"> * @Entity — говорит JPA: "Этот класс — таблица в базе данных!"</span>
+<span class="cm"> * @Table(name = "employees") — имя таблицы в БД (явно указываем)</span>
+<span class="cm"> */</span>
+<span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"employees"</span>)
+<span class="kw">public class</span> <span class="cl">Employee</span> {
+    
+    <span class="cm">/*</span>
+<span class="cm">     * @Id — это поле является ПЕРВИЧНЫМ КЛЮЧОМ (уникальный идентификатор).</span>
+<span class="cm">     * @GeneratedValue — база данных САМА генерирует id (1, 2, 3, ...).</span>
+<span class="cm">     * Strategy.IDENTITY — БД увеличивает счётчик (PostgreSQL, MySQL).</span>
+<span class="cm">     */</span>
+    <span class="an">@Id</span>
+    <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="cm">/*</span>
+<span class="cm">     * @Column — настройки столбца в таблице:</span>
+<span class="cm">     *   name — имя столбца (snake_case в БД vs camelCase в Java)</span>
+<span class="cm">     *   nullable — может ли быть NULL?</span>
+<span class="cm">     *   length — максимальная длина строки</span>
+<span class="cm">     *</span>
+<span class="cm">     * @NotBlank/@Size — ВАЛИДАЦИЯ: поле не может быть пустым, длина 2-50</span>
+<span class="cm">     */</span>
+    <span class="an">@Column</span>(<span class="fn">name</span> = <span class="st">"first_name"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">length</span> = <span class="nu">50</span>)
+    <span class="an">@NotBlank</span>(<span class="fn">message</span> = <span class="st">"Имя не может быть пустым"</span>)
+    <span class="an">@Size</span>(<span class="fn">min</span> = <span class="nu">2</span>, <span class="fn">max</span> = <span class="nu">50</span>, <span class="fn">message</span> = <span class="st">"Имя должно быть от 2 до 50 символов"</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">firstName</span>;
+
+    <span class="an">@Column</span>(<span class="fn">name</span> = <span class="st">"last_name"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">length</span> = <span class="nu">50</span>)
+    <span class="an">@NotBlank</span>(<span class="fn">message</span> = <span class="st">"Фамилия не может быть пустой"</span>)
+    <span class="an">@Size</span>(<span class="fn">min</span> = <span class="nu">2</span>, <span class="fn">max</span> = <span class="nu">50</span>, <span class="fn">message</span> = <span class="st">"Фамилия должна быть от 2 до 50 символов"</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">lastName</span>;
+
+    <span class="cm">/*</span>
+<span class="cm">     * @Email — ВАЛИДАЦИЯ: проверяет корректность email.</span>
+<span class="cm">     * unique = true — в таблице не может быть двух одинаковых email.</span>
+<span class="cm">     */</span>
+    <span class="an">@Column</span>(<span class="fn">name</span> = <span class="st">"email"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">unique</span> = <span class="kw">true</span>, <span class="fn">length</span> = <span class="nu">100</span>)
+    <span class="an">@NotBlank</span>(<span class="fn">message</span> = <span class="st">"Email не может быть пустым"</span>)
+    <span class="an">@Email</span>(<span class="fn">message</span> = <span class="st">"Некорректный формат email"</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">email</span>;
+
+    <span class="an">@Column</span>(<span class="fn">name</span> = <span class="st">"department"</span>, <span class="fn">length</span> = <span class="nu">100</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">department</span>;
+
+    <span class="cm">/*</span>
+<span class="cm">     * @Min/@Max — ВАЛИДАЦИЯ для чисел:</span>
+<span class="cm">     *   зарплата не может быть отрицательной и не может превышать 10 млн</span>
+<span class="cm">     */</span>
+    <span class="an">@Column</span>(<span class="fn">name</span> = <span class="st">"salary"</span>)
+    <span class="an">@Min</span>(<span class="fn">value</span> = <span class="nu">0</span>, <span class="fn">message</span> = <span class="st">"Зарплата не может быть отрицательной"</span>)
+    <span class="an">@Max</span>(<span class="fn">value</span> = <span class="nu">10_000_000</span>, <span class="fn">message</span> = <span class="st">"Зарплата не может превышать 10 000 000"</span>)
+    <span class="kw">private</span> <span class="ty">Double</span> <span class="fn">salary</span>;
+
+    <span class="cm">/*</span>
+<span class="cm">     * LocalDateTime — дата и время (Java 8+).</span>
+<span class="cm">     * @Column(updatable = false) — дата создания НЕ меняется после создания.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @PrePersist — вызывается ПЕРЕД INSERT (вставкой в БД)</span>
+<span class="cm">     * @PreUpdate — вызывается ПЕРЕД UPDATE (обновлением в БД)</span>
+<span class="cm">     * Это как "триггеры" — автоматические действия перед операцией.</span>
+<span class="cm">     */</span>
+    <span class="an">@Column</span>(<span class="fn">name</span> = <span class="st">"created_at"</span>, <span class="fn">updatable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cl">LocalDateTime</span> <span class="fn">createdAt</span>;
+
+    <span class="an">@Column</span>(<span class="fn">name</span> = <span class="st">"updated_at"</span>)
+    <span class="kw">private</span> <span class="cl">LocalDateTime</span> <span class="fn">updatedAt</span>;
+
+    <span class="an">@PrePersist</span>
+    <span class="kw">protected void</span> <span class="fn">onCreate</span>() {
+        <span class="kw">this</span>.<span class="fn">createdAt</span> = <span class="cl">LocalDateTime</span>.<span class="fn">now</span>();
+        <span class="kw">this</span>.<span class="fn">updatedAt</span> = <span class="cl">LocalDateTime</span>.<span class="fn">now</span>();
+    }
+
+    <span class="an">@PreUpdate</span>
+    <span class="kw">protected void</span> <span class="fn">onUpdate</span>() {
+        <span class="kw">this</span>.<span class="fn">updatedAt</span> = <span class="cl">LocalDateTime</span>.<span class="fn">now</span>();
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 5: DTO & Response -->
+                <div class="section" id="step5">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🔄</span> Шаг 5: DTO и Response</h2>
+                    <div class="prose">
+                        <p>Никогда не отдавайте <code class="cl">Entity</code> напрямую клиенту! DTO контролирует входящие данные, Response — исходящие. Это защищает от перезаписи служебных полей и позволяет добавить вычисляемые поля (например, <code>fullName</code>).</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">EmployeeDTO.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * EmployeeDTO.java — Data Transfer Object (Объект Передачи Данных)</span>
+<span class="cm"> * DTO — это "фильтр" между клиентом и базой данных.</span>
+<span class="cm"> * Клиент отправляет только нужные поля (имя, фамилия, email...).</span>
+<span class="cm"> * Здесь НЕТ поля id, createdAt, updatedAt — их устанавливает сервер/БД.</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud.dto</span>;
+
+<span class="kw">import</span> <span class="cl">jakarta.validation.constraints.*</span>;
+<span class="kw">import</span> <span class="cl">lombok.*</span>;
+
+<span class="an">@Data</span>
+<span class="an">@Builder</span>
+<span class="an">@NoArgsConstructor</span>
+<span class="an">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">EmployeeDTO</span> {
+    
+    <span class="cm">/*</span>
+<span class="cm">     * Валидация происходит ДО преобразования в Entity.</span>
+<span class="cm">     * Это называется "валидация на входе" — ловим ошибки как можно раньше.</span>
+<span class="cm">     */</span>
+    <span class="an">@NotBlank</span>(<span class="fn">message</span> = <span class="st">"Имя не может быть пустым"</span>)
+    <span class="an">@Size</span>(<span class="fn">min</span> = <span class="nu">2</span>, <span class="fn">max</span> = <span class="nu">50</span>, <span class="fn">message</span> = <span class="st">"Имя должно быть от 2 до 50 символов"</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">firstName</span>;
+
+    <span class="an">@NotBlank</span>(<span class="fn">message</span> = <span class="st">"Фамилия не может быть пустой"</span>)
+    <span class="an">@Size</span>(<span class="fn">min</span> = <span class="nu">2</span>, <span class="fn">max</span> = <span class="nu">50</span>, <span class="fn">message</span> = <span class="st">"Фамилия должна быть от 2 до 50 символов"</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">lastName</span>;
+
+    <span class="an">@NotBlank</span>(<span class="fn">message</span> = <span class="st">"Email не может быть пустым"</span>)
+    <span class="an">@Email</span>(<span class="fn">message</span> = <span class="st">"Некорректный формат email"</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">email</span>;
+
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">department</span>;
+
+    <span class="an">@Min</span>(<span class="fn">value</span> = <span class="nu">0</span>, <span class="fn">message</span> = <span class="st">"Зарплата не может быть отрицательной"</span>)
+    <span class="an">@Max</span>(<span class="fn">value</span> = <span class="nu">10_000_000</span>, <span class="fn">message</span> = <span class="st">"Зарплата не может превышать 10 000 000"</span>)
+    <span class="kw">private</span> <span class="ty">Double</span> <span class="fn">salary</span>;
+}</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">EmployeeResponse.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * EmployeeResponse.java — ОТВЕТ КЛИЕНТУ (Response DTO)</span>
+<span class="cm"> * Это объект, который клиент получает в JSON-ответе.</span>
+<span class="cm"> * Отличия от EmployeeDTO:</span>
+<span class="cm"> *   - Включает id, createdAt, updatedAt (генерируются сервером)</span>
+<span class="cm"> *   - Может содержать вычисляемые поля (например, fullName)</span>
+<span class="cm"> * Принцип: DTO = "что клиент ОТПРАВЛЯЕТ", Response = "что мы ОТПРАВЛЯЕМ клиенту"</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud.dto</span>;
+
+<span class="kw">import</span> <span class="cl">lombok.*</span>;
+<span class="kw">import</span> <span class="cl">java.time.LocalDateTime</span>;
+
+<span class="an">@Data</span>
+<span class="an">@Builder</span>
+<span class="an">@NoArgsConstructor</span>
+<span class="an">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">EmployeeResponse</span> {
+    
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">firstName</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">lastName</span>;
+
+    <span class="cm">/*</span>
+<span class="cm">     * fullName — вычисляемое поле (не хранится в БД!).</span>
+<span class="cm">     * Удобно для клиента — не нужно склеивать имя и фамилию.</span>
+<span class="cm">     * Мы НЕ используем @Builder для этого поля — оно вычисляется через getter.</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getFullName</span>() {
+        <span class="kw">return</span> <span class="fn">firstName</span> + <span class="st">" "</span> + <span class="fn">lastName</span>;
+    }
+
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">email</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">department</span>;
+    <span class="kw">private</span> <span class="ty">Double</span> <span class="fn">salary</span>;
+
+    <span class="cm">/*</span>
+<span class="cm">     * Даты создания и обновления.</span>
+<span class="cm">     * Клиент видит, когда запись была создана и когда изменялась.</span>
+<span class="cm">     * Формат в JSON: "2024-01-15T10:30:00"</span>
+<span class="cm">     */</span>
+    <span class="kw">private</span> <span class="cl">LocalDateTime</span> <span class="fn">createdAt</span>;
+    <span class="kw">private</span> <span class="cl">LocalDateTime</span> <span class="fn">updatedAt</span>;
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 6: Repository -->
+                <div class="section" id="step6">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">📊</span> Шаг 6: Репозиторий</h2>
+                    <div class="prose">
+                        <p><code class="cl">JpaRepository</code> автоматически генерирует SQL по имени метода. Это называется <em>Query Derivation</em>.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">EmployeeRepository.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * EmployeeRepository.java — РЕПОЗИТОРИЙ (слой доступа к данным)</span>
+<span class="cm"> * Репозиторий — "посредник" между Java-кодом и базой данных.</span>
+<span class="cm"> * Spring Data JPA ГЕНЕРИРУЕТ SQL автоматически — не нужно писать запросы вручную!</span>
+<span class="cm"> *</span>
+<span class="cm"> * JpaRepository&lt;Employee, Long&gt; — два параметра:</span>
+<span class="cm"> *   Employee — с какой сущностью работаем</span>
+<span class="cm"> *   Long     — тип первичного ключа (id)</span>
+<span class="cm"> *</span>
+<span class="cm"> * Что мы получаем БЕСПЛАТНО от JpaRepository:</span>
+<span class="cm"> *   save()      → INSERT/UPDATE</span>
+<span class="cm"> *   findById()  → SELECT WHERE id = ?</span>
+<span class="cm"> *   findAll()   → SELECT * FROM employees</span>
+<span class="cm"> *   delete()    → DELETE</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud.repository</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.model.Employee</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.data.jpa.repository.JpaRepository</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.stereotype.Repository</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.Optional</span>;
+
+<span class="cm">/*</span>
+<span class="cm"> * @Repository — говорит Spring: "Это компонент для работы с данными!"</span>
+<span class="cm"> * Spring автоматически создаст реализацию этого интерфейса.</span>
+<span class="cm"> * Технически для JpaRepository @Repository не обязателен,</span>
+<span class="cm"> * но мы пишем его явно для наглядности.</span>
+<span class="cm"> */</span>
+<span class="an">@Repository</span>
+<span class="kw">public interface</span> <span class="cl">EmployeeRepository</span> <span class="kw">extends</span> <span class="cl">JpaRepository</span>&lt;<span class="cl">Employee</span>, <span class="ty">Long</span>&gt; {
+    
+    <span class="cm">/*</span>
+<span class="cm">     * =====================================================</span>
+<span class="cm">     *  КАСТОМНЫЕ МЕТОДЫ — "Query Methods" (методы-запросы)</span>
+<span class="cm">     * =====================================================</span>
+<span class="cm">     *</span>
+<span class="cm">     * Spring Data JPA умеет ГЕНЕРИРОВАТЬ SQL из ИМЕНИ метода!</span>
+<span class="cm">     * Это называется "Query Derivation" (вывод запроса).</span>
+<span class="cm">     *</span>
+<span class="cm">     * Правила именования:</span>
+<span class="cm">     *   findBy{Поле}           → WHERE поле = ?</span>
+<span class="cm">     *   findBy{Поле}Containing → WHERE поле LIKE '%?%'</span>
+<span class="cm">     *   existsBy{Поле}         → SELECT EXISTS(WHERE поле = ?)</span>
+<span class="cm">     */</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * findByEmail("ivan@mail.ru")</span>
+<span class="cm">     * → SELECT * FROM employees WHERE email = 'ivan@mail.ru'</span>
+<span class="cm">     *</span>
+<span class="cm">     * Optional&lt;Employee&gt; — контейнер, который может содержать</span>
+<span class="cm">     * Employee или быть пустым. Это лучше, чем возвращать null!</span>
+<span class="cm">     */</span>
+    <span class="cl">Optional</span>&lt;<span class="cl">Employee</span>&gt; <span class="fn">findByEmail</span>(<span class="ty">String</span> <span class="fn">email</span>);
+
+    <span class="cm">/*</span>
+<span class="cm">     * findByDepartment("IT")</span>
+<span class="cm">     * → SELECT * FROM employees WHERE department = 'IT'</span>
+<span class="cm">     *</span>
+<span class="cm">     * Возвращает список, потому что в одном отделе</span>
+<span class="cm">     * может быть много сотрудников.</span>
+<span class="cm">     */</span>
+    <span class="cl">List</span>&lt;<span class="cl">Employee</span>&gt; <span class="fn">findByDepartment</span>(<span class="ty">String</span> <span class="fn">department</span>);
+
+    <span class="cm">/*</span>
+<span class="cm">     * findByFirstNameContainingIgnoreCase("ива")</span>
+<span class="cm">     * → SELECT * FROM employees WHERE LOWER(first_name) LIKE LOWER('%ива%')</span>
+<span class="cm">     *</span>
+<span class="cm">     * Containing — поиск подстроки (LIKE '%...%')</span>
+<span class="cm">     * IgnoreCase — без учёта регистра (Иван = иван = ИВАН)</span>
+<span class="cm">     */</span>
+    <span class="cl">List</span>&lt;<span class="cl">Employee</span>&gt; <span class="fn">findByFirstNameContainingIgnoreCase</span>(<span class="ty">String</span> <span class="fn">firstName</span>);
+
+    <span class="cm">/*</span>
+<span class="cm">     * existsByEmail("ivan@mail.ru")</span>
+<span class="cm">     * → SELECT EXISTS(SELECT 1 FROM employees WHERE email = 'ivan@mail.ru')</span>
+<span class="cm">     *</span>
+<span class="cm">     * Возвращает true/false — есть ли сотрудник с таким email?</span>
+<span class="cm">     * Используем для проверки уникальности перед созданием.</span>
+<span class="cm">     */</span>
+    <span class="kw">boolean</span> <span class="fn">existsByEmail</span>(<span class="ty">String</span> <span class="fn">email</span>);
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 7: Mapper -->
+                <div class="section" id="step7">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">🔗</span> Шаг 7: Маппер</h2>
+                    <div class="box box-warn">
+                        <div class="box-label">⚠️ Зачем отдельный Mapper?</div>
+                        Разделяет ответственность (SRP). При изменении полей правим только маппер, а не весь сервис. Легко тестируется отдельно.
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">EmployeeMapper.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * EmployeeMapper.java — МАППЕР (преобразователь объектов)</span>
+<span class="cm"> * Маппер конвертирует объекты одного типа в другой:</span>
+<span class="cm"> *   EmployeeDTO  ←→  Employee (Entity)</span>
+<span class="cm"> *</span>
+<span class="cm"> * Зачем отдельный класс?</span>
+<span class="cm"> * ✅ ВСЯ логика преобразования в ОДНОМ месте</span>
+<span class="cm"> * ✅ Добавил поле? Поменял только маппер!</span>
+<span class="cm"> * ✅ Легко тестировать отдельно</span>
+<span class="cm"> * ✅ Принцип SRP (каждый класс делает одно дело)</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud.mapper</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.dto.EmployeeDTO</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.dto.EmployeeResponse</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.model.Employee</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.stereotype.Component</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.stream.Collectors</span>;
+
+<span class="cm">/*</span>
+<span class="cm"> * @Component — говорит Spring: "Создай экземпляр этого класса и управляй им!"</span>
+<span class="cm"> * После этого маппер можно "внедрять" через конструктор в любой другой класс.</span>
+<span class="cm"> */</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">EmployeeMapper</span> {
+    
+    <span class="cm">// ==================== DTO → Entity ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * toEntity() — преобразует DTO (данные от клиента) в Entity (для БД).</span>
+<span class="cm">     *</span>
+<span class="cm">     * Что ВКЛЮЧАЕМ: firstName, lastName, email, department, salary</span>
+<span class="cm">     * Что НЕ ВКЛЮЧАЕМ:</span>
+<span class="cm">     *   - id → генерируется базой данных автоматически</span>
+<span class="cm">     *   - createdAt/updatedAt → устанавливаются через @PrePersist/@PreUpdate</span>
+<span class="cm">     *</span>
+<span class="cm">     * Используем Builder (от Lombok) — читаемый способ создания объекта.</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> <span class="cl">Employee</span> <span class="fn">toEntity</span>(<span class="cl">EmployeeDTO</span> <span class="fn">dto</span>) {
+        <span class="kw">if</span> (<span class="fn">dto</span> == <span class="kw">null</span>) {
+            <span class="kw">return</span> <span class="kw">null</span>;  <span class="cm">// Защита от NullPointerException</span>
+        }
+        <span class="kw">return</span> <span class="cl">Employee</span>.<span class="fn">builder</span>()
+                .<span class="fn">firstName</span>(<span class="fn">dto</span>.<span class="fn">getFirstName</span>())
+                .<span class="fn">lastName</span>(<span class="fn">dto</span>.<span class="fn">getLastName</span>())
+                .<span class="fn">email</span>(<span class="fn">dto</span>.<span class="fn">getEmail</span>())
+                .<span class="fn">department</span>(<span class="fn">dto</span>.<span class="fn">getDepartment</span>())
+                .<span class="fn">salary</span>(<span class="fn">dto</span>.<span class="fn">getSalary</span>())
+                .<span class="fn">build</span>();
+    }
+
+    <span class="cm">// ==================== Entity → DTO ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * toDTO() — преобразует Entity (из БД) обратно в DTO.</span>
+<span class="cm">     * Может использоваться для экспорта данных, передачи между микросервисами.</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> <span class="cl">EmployeeDTO</span> <span class="fn">toDTO</span>(<span class="cl">Employee</span> <span class="fn">entity</span>) {
+        <span class="kw">if</span> (<span class="fn">entity</span> == <span class="kw">null</span>) {
+            <span class="kw">return</span> <span class="kw">null</span>;
+        }
+        <span class="kw">return</span> <span class="cl">EmployeeDTO</span>.<span class="fn">builder</span>()
+                .<span class="fn">firstName</span>(<span class="fn">entity</span>.<span class="fn">getFirstName</span>())
+                .<span class="fn">lastName</span>(<span class="fn">entity</span>.<span class="fn">getLastName</span>())
+                .<span class="fn">email</span>(<span class="fn">entity</span>.<span class="fn">getEmail</span>())
+                .<span class="fn">department</span>(<span class="fn">entity</span>.<span class="fn">getDepartment</span>())
+                .<span class="fn">salary</span>(<span class="fn">entity</span>.<span class="fn">getSalary</span>())
+                .<span class="fn">build</span>();
+    }
+
+    <span class="cm">// ==================== Entity → Response ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * toResponse() — преобразует Entity в EmployeeResponse.</span>
+<span class="cm">     *</span>
+<span class="cm">     * EmployeeResponse — это то, что КЛИЕНТ получает в ответ.</span>
+<span class="cm">     * Он содержит id и даты, но НЕ содержит чувствительные данные.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Разница DTO vs Response:</span>
+<span class="cm">     *   DTO      — ВХОДЯЩИЕ данные (от клиента → серверу)</span>
+<span class="cm">     *   Response — ИСХОДЯЩИЕ данные (от сервера → клиенту)</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> <span class="cl">EmployeeResponse</span> <span class="fn">toResponse</span>(<span class="cl">Employee</span> <span class="fn">entity</span>) {
+        <span class="kw">if</span> (<span class="fn">entity</span> == <span class="kw">null</span>) {
+            <span class="kw">return</span> <span class="kw">null</span>;
+        }
+        <span class="kw">return</span> <span class="cl">EmployeeResponse</span>.<span class="fn">builder</span>()
+                .<span class="fn">id</span>(<span class="fn">entity</span>.<span class="fn">getId</span>())
+                .<span class="fn">firstName</span>(<span class="fn">entity</span>.<span class="fn">getFirstName</span>())
+                .<span class="fn">lastName</span>(<span class="fn">entity</span>.<span class="fn">getLastName</span>())
+                .<span class="fn">email</span>(<span class="fn">entity</span>.<span class="fn">getEmail</span>())
+                .<span class="fn">department</span>(<span class="fn">entity</span>.<span class="fn">getDepartment</span>())
+                .<span class="fn">salary</span>(<span class="fn">entity</span>.<span class="fn">getSalary</span>())
+                .<span class="fn">createdAt</span>(<span class="fn">entity</span>.<span class="fn">getCreatedAt</span>())
+                .<span class="fn">updatedAt</span>(<span class="fn">entity</span>.<span class="fn">getUpdatedAt</span>())
+                .<span class="fn">build</span>();
+    }
+
+    <span class="cm">// ==================== Списки (List) ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * toResponseList() — преобразует СПИСОК Entity в список Response.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Используем Stream API (Java 8+):</span>
+<span class="cm">     *   .stream() — создаём поток из списка</span>
+<span class="cm">     *   .map(this::toResponse) — применяем toResponse() к КАЖДОМУ элементу</span>
+<span class="cm">     *   .collect(...) — собираем результат обратно в список</span>
+<span class="cm">     *</span>
+<span class="cm">     * this::toResponse — "ссылка на метод" (method reference).</span>
+<span class="cm">     * Эквивалентно: .map(employee -> toResponse(employee)), но короче.</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">toResponseList</span>(<span class="cl">List</span>&lt;<span class="cl">Employee</span>&gt; <span class="fn">entities</span>) {
+        <span class="kw">if</span> (<span class="fn">entities</span> == <span class="kw">null</span>) {
+            <span class="kw">return</span> <span class="cl">List</span>.<span class="fn">of</span>();  <span class="cm">// Возвращаем пустой список, а не null!</span>
+        }
+        <span class="kw">return</span> <span class="fn">entities</span>.<span class="fn">stream</span>()
+                .<span class="fn">map</span>(<span class="kw">this</span>::<span class="fn">toResponse</span>)
+                .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">toList</span>());
+    }
+
+    <span class="cm">// ==================== Обновление Entity из DTO ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * updateEntityFromDTO() — обновляет СУЩЕСТВУЮЩИЙ Entity данными из DTO.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Зачем отдельный метод? При UPDATE мы НЕ создаём новый объект!</span>
+<span class="cm">     * Мы обновляем поля СУЩЕСТВУЮЩЕГО объекта, чтобы сохранить:</span>
+<span class="cm">     *   - id (не менять!)</span>
+<span class="cm">     *   - createdAt (не менять!)</span>
+<span class="cm">     *   - updatedAt (обновится через @PreUpdate автоматически)</span>
+<span class="cm">     *</span>
+<span class="cm">     * Это важное отличие от toEntity():</span>
+<span class="cm">     *   toEntity() — создаёт НОВЫЙ объект (для CREATE)</span>
+<span class="cm">     *   updateEntityFromDTO() — модифицирует СУЩЕСТВУЮЩИЙ (для UPDATE)</span>
+<span class="cm">     */</span>
+    <span class="kw">public void</span> <span class="fn">updateEntityFromDTO</span>(<span class="cl">Employee</span> <span class="fn">entity</span>, <span class="cl">EmployeeDTO</span> <span class="fn">dto</span>) {
+        <span class="kw">if</span> (<span class="fn">entity</span> == <span class="kw">null</span> || <span class="fn">dto</span> == <span class="kw">null</span>) {
+            <span class="kw">return</span>;
+        }
+        <span class="fn">entity</span>.<span class="fn">setFirstName</span>(<span class="fn">dto</span>.<span class="fn">getFirstName</span>());
+        <span class="fn">entity</span>.<span class="fn">setLastName</span>(<span class="fn">dto</span>.<span class="fn">getLastName</span>());
+        <span class="fn">entity</span>.<span class="fn">setEmail</span>(<span class="fn">dto</span>.<span class="fn">getEmail</span>());
+        <span class="fn">entity</span>.<span class="fn">setDepartment</span>(<span class="fn">dto</span>.<span class="fn">getDepartment</span>());
+        <span class="fn">entity</span>.<span class="fn">setSalary</span>(<span class="fn">dto</span>.<span class="fn">getSalary</span>());
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 8: Service -->
+                <div class="section" id="step8">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">⚙️</span> Шаг 8: Сервисный слой</h2>
+                    <div class="prose">
+                        <p>Содержит всю бизнес-логику. Использует <code class="an">@Transactional</code> для атомарности операций. Внедряет Repository и Mapper через конструктор.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">EmployeeService.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * EmployeeService.java — СЕРВИСНЫЙ СЛОЙ (бизнес-логика)</span>
+<span class="cm"> *</span>
+<span class="cm"> * Архитектура Spring-приложения — три слоя:</span>
+<span class="cm"> *   1. CONTROLLER — принимает HTTP, отдаёт ответы (НЕ содержит бизнес-логику!)</span>
+<span class="cm"> *   2. SERVICE ← МЫ ЗДЕСЬ — вся бизнес-логика, валидация, правила</span>
+<span class="cm"> *   3. REPOSITORY — работа с БД, CRUD операции</span>
+<span class="cm"> *</span>
+<span class="cm"> * Зачем разделять на слои?</span>
+<span class="cm"> * ✅ Каждый слой имеет ОДНУ ответственность (SRP)</span>
+<span class="cm"> * ✅ Можно менять БД без изменения контроллера</span>
+<span class="cm"> * ✅ Легче тестировать — каждый слой тестируется отдельно</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud.service</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.dto.EmployeeDTO</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.dto.EmployeeResponse</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.exception.ResourceNotFoundException</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.mapper.EmployeeMapper</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.model.Employee</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.repository.EmployeeRepository</span>;
+<span class="kw">import</span> <span class="cl">lombok.RequiredArgsConstructor</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.stereotype.Service</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.transaction.annotation.Transactional</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+
+<span class="cm">/*</span>
+<span class="cm"> * @Service — говорит Spring: "Это бизнес-компонент! Создай его экземпляр."</span>
+<span class="cm"> * Spring создаст ОДИН экземпляр (Singleton) на всё приложение.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @RequiredArgsConstructor (Lombok) — генерирует конструктор для ВСЕХ final-полей.</span>
+<span class="cm"> * Это лучший способ внедрения зависимостей (Dependency Injection)!</span>
+<span class="cm"> *</span>
+<span class="cm"> * Dependency Injection (DI) — ключевой принцип Spring:</span>
+<span class="cm"> * Вместо new EmployeeRepository(), мы ОБЪЯВЛЯЕМ зависимости,</span>
+<span class="cm"> * а Spring сам "внедряет" (передаёт) нужные объекты.</span>
+<span class="cm"> */</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">EmployeeService</span> {
+    
+    <span class="cm">/*</span>
+<span class="cm">     * final — поле нельзя переназначить после инициализации.</span>
+<span class="cm">     * Это ГАРАНТИРУЕТ, что зависимости всегда будут установлены.</span>
+<span class="cm">     */</span>
+    <span class="kw">private final</span> <span class="cl">EmployeeRepository</span> <span class="fn">employeeRepository</span>;
+    
+    <span class="cm">/*</span>
+<span class="cm">     * EmployeeMapper — наш маппер для преобразования объектов.</span>
+<span class="cm">     * Вынесен в отдельный @Component, внедряется через DI.</span>
+<span class="cm">     * Преимущества: каждый класс делает ОДНО дело (SRP),</span>
+<span class="cm">     * маппер можно переиспользовать и тестировать отдельно.</span>
+<span class="cm">     */</span>
+    <span class="kw">private final</span> <span class="cl">EmployeeMapper</span> <span class="fn">employeeMapper</span>;
+
+    <span class="cm">// ==================== CREATE (Создание) ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Создание нового сотрудника.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @Transactional — ОЧЕНЬ ВАЖНАЯ аннотация!</span>
+<span class="cm">     * Оборачивает метод в транзакцию базы данных.</span>
+<span class="cm">     * Транзакция — это "всё или ничего":</span>
+<span class="cm">     *   - Если всё ОК → данные сохраняются (COMMIT)</span>
+<span class="cm">     *   - Если ошибка → все изменения откатываются (ROLLBACK)</span>
+<span class="cm">     *</span>
+<span class="cm">     * Возвращаем EmployeeResponse вместо Employee (Entity).</span>
+<span class="cm">     * Это правильный подход: клиент НИКОГДА не видит Entity напрямую!</span>
+<span class="cm">     *</span>
+<span class="cm">     * Поток данных:</span>
+<span class="cm">     *   EmployeeDTO (вход) → Employee (БД) → EmployeeResponse (выход)</span>
+<span class="cm">     */</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> <span class="cl">EmployeeResponse</span> <span class="fn">createEmployee</span>(<span class="cl">EmployeeDTO</span> <span class="fn">dto</span>) {
+        <span class="cm">// Проверяем: нет ли уже сотрудника с таким email?</span>
+        <span class="kw">if</span> (<span class="fn">employeeRepository</span>.<span class="fn">existsByEmail</span>(<span class="fn">dto</span>.<span class="fn">getEmail</span>())) {
+            <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(
+                <span class="st">"Сотрудник с email "</span> + <span class="fn">dto</span>.<span class="fn">getEmail</span>() + <span class="st">" уже существует!"</span>
+            );
+        }
+        <span class="cm">// Шаг 1: DTO → Entity (через маппер)</span>
+        <span class="cl">Employee</span> <span class="fn">employee</span> = <span class="fn">employeeMapper</span>.<span class="fn">toEntity</span>(<span class="fn">dto</span>);
+        <span class="cm">// Шаг 2: Сохраняем в БД (получаем Entity с заполненным id)</span>
+        <span class="cl">Employee</span> <span class="fn">saved</span> = <span class="fn">employeeRepository</span>.<span class="fn">save</span>(<span class="fn">employee</span>);
+        <span class="cm">// Шаг 3: Entity → Response (через маппер)</span>
+        <span class="kw">return</span> <span class="fn">employeeMapper</span>.<span class="fn">toResponse</span>(<span class="fn">saved</span>);
+    }
+
+    <span class="cm">// ==================== READ (Чтение) ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Получить ВСЕХ сотрудников.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @Transactional(readOnly = true) — оптимизация:</span>
+<span class="cm">     *   Говорим Hibernate: "Мы только читаем, не изменяем".</span>
+<span class="cm">     *   Hibernate отключает "dirty checking" (отслеживание изменений),</span>
+<span class="cm">     *   что ускоряет работу.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Используем employeeMapper.toResponseList() — преобразуем</span>
+<span class="cm">     * ВЕСЬ список Entity в список Response за один вызов.</span>
+<span class="cm">     */</span>
+    <span class="an">@Transactional</span>(<span class="fn">readOnly</span> = <span class="kw">true</span>)
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">getAllEmployees</span>() {
+        <span class="cl">List</span>&lt;<span class="cl">Employee</span>&gt; <span class="fn">employees</span> = <span class="fn">employeeRepository</span>.<span class="fn">findAll</span>();
+        <span class="kw">return</span> <span class="fn">employeeMapper</span>.<span class="fn">toResponseList</span>(<span class="fn">employees</span>);
+    }
+
+    <span class="cm">/*</span>
+<span class="cm">     * Получить сотрудника по ID.</span>
+<span class="cm">     *</span>
+<span class="cm">     * findById() возвращает Optional&lt;Employee&gt;.</span>
+<span class="cm">     * .orElseThrow() — если сотрудник не найден, бросаем исключение.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Лямбда () -&gt; new ResourceNotFoundException(...)</span>
+<span class="cm">     * — создаёт исключение ТОЛЬКО если сотрудник не найден.</span>
+<span class="cm">     * Если найден — исключение не создаётся (экономия ресурсов).</span>
+<span class="cm">     */</span>
+    <span class="an">@Transactional</span>(<span class="fn">readOnly</span> = <span class="kw">true</span>)
+    <span class="kw">public</span> <span class="cl">EmployeeResponse</span> <span class="fn">getEmployeeById</span>(<span class="ty">Long</span> <span class="fn">id</span>) {
+        <span class="cl">Employee</span> <span class="fn">employee</span> = <span class="fn">findEmployeeOrThrow</span>(<span class="fn">id</span>);
+        <span class="kw">return</span> <span class="fn">employeeMapper</span>.<span class="fn">toResponse</span>(<span class="fn">employee</span>);
+    }
+
+    <span class="cm">/*</span>
+<span class="cm">     * Поиск сотрудников по отделу.</span>
+<span class="cm">     */</span>
+    <span class="an">@Transactional</span>(<span class="fn">readOnly</span> = <span class="kw">true</span>)
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">getEmployeesByDepartment</span>(<span class="ty">String</span> <span class="fn">department</span>) {
+        <span class="cl">List</span>&lt;<span class="cl">Employee</span>&gt; <span class="fn">employees</span> = <span class="fn">employeeRepository</span>.<span class="fn">findByDepartment</span>(<span class="fn">department</span>);
+        <span class="kw">return</span> <span class="fn">employeeMapper</span>.<span class="fn">toResponseList</span>(<span class="fn">employees</span>);
+    }
+
+    <span class="cm">/*</span>
+<span class="cm">     * Поиск сотрудников по имени (частичное совпадение).</span>
+<span class="cm">     */</span>
+    <span class="an">@Transactional</span>(<span class="fn">readOnly</span> = <span class="kw">true</span>)
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">searchByName</span>(<span class="ty">String</span> <span class="fn">name</span>) {
+        <span class="cl">List</span>&lt;<span class="cl">Employee</span>&gt; <span class="fn">employees</span> = <span class="fn">employeeRepository</span>
+                .<span class="fn">findByFirstNameContainingIgnoreCase</span>(<span class="fn">name</span>);
+        <span class="kw">return</span> <span class="fn">employeeMapper</span>.<span class="fn">toResponseList</span>(<span class="fn">employees</span>);
+    }
+
+    <span class="cm">// ==================== UPDATE (Обновление) ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Обновление данных сотрудника.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Используем employeeMapper.updateEntityFromDTO() — маппер</span>
+<span class="cm">     * обновляет СУЩЕСТВУЮЩИЙ объект, а не создаёт новый.</span>
+<span class="cm">     * Это сохраняет id, createdAt и другие поля Entity.</span>
+<span class="cm">     */</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> <span class="cl">EmployeeResponse</span> <span class="fn">updateEmployee</span>(<span class="ty">Long</span> <span class="fn">id</span>, <span class="cl">EmployeeDTO</span> <span class="fn">dto</span>) {
+        <span class="cm">// Шаг 1: Ищем сотрудника (бросит 404, если не найден)</span>
+        <span class="cl">Employee</span> <span class="fn">existing</span> = <span class="fn">findEmployeeOrThrow</span>(<span class="fn">id</span>);
+        
+        <span class="cm">// Шаг 2: Проверяем email (если изменился)</span>
+        <span class="kw">if</span> (!<span class="fn">existing</span>.<span class="fn">getEmail</span>().<span class="fn">equals</span>(<span class="fn">dto</span>.<span class="fn">getEmail</span>())
+                &amp;&amp; <span class="fn">employeeRepository</span>.<span class="fn">existsByEmail</span>(<span class="fn">dto</span>.<span class="fn">getEmail</span>())) {
+            <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(
+                <span class="st">"Email "</span> + <span class="fn">dto</span>.<span class="fn">getEmail</span>() + <span class="st">" уже используется другим сотрудником!"</span>
+            );
+        }
+        
+        <span class="cm">// Шаг 3: Обновляем поля через маппер</span>
+        <span class="cm">// Маппер обновляет СУЩЕСТВУЮЩИЙ объект, не создавая новый!</span>
+        <span class="fn">employeeMapper</span>.<span class="fn">updateEntityFromDTO</span>(<span class="fn">existing</span>, <span class="fn">dto</span>);
+        
+        <span class="cm">// Шаг 4: Сохраняем (UPDATE, потому что id уже существует)</span>
+        <span class="cm">// @PreUpdate в Employee автоматически обновит updatedAt</span>
+        <span class="cl">Employee</span> <span class="fn">updated</span> = <span class="fn">employeeRepository</span>.<span class="fn">save</span>(<span class="fn">existing</span>);
+        
+        <span class="cm">// Шаг 5: Entity → Response</span>
+        <span class="kw">return</span> <span class="fn">employeeMapper</span>.<span class="fn">toResponse</span>(<span class="fn">updated</span>);
+    }
+
+    <span class="cm">// ==================== DELETE (Удаление) ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Удаление сотрудника по ID.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Сначала проверяем, существует ли сотрудник.</span>
+<span class="cm">     * Если нет — бросаем 404, а не молча игнорируем.</span>
+<span class="cm">     * Это важно: клиент должен знать, если он пытается</span>
+<span class="cm">     * удалить несуществующую запись.</span>
+<span class="cm">     */</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public void</span> <span class="fn">deleteEmployee</span>(<span class="ty">Long</span> <span class="fn">id</span>) {
+        <span class="cl">Employee</span> <span class="fn">employee</span> = <span class="fn">findEmployeeOrThrow</span>(<span class="fn">id</span>);
+        <span class="fn">employeeRepository</span>.<span class="fn">delete</span>(<span class="fn">employee</span>);
+    }
+
+    <span class="cm">// ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * findEmployeeOrThrow() — находит сотрудника или бросает 404.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Вынесен в отдельный метод, потому что используется в:</span>
+<span class="cm">     *   - getEmployeeById()</span>
+<span class="cm">     *   - updateEmployee()</span>
+<span class="cm">     *   - deleteEmployee()</span>
+<span class="cm">     *</span>
+<span class="cm">     * Принцип DRY — не повторяй одну и ту же логику!</span>
+<span class="cm">     *</span>
+<span class="cm">     * Этот метод возвращает ENTITY (не Response), потому что</span>
+<span class="cm">     * он используется внутри сервиса для работы с данными.</span>
+<span class="cm">     * Преобразование в Response происходит уже в публичных методах.</span>
+<span class="cm">     */</span>
+    <span class="kw">private</span> <span class="cl">Employee</span> <span class="fn">findEmployeeOrThrow</span>(<span class="ty">Long</span> <span class="fn">id</span>) {
+        <span class="kw">return</span> <span class="fn">employeeRepository</span>.<span class="fn">findById</span>(<span class="fn">id</span>)
+                .<span class="fn">orElseThrow</span>(() -&gt; <span class="kw">new</span> <span class="cl">ResourceNotFoundException</span>(
+                    <span class="st">"Сотрудник с id "</span> + <span class="fn">id</span> + <span class="st">" не найден"</span>
+                ));
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 9: Controller -->
+                <div class="section" id="step9">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">🌐</span> Шаг 9: REST Контроллер</h2>
+                    <div class="prose">
+                        <p>Принимает HTTP-запросы, вызывает сервис, возвращает <code class="cl">ResponseEntity</code> с правильными статус-кодами. <code class="an">@Valid</code> включает валидацию входящих DTO.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">EmployeeController.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * EmployeeController.java — REST КОНТРОЛЛЕР (обработка HTTP-запросов)</span>
+<span class="cm"> *</span>
+<span class="cm"> * Контроллер — это "дверь" в приложение. Он:</span>
+<span class="cm"> *   1. Принимает HTTP-запросы от клиента (браузер, Postman, фронтенд)</span>
+<span class="cm"> *   2. Вызывает сервис для выполнения бизнес-логики</span>
+<span class="cm"> *   3. Возвращает HTTP-ответ (JSON)</span>
+<span class="cm"> *</span>
+<span class="cm"> * REST API — архитектурный стиль для веб-сервисов:</span>
+<span class="cm"> *   POST   /api/employees       → Создать сотрудника</span>
+<span class="cm"> *   GET    /api/employees       → Получить всех сотрудников</span>
+<span class="cm"> *   GET    /api/employees/5     → Получить сотрудника с id=5</span>
+<span class="cm"> *   PUT    /api/employees/5     → Обновить сотрудника с id=5</span>
+<span class="cm"> *   DELETE /api/employees/5     → Удалить сотрудника с id=5</span>
+<span class="cm"> *</span>
+<span class="cm"> * ВАЖНО: Контроллер возвращает EmployeeResponse вместо Employee!</span>
+<span class="cm"> * Клиент НИКОГДА не видит Entity (Employee) напрямую.</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud.controller</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.dto.EmployeeDTO</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.dto.EmployeeResponse</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.service.EmployeeService</span>;
+<span class="kw">import</span> <span class="cl">jakarta.validation.Valid</span>;
+<span class="kw">import</span> <span class="cl">lombok.RequiredArgsConstructor</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.http.HttpStatus</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.http.ResponseEntity</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.web.bind.annotation.*</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+
+<span class="cm">/*</span>
+<span class="cm"> * @RestController — комбинация:</span>
+<span class="cm"> *   @Controller — это контроллер Spring MVC</span>
+<span class="cm"> *   @ResponseBody — все методы возвращают JSON (а не HTML-страницу)</span>
+<span class="cm"> *</span>
+<span class="cm"> * @RequestMapping("/api/employees") — базовый URL для всех методов.</span>
+<span class="cm"> * Все URL в этом контроллере начинаются с "/api/employees".</span>
+<span class="cm"> * Полный URL: http://localhost:8080/api/employees</span>
+<span class="cm"> */</span>
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/employees"</span>)
+
+<span class="cm">/*</span>
+<span class="cm"> * @RequiredArgsConstructor — Lombok генерирует конструктор:</span>
+<span class="cm"> *   public EmployeeController(EmployeeService employeeService) {</span>
+<span class="cm"> *     this.employeeService = employeeService;</span>
+<span class="cm"> *   }</span>
+<span class="cm"> * Spring автоматически "внедрит" (inject) EmployeeService.</span>
+<span class="cm"> */</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">EmployeeController</span> {
+    
+    <span class="kw">private final</span> <span class="cl">EmployeeService</span> <span class="fn">employeeService</span>;
+
+    <span class="cm">// ==================== POST — СОЗДАНИЕ ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * POST /api/employees</span>
+<span class="cm">     *</span>
+<span class="cm">     * Создание нового сотрудника.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @PostMapping — обрабатывает HTTP POST запросы.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @Valid — ВКЛЮЧАЕТ валидацию!</span>
+<span class="cm">     *   Без @Valid аннотации @NotBlank, @Email и т.д. в DTO</span>
+<span class="cm">     *   будут просто ИГНОРИРОВАТЬСЯ. Это частая ошибка новичков!</span>
+<span class="cm">     *</span>
+<span class="cm">     * @RequestBody — говорит Spring:</span>
+<span class="cm">     *   "Возьми тело HTTP-запроса (JSON) и преобразуй в объект EmployeeDTO"</span>
+<span class="cm">     *</span>
+<span class="cm">     *   JSON запроса:</span>
+<span class="cm">     *   { "firstName": "Иван", "lastName": "Петров", "email": "ivan@mail.ru", ... }</span>
+<span class="cm">     *                    ↓ Jackson автоматически</span>
+<span class="cm">     *   EmployeeDTO(firstName="Иван", lastName="Петров", ...)</span>
+<span class="cm">     *</span>
+<span class="cm">     * ResponseEntity&lt;EmployeeResponse&gt; — полный HTTP-ответ:</span>
+<span class="cm">     *   - Тело: EmployeeResponse (JSON) — данные с id и датами</span>
+<span class="cm">     *   - Статус: 201 Created (ресурс успешно создан)</span>
+<span class="cm">     */</span>
+    <span class="an">@PostMapping</span>
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">createEmployee</span>(
+            <span class="an">@Valid</span> <span class="an">@RequestBody</span> <span class="cl">EmployeeDTO</span> <span class="fn">employeeDTO</span>) {
+        
+        <span class="cl">EmployeeResponse</span> <span class="fn">created</span> = <span class="fn">employeeService</span>.<span class="fn">createEmployee</span>(<span class="fn">employeeDTO</span>);
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="fn">created</span>, <span class="cl">HttpStatus</span>.<span class="cl">CREATED</span>); <span class="cm">// 201</span>
+    }
+
+    <span class="cm">// ==================== GET — ЧТЕНИЕ ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * GET /api/employees</span>
+<span class="cm">     *</span>
+<span class="cm">     * Получить список ВСЕХ сотрудников.</span>
+<span class="cm">     * Возвращает List&lt;EmployeeResponse&gt; — каждый элемент содержит</span>
+<span class="cm">     * id, fullName, даты и все остальные поля.</span>
+<span class="cm">     *</span>
+<span class="cm">     * HttpStatus.OK = 200 — стандартный успешный ответ.</span>
+<span class="cm">     */</span>
+    <span class="an">@GetMapping</span>
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt;&gt; <span class="fn">getAllEmployees</span>() {
+        <span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">employees</span> = <span class="fn">employeeService</span>.<span class="fn">getAllEmployees</span>();
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="fn">employees</span>, <span class="cl">HttpStatus</span>.<span class="cl">OK</span>); <span class="cm">// 200</span>
+    }
+
+    <span class="cm">/*</span>
+<span class="cm">     * GET /api/employees/5</span>
+<span class="cm">     *</span>
+<span class="cm">     * Получить ОДНОГО сотрудника по его ID.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @GetMapping("/{id}") — {id} это "переменная пути" (path variable).</span>
+<span class="cm">     *   URL /api/employees/5  → id = 5</span>
+<span class="cm">     *   URL /api/employees/42 → id = 42</span>
+<span class="cm">     *</span>
+<span class="cm">     * @PathVariable — извлекает значение из URL.</span>
+<span class="cm">     *   Spring автоматически конвертирует строку "5" в Long 5.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Если сотрудник не найден, сервис бросит ResourceNotFoundException,</span>
+<span class="cm">     * которую перехватит GlobalExceptionHandler и вернёт 404.</span>
+<span class="cm">     */</span>
+    <span class="an">@GetMapping</span>(<span class="st">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">getEmployeeById</span>(<span class="an">@PathVariable</span> <span class="ty">Long</span> <span class="fn">id</span>) {
+        <span class="cl">EmployeeResponse</span> <span class="fn">employee</span> = <span class="fn">employeeService</span>.<span class="fn">getEmployeeById</span>(<span class="fn">id</span>);
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="fn">employee</span>, <span class="cl">HttpStatus</span>.<span class="cl">OK</span>);
+    }
+
+    <span class="cm">/*</span>
+<span class="cm">     * GET /api/employees/department/IT</span>
+<span class="cm">     *</span>
+<span class="cm">     * Поиск сотрудников по отделу.</span>
+<span class="cm">     * Пример: GET /api/employees/department/HR → Все сотрудники из отдела HR</span>
+<span class="cm">     */</span>
+    <span class="an">@GetMapping</span>(<span class="st">"/department/{department}"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt;&gt; <span class="fn">getByDepartment</span>(
+            <span class="an">@PathVariable</span> <span class="ty">String</span> <span class="fn">department</span>) {
+        
+        <span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">employees</span> = <span class="fn">employeeService</span>
+                .<span class="fn">getEmployeesByDepartment</span>(<span class="fn">department</span>);
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="fn">employees</span>, <span class="cl">HttpStatus</span>.<span class="cl">OK</span>);
+    }
+
+    <span class="cm">/*</span>
+<span class="cm">     * GET /api/employees/search?name=иван</span>
+<span class="cm">     *</span>
+<span class="cm">     * Поиск сотрудников по имени.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @RequestParam — извлекает ПАРАМЕТР ЗАПРОСА из URL.</span>
+<span class="cm">     *   URL: /api/employees/search?name=иван → name = "иван"</span>
+<span class="cm">     *</span>
+<span class="cm">     * Разница @PathVariable vs @RequestParam:</span>
+<span class="cm">     *   @PathVariable — часть URL:     /employees/5       (id = 5)</span>
+<span class="cm">     *   @RequestParam — после знака ?: /search?name=иван  (name = "иван")</span>
+<span class="cm">     *</span>
+<span class="cm">     * Когда что использовать:</span>
+<span class="cm">     *   @PathVariable — для идентификации ресурса (id, slug)</span>
+<span class="cm">     *   @RequestParam — для фильтрации, поиска, пагинации</span>
+<span class="cm">     */</span>
+    <span class="an">@GetMapping</span>(<span class="st">"/search"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt;&gt; <span class="fn">searchByName</span>(
+            <span class="an">@RequestParam</span> <span class="ty">String</span> <span class="fn">name</span>) {
+        
+        <span class="cl">List</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">employees</span> = <span class="fn">employeeService</span>.<span class="fn">searchByName</span>(<span class="fn">name</span>);
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="fn">employees</span>, <span class="cl">HttpStatus</span>.<span class="cl">OK</span>);
+    }
+
+    <span class="cm">// ==================== PUT — ОБНОВЛЕНИЕ ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * PUT /api/employees/5</span>
+<span class="cm">     *</span>
+<span class="cm">     * Обновить данные сотрудника.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @PutMapping("/{id}") — обрабатывает HTTP PUT запросы.</span>
+<span class="cm">     *</span>
+<span class="cm">     * PUT vs PATCH:</span>
+<span class="cm">     *   PUT   — полная замена (нужно отправить ВСЕ поля)</span>
+<span class="cm">     *   PATCH — частичное обновление (только изменённые поля)</span>
+<span class="cm">     *   Мы используем PUT для простоты.</span>
+<span class="cm">     */</span>
+    <span class="an">@PutMapping</span>(<span class="st">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">EmployeeResponse</span>&gt; <span class="fn">updateEmployee</span>(
+            <span class="an">@PathVariable</span> <span class="ty">Long</span> <span class="fn">id</span>,
+            <span class="an">@Valid</span> <span class="an">@RequestBody</span> <span class="cl">EmployeeDTO</span> <span class="fn">employeeDTO</span>) {
+        
+        <span class="cl">EmployeeResponse</span> <span class="fn">updated</span> = <span class="fn">employeeService</span>.<span class="fn">updateEmployee</span>(<span class="fn">id</span>, <span class="fn">employeeDTO</span>);
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="fn">updated</span>, <span class="cl">HttpStatus</span>.<span class="cl">OK</span>);
+    }
+
+    <span class="cm">// ==================== DELETE — УДАЛЕНИЕ ====================</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * DELETE /api/employees/5</span>
+<span class="cm">     *</span>
+<span class="cm">     * Удалить сотрудника.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @DeleteMapping("/{id}") — обрабатывает HTTP DELETE запросы.</span>
+<span class="cm">     *</span>
+<span class="cm">     * HttpStatus.NO_CONTENT (204) — "Успешно, но нечего возвращать".</span>
+<span class="cm">     *   Это правильный статус для DELETE — ресурс удалён,</span>
+<span class="cm">     *   возвращать его данные нет смысла.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Void — метод ничего не возвращает в теле ответа.</span>
+<span class="cm">     */</span>
+    <span class="an">@DeleteMapping</span>(<span class="st">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="ty">Void</span>&gt; <span class="fn">deleteEmployee</span>(<span class="an">@PathVariable</span> <span class="ty">Long</span> <span class="fn">id</span>) {
+        <span class="fn">employeeService</span>.<span class="fn">deleteEmployee</span>(<span class="fn">id</span>);
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="cl">HttpStatus</span>.<span class="cl">NO_CONTENT</span>); <span class="cm">// 204</span>
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 10: Exception Handling -->
+                <div class="section" id="step10">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(240,96,96,0.12);color:var(--error)">🚨</span> Шаг 10: Глобальная обработка ошибок</h2>
+                    <div class="prose">
+                        <p><code class="an">@RestControllerAdvice</code> перехватывает исключения из всех контроллеров и возвращает унифицированный JSON-ответ.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">ResourceNotFoundException.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * ResourceNotFoundException.java — КАСТОМНОЕ ИСКЛЮЧЕНИЕ</span>
+<span class="cm"> *</span>
+<span class="cm"> * Зачем создавать своё исключение?</span>
+<span class="cm"> * Когда клиент запрашивает сотрудника с id=999, а его нет в базе,</span>
+<span class="cm"> * мы должны вернуть понятную ошибку: "Сотрудник с id 999 не найден"</span>
+<span class="cm"> * и HTTP-статус 404 (Not Found).</span>
+<span class="cm"> *</span>
+<span class="cm"> * Стандартные исключения Java (NullPointerException и т.д.)</span>
+<span class="cm"> * не подходят — они возвращают статус 500 (Internal Server Error),</span>
+<span class="cm"> * что вводит клиента в заблуждение.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @ResponseStatus(HttpStatus.NOT_FOUND) — когда это исключение</span>
+<span class="cm"> * выбрасывается, Spring автоматически вернёт HTTP 404.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Иерархия наследования:</span>
+<span class="cm"> *   Throwable → Exception → RuntimeException → ResourceNotFoundException</span>
+<span class="cm"> *</span>
+<span class="cm"> * Почему RuntimeException, а не Exception?</span>
+<span class="cm"> *   RuntimeException — "непроверяемое" исключение (unchecked)</span>
+<span class="cm"> *   Не требует try-catch или throws в сигнатуре метода</span>
+<span class="cm"> *   Код чище и проще</span>
+<span class="cm"> *   Spring лучше работает с RuntimeException</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud.exception</span>;
+
+<span class="kw">import</span> <span class="cl">org.springframework.http.HttpStatus</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.web.bind.annotation.ResponseStatus</span>;
+
+<span class="an">@ResponseStatus</span>(<span class="fn">value</span> = <span class="cl">HttpStatus</span>.<span class="cl">NOT_FOUND</span>)
+<span class="kw">public class</span> <span class="cl">ResourceNotFoundException</span> <span class="kw">extends</span> <span class="cl">RuntimeException</span> {
+    
+    <span class="cm">/*</span>
+<span class="cm">     * Конструктор принимает сообщение об ошибке.</span>
+<span class="cm">     * super(message) — передаём сообщение родительскому классу.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Пример использования:</span>
+<span class="cm">     *   throw new ResourceNotFoundException("Сотрудник с id 5 не найден");</span>
+<span class="cm">     *</span>
+<span class="cm">     * Клиент получит:</span>
+<span class="cm">     *   HTTP 404</span>
+<span class="cm">     *   { "message": "Сотрудник с id 5 не найден" }</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> <span class="fn">ResourceNotFoundException</span>(<span class="ty">String</span> <span class="fn">message</span>) {
+        <span class="kw">super</span>(<span class="fn">message</span>);
+    }
+}</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">GlobalExceptionHandler.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*</span>
+<span class="cm"> * GlobalExceptionHandler.java — ГЛОБАЛЬНЫЙ ОБРАБОТЧИК ОШИБОК</span>
+<span class="cm"> *</span>
+<span class="cm"> * Представь: в разных контроллерах могут возникать одинаковые ошибки.</span>
+<span class="cm"> * Вместо того чтобы обрабатывать их в каждом контроллере отдельно,</span>
+<span class="cm"> * мы создаём ОДИН централизованный обработчик.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @RestControllerAdvice — комбинация:</span>
+<span class="cm"> *   @ControllerAdvice — "советчик" для всех контроллеров</span>
+<span class="cm"> *   @ResponseBody     — ответ автоматически в JSON</span>
+<span class="cm"> *</span>
+<span class="cm"> * Аналогия: это как "служба безопасности" в здании —</span>
+<span class="cm"> * перехватывает все инциденты из всех кабинетов.</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud.exception</span>;
+
+<span class="kw">import</span> <span class="cl">org.springframework.http.HttpStatus</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.http.ResponseEntity</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.validation.FieldError</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.web.bind.MethodArgumentNotValidException</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.web.bind.annotation.*</span>;
+<span class="kw">import</span> <span class="cl">java.time.LocalDateTime</span>;
+<span class="kw">import</span> <span class="cl">java.util.HashMap</span>;
+<span class="kw">import</span> <span class="cl">java.util.Map</span>;
+
+<span class="an">@RestControllerAdvice</span>
+<span class="kw">public class</span> <span class="cl">GlobalExceptionHandler</span> {
+    
+    <span class="cm">/*</span>
+<span class="cm">     * Обработчик для ResourceNotFoundException (сотрудник не найден).</span>
+<span class="cm">     *</span>
+<span class="cm">     * @ExceptionHandler — говорит Spring:</span>
+<span class="cm">     *    "Когда где-либо возникает ResourceNotFoundException,</span>
+<span class="cm">     *    вызови ЭТОТ метод для обработки!"</span>
+<span class="cm">     *</span>
+<span class="cm">     * ResponseEntity&lt;?&gt; — полный HTTP-ответ:</span>
+<span class="cm">     *   - Тело (body) — JSON с деталями ошибки</span>
+<span class="cm">     *   - Статус — HTTP 404 (NOT_FOUND)</span>
+<span class="cm">     *   - Заголовки (headers) — опционально</span>
+<span class="cm">     *</span>
+<span class="cm">     * Пример ответа клиенту:</span>
+<span class="cm">     * {</span>
+<span class="cm">     *    "timestamp": "2024-01-15T10:30:00",</span>
+<span class="cm">     *    "status": 404,</span>
+<span class="cm">     *    "error": "Not Found",</span>
+<span class="cm">     *    "message": "Сотрудник с id 5 не найден"</span>
+<span class="cm">     * }</span>
+<span class="cm">     */</span>
+    <span class="an">@ExceptionHandler</span>(<span class="cl">ResourceNotFoundException</span>.<span class="kw">class</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">Map</span>&lt;<span class="ty">String</span>, <span class="cl">Object</span>&gt;&gt; <span class="fn">handleResourceNotFound</span>(
+            <span class="cl">ResourceNotFoundException</span> <span class="fn">ex</span>) {
+        
+        <span class="cl">Map</span>&lt;<span class="ty">String</span>, <span class="cl">Object</span>&gt; <span class="fn">body</span> = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"timestamp"</span>, <span class="cl">LocalDateTime</span>.<span class="fn">now</span>().<span class="fn">toString</span>());
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"status"</span>, <span class="cl">HttpStatus</span>.<span class="cl">NOT_FOUND</span>.<span class="fn">value</span>());       <span class="cm">// 404</span>
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"error"</span>, <span class="st">"Not Found"</span>);
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"message"</span>, <span class="fn">ex</span>.<span class="fn">getMessage</span>());
+        
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="fn">body</span>, <span class="cl">HttpStatus</span>.<span class="cl">NOT_FOUND</span>);
+    }
+
+    <span class="cm">/*</span>
+<span class="cm">     * Обработчик ошибок ВАЛИДАЦИИ.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Когда клиент отправляет невалидные данные (пустое имя, кривой email),</span>
+<span class="cm">     * Spring выбрасывает MethodArgumentNotValidException.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Мы перехватываем его и возвращаем ПОНЯТНЫЙ список ошибок:</span>
+<span class="cm">     *</span>
+<span class="cm">     * Пример: клиент отправил { "firstName": "", "email": "не-email" }</span>
+<span class="cm">     *</span>
+<span class="cm">     * Ответ (HTTP 400 — Bad Request):</span>
+<span class="cm">     * {</span>
+<span class="cm">     *    "timestamp": "2024-01-15T10:30:00",</span>
+<span class="cm">     *    "status": 400,</span>
+<span class="cm">     *    "error": "Validation Failed",</span>
+<span class="cm">     *    "errors": {</span>
+<span class="cm">     *      "firstName": "Имя не может быть пустым",</span>
+<span class="cm">     *      "email": "Некорректный формат email"</span>
+<span class="cm">     *    }</span>
+<span class="cm">     * }</span>
+<span class="cm">     */</span>
+    <span class="an">@ExceptionHandler</span>(<span class="cl">MethodArgumentNotValidException</span>.<span class="kw">class</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">Map</span>&lt;<span class="ty">String</span>, <span class="cl">Object</span>&gt;&gt; <span class="fn">handleValidationErrors</span>(
+            <span class="cl">MethodArgumentNotValidException</span> <span class="fn">ex</span>) {
+        
+        <span class="cm">/*</span>
+<span class="cm">         * Собираем ВСЕ ошибки валидации в удобный формат.</span>
+<span class="cm">         * getBindingResult().getAllErrors() — список всех ошибок.</span>
+<span class="cm">         * Каждая FieldError содержит:</span>
+<span class="cm">         *   getField()          — имя поля ("firstName", "email")</span>
+<span class="cm">         *   getDefaultMessage() — сообщение ("Имя не может быть пустым")</span>
+<span class="cm">         */</span>
+        <span class="cl">Map</span>&lt;<span class="ty">String</span>, <span class="ty">String</span>&gt; <span class="fn">errors</span> = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+        <span class="fn">ex</span>.<span class="fn">getBindingResult</span>().<span class="fn">getAllErrors</span>().<span class="fn">forEach</span>(<span class="fn">error</span> -&gt; {
+            <span class="ty">String</span> <span class="fn">fieldName</span> = ((<span class="cl">FieldError</span>) <span class="fn">error</span>).<span class="fn">getField</span>();
+            <span class="ty">String</span> <span class="fn">errorMessage</span> = <span class="fn">error</span>.<span class="fn">getDefaultMessage</span>();
+            <span class="fn">errors</span>.<span class="fn">put</span>(<span class="fn">fieldName</span>, <span class="fn">errorMessage</span>);
+        });
+        
+        <span class="cl">Map</span>&lt;<span class="ty">String</span>, <span class="cl">Object</span>&gt; <span class="fn">body</span> = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"timestamp"</span>, <span class="cl">LocalDateTime</span>.<span class="fn">now</span>().<span class="fn">toString</span>());
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"status"</span>, <span class="cl">HttpStatus</span>.<span class="cl">BAD_REQUEST</span>.<span class="fn">value</span>());      <span class="cm">// 400</span>
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"error"</span>, <span class="st">"Validation Failed"</span>);
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"errors"</span>, <span class="fn">errors</span>);
+        
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="fn">body</span>, <span class="cl">HttpStatus</span>.<span class="cl">BAD_REQUEST</span>);
+    }
+
+    <span class="cm">/*</span>
+<span class="cm">     * "Ловушка" для ВСЕХ остальных непредвиденных ошибок.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Если произойдёт что-то неожиданное (например, база данных упала),</span>
+<span class="cm">     * клиент получит аккуратное сообщение, а не stack trace.</span>
+<span class="cm">     *</span>
+<span class="cm">     * ВАЖНО: в продакшене НИКОГДА не отдавайте ex.getMessage() клиенту!</span>
+<span class="cm">     * Это может раскрыть внутреннюю архитектуру (пути файлов, SQL и т.д.).</span>
+<span class="cm">     * В реальном проекте логируйте ошибку и возвращайте общее сообщение.</span>
+<span class="cm">     */</span>
+    <span class="an">@ExceptionHandler</span>(<span class="cl">Exception</span>.<span class="kw">class</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">Map</span>&lt;<span class="ty">String</span>, <span class="cl">Object</span>&gt;&gt; <span class="fn">handleGeneralException</span>(
+            <span class="cl">Exception</span> <span class="fn">ex</span>) {
+        
+        <span class="cl">Map</span>&lt;<span class="ty">String</span>, <span class="cl">Object</span>&gt; <span class="fn">body</span> = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"timestamp"</span>, <span class="cl">LocalDateTime</span>.<span class="fn">now</span>().<span class="fn">toString</span>());
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"status"</span>, <span class="cl">HttpStatus</span>.<span class="cl">INTERNAL_SERVER_ERROR</span>.<span class="fn">value</span>()); <span class="cm">// 500</span>
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"error"</span>, <span class="st">"Internal Server Error"</span>);
+        <span class="fn">body</span>.<span class="fn">put</span>(<span class="st">"message"</span>, <span class="st">"Произошла внутренняя ошибка сервера"</span>);
+        
+        <span class="kw">return new</span> <span class="cl">ResponseEntity</span>&lt;&gt;(<span class="fn">body</span>, <span class="cl">HttpStatus</span>.<span class="cl">INTERNAL_SERVER_ERROR</span>);
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 11: data.sql -->
+                <div class="section" id="step11">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🗂️</span> Шаг 11: Начальные данные</h2>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">data.sql</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">-- =====================================================================</span>
+<span class="cm">--  data.sql — НАЧАЛЬНЫЕ ДАННЫЕ (загружаются при старте приложения)</span>
+<span class="cm">-- =====================================================================</span>
+<span class="cm">--  Spring Boot автоматически выполняет файл data.sql при запуске,</span>
+<span class="cm">--  если он находится в папке src/main/resources.</span>
+<span class="cm">--  Это удобно для:</span>
+<span class="cm">--    - Заполнения БД тестовыми данными при разработке</span>
+<span class="cm">--    - Загрузки справочников (страны, валюты, роли и т.д.)</span>
+<span class="cm">--  ВАЖНО: В продакшене начальные данные загружают через</span>
+<span class="cm">--  миграции (Flyway или Liquibase), а не через data.sql!</span>
+<span class="cm">-- =====================================================================</span>
+
+<span class="kw">INSERT INTO</span> <span class="cl">employees</span> (<span class="fn">first_name</span>, <span class="fn">last_name</span>, <span class="fn">email</span>, <span class="fn">department</span>, <span class="fn">salary</span>, <span class="fn">created_at</span>, <span class="fn">updated_at</span>)
+<span class="kw">VALUES</span> (<span class="st">'Иван'</span>, <span class="st">'Петров'</span>, <span class="st">'ivan.petrov@company.ru'</span>, <span class="st">'IT'</span>, <span class="nu">85000</span>, <span class="cl">NOW</span>(), <span class="cl">NOW</span>());
+
+<span class="kw">INSERT INTO</span> <span class="cl">employees</span> (<span class="fn">first_name</span>, <span class="fn">last_name</span>, <span class="fn">email</span>, <span class="fn">department</span>, <span class="fn">salary</span>, <span class="fn">created_at</span>, <span class="fn">updated_at</span>)
+<span class="kw">VALUES</span> (<span class="st">'Анна'</span>, <span class="st">'Сидорова'</span>, <span class="st">'anna.sidorova@company.ru'</span>, <span class="st">'HR'</span>, <span class="nu">72000</span>, <span class="cl">NOW</span>(), <span class="cl">NOW</span>());
+
+<span class="kw">INSERT INTO</span> <span class="cl">employees</span> (<span class="fn">first_name</span>, <span class="fn">last_name</span>, <span class="fn">email</span>, <span class="fn">department</span>, <span class="fn">salary</span>, <span class="fn">created_at</span>, <span class="fn">updated_at</span>)
+<span class="kw">VALUES</span> (<span class="st">'Дмитрий'</span>, <span class="st">'Козлов'</span>, <span class="st">'dmitry.kozlov@company.ru'</span>, <span class="st">'IT'</span>, <span class="nu">95000</span>, <span class="cl">NOW</span>(), <span class="cl">NOW</span>());
+
+<span class="kw">INSERT INTO</span> <span class="cl">employees</span> (<span class="fn">first_name</span>, <span class="fn">last_name</span>, <span class="fn">email</span>, <span class="fn">department</span>, <span class="fn">salary</span>, <span class="fn">created_at</span>, <span class="fn">updated_at</span>)
+<span class="kw">VALUES</span> (<span class="st">'Мария'</span>, <span class="st">'Новикова'</span>, <span class="st">'maria.novikova@company.ru'</span>, <span class="st">'Marketing'</span>, <span class="nu">68000</span>, <span class="cl">NOW</span>(), <span class="cl">NOW</span>());
+
+<span class="kw">INSERT INTO</span> <span class="cl">employees</span> (<span class="fn">first_name</span>, <span class="fn">last_name</span>, <span class="fn">email</span>, <span class="fn">department</span>, <span class="fn">salary</span>, <span class="fn">created_at</span>, <span class="fn">updated_at</span>)
+<span class="kw">VALUES</span> (<span class="st">'Алексей'</span>, <span class="st">'Волков'</span>, <span class="st">'alexey.volkov@company.ru'</span>, <span class="st">'IT'</span>, <span class="nu">110000</span>, <span class="cl">NOW</span>(), <span class="cl">NOW</span>());</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 12: Testing -->
+                <div class="section" id="step12">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">🧪</span> Шаг 12: Юнит-тесты</h2>
+                    <div class="box box-green">
+                        <div class="box-label">✅ Почему Mockito?</div>
+                        Тестируем <b>только</b> сервис/маппер. Репозиторий "мокается" (не ходит в БД), маппер "подменяется" для проверки порядка вызовов.
+                    </div>
+                    <div class="accordion">
+                        <div class="acc-header"><span class="acc-title">EmployeeServiceTest.java (фрагменты)</span><span class="acc-arrow">▼</span></div>
+                        <div class="acc-body">
+                            <div class="code-wrap">
+                                <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                                <pre><code><span class="cm">/*</span>
+<span class="cm"> * EmployeeServiceTest.java — UNIT-ТЕСТЫ для сервисного слоя</span>
+<span class="cm"> *</span>
+<span class="cm"> * ОБНОВЛЕНО: теперь тесты учитывают:</span>
+<span class="cm"> *   - EmployeeMapper (добавлен как @Mock)</span>
+<span class="cm"> *   - EmployeeResponse (сервис теперь возвращает Response, не Entity)</span>
+<span class="cm"> *</span>
+<span class="cm"> * Мы мокаем (подделываем) И репозиторий, И маппер.</span>
+<span class="cm"> * Это позволяет тестировать ТОЛЬКО бизнес-логику сервиса,</span>
+<span class="cm"> * изолированно от БД и маппинга.</span>
+<span class="cm"> *</span>
+<span class="cm"> * ┌──────────────────────────────────────────────────────┐</span>
+<span class="cm"> * │              Что мы тестируем                        │</span>
+<span class="cm"> * │                                                      │</span>
+<span class="cm"> * │  Mock Repository ← EmployeeService → Mock Mapper     │</span>
+<span class="cm"> * │  (подделка)           (РЕАЛЬНЫЙ)      (подделка)     │</span>
+<span class="cm"> * │                                                      │</span>
+<span class="cm"> * │  Тестируем ТОЛЬКО логику сервиса:                    │</span>
+<span class="cm"> * │    - Проверка дубликата email                        │</span>
+<span class="cm"> * │    - Бросание 404 при отсутствии сотрудника          │</span>
+<span class="cm"> * │    - Правильный порядок вызовов                      │</span>
+<span class="cm"> * └──────────────────────────────────────────────────────┘</span>
+<span class="cm"> */</span>
+<span class="pk">package</span> <span class="cl">com.example.employeecrud</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.dto.EmployeeDTO</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.dto.EmployeeResponse</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.exception.ResourceNotFoundException</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.mapper.EmployeeMapper</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.model.Employee</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.repository.EmployeeRepository</span>;
+<span class="kw">import</span> <span class="cl">com.example.employeecrud.service.EmployeeService</span>;
+<span class="kw">import</span> <span class="cl">org.junit.jupiter.api.BeforeEach</span>;
+<span class="kw">import</span> <span class="cl">org.junit.jupiter.api.DisplayName</span>;
+<span class="kw">import</span> <span class="cl">org.junit.jupiter.api.Test</span>;
+<span class="kw">import</span> <span class="cl">org.junit.jupiter.api.extension.ExtendWith</span>;
+<span class="kw">import</span> <span class="cl">org.mockito.InjectMocks</span>;
+<span class="kw">import</span> <span class="cl">org.mockito.Mock</span>;
+<span class="kw">import</span> <span class="cl">org.mockito.junit.jupiter.MockitoExtension</span>;
+<span class="kw">import</span> <span class="cl">java.time.LocalDateTime</span>;
+<span class="kw">import</span> <span class="cl">java.util.Arrays</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.Optional</span>;
+<span class="kw">import static</span> <span class="cl">org.junit.jupiter.api.Assertions.*</span>;
+<span class="kw">import static</span> <span class="cl">org.mockito.ArgumentMatchers.any</span>;
+<span class="kw">import static</span> <span class="cl">org.mockito.ArgumentMatchers.anyList</span>;
+<span class="kw">import static</span> <span class="cl">org.mockito.Mockito.*</span>;
+
+<span class="an">@ExtendWith</span>(<span class="cl">MockitoExtension</span>.<span class="kw">class</span>)
+<span class="kw">class</span> <span class="cl">EmployeeServiceTest</span> {
+    
+    <span class="an">@Mock</span>
+    <span class="kw">private</span> <span class="cl">EmployeeRepository</span> <span class="fn">employeeRepository</span>;
+
+    <span class="cm">/*</span>
+<span class="cm">     * НОВОЕ: мокаем EmployeeMapper.</span>
+<span class="cm">     * Теперь сервис использует маппер вместо приватного метода.</span>
+<span class="cm">     * В тестах мы контролируем, что маппер "вернёт".</span>
+<span class="cm">     */</span>
+    <span class="an">@Mock</span>
+    <span class="kw">private</span> <span class="cl">EmployeeMapper</span> <span class="fn">employeeMapper</span>;
+
+    <span class="an">@InjectMocks</span>
+    <span class="kw">private</span> <span class="cl">EmployeeService</span> <span class="fn">employeeService</span>;
+
+    <span class="cm">// Тестовые данные</span>
+    <span class="kw">private</span> <span class="cl">Employee</span> <span class="fn">employee</span>;
+    <span class="kw">private</span> <span class="cl">EmployeeDTO</span> <span class="fn">employeeDTO</span>;
+    <span class="kw">private</span> <span class="cl">EmployeeResponse</span> <span class="fn">employeeResponse</span>;
+
+    <span class="an">@BeforeEach</span>
+    <span class="kw">void</span> <span class="fn">setUp</span>() {
+        <span class="cl">LocalDateTime</span> <span class="fn">now</span> = <span class="cl">LocalDateTime</span>.<span class="fn">now</span>();
+
+        <span class="fn">employee</span> = <span class="cl">Employee</span>.<span class="fn">builder</span>()
+                 .<span class="fn">id</span>(<span class="nu">1L</span>)
+                .<span class="fn">firstName</span>(<span class="st">"Иван"</span>)
+                .<span class="fn">lastName</span>(<span class="st">"Петров"</span>)
+                .<span class="fn">email</span>(<span class="st">"ivan@test.ru"</span>)
+                .<span class="fn">department</span>(<span class="st">"IT"</span>)
+                .<span class="fn">salary</span>(<span class="nu">80000.0</span>)
+                .<span class="fn">createdAt</span>(<span class="fn">now</span>)
+                .<span class="fn">updatedAt</span>(<span class="fn">now</span>)
+                .<span class="fn">build</span>();
+
+        <span class="fn">employeeDTO</span> = <span class="cl">EmployeeDTO</span>.<span class="fn">builder</span>()
+                .<span class="fn">firstName</span>(<span class="st">"Иван"</span>)
+                .<span class="fn">lastName</span>(<span class="st">"Петров"</span>)
+                .<span class="fn">email</span>(<span class="st">"ivan@test.ru"</span>)
+                .<span class="fn">department</span>(<span class="st">"IT"</span>)
+                .<span class="fn">salary</span>(<span class="nu">80000.0</span>)
+                .<span class="fn">build</span>();
+
+        <span class="cm">/*</span>
+<span class="cm">         * НОВОЕ: создаём тестовый EmployeeResponse.</span>
+<span class="cm">         * Это то, что маппер "вернёт" в тестах.</span>
+<span class="cm">         */</span>
+        <span class="fn">employeeResponse</span> = <span class="cl">EmployeeResponse</span>.<span class="fn">builder</span>()
+                .<span class="fn">id</span>(<span class="nu">1L</span>)
+                .<span class="fn">firstName</span>(<span class="st">"Иван"</span>)
+                .<span class="fn">lastName</span>(<span class="st">"Петров"</span>)
+                .<span class="fn">email</span>(<span class="st">"ivan@test.ru"</span>)
+                .<span class="fn">department</span>(<span class="st">"IT"</span>)
+                .<span class="fn">salary</span>(<span class="nu">80000.0</span>)
+                .<span class="fn">createdAt</span>(<span class="fn">now</span>)
+                .<span class="fn">updatedAt</span>(<span class="fn">now</span>)
+                .<span class="fn">build</span>();
+    }
+
+    <span class="cm">// ==================== ТЕСТЫ CREATE ====================</span>
+
+    <span class="an">@Test</span>
+    <span class="an">@DisplayName</span>(<span class="st">"Создание сотрудника — успешный сценарий"</span>)
+    <span class="kw">void</span> <span class="fn">createEmployee_Success</span>() {
+        <span class="cm">// Arrange</span>
+        <span class="fn">when</span>(<span class="fn">employeeRepository</span>.<span class="fn">existsByEmail</span>(<span class="st">"ivan@test.ru"</span>)).<span class="fn">thenReturn</span>(<span class="kw">false</span>);
+        <span class="fn">when</span>(<span class="fn">employeeMapper</span>.<span class="fn">toEntity</span>(<span class="fn">employeeDTO</span>)).<span class="fn">thenReturn</span>(<span class="fn">employee</span>);
+        <span class="fn">when</span>(<span class="fn">employeeRepository</span>.<span class="fn">save</span>(<span class="fn">any</span>(<span class="cl">Employee</span>.<span class="kw">class</span>))).<span class="fn">thenReturn</span>(<span class="fn">employee</span>);
+        <span class="fn">when</span>(<span class="fn">employeeMapper</span>.<span class="fn">toResponse</span>(<span class="fn">employee</span>)).<span class="fn">thenReturn</span>(<span class="fn">employeeResponse</span>);
+
+        <span class="cm">// Act</span>
+        <span class="cl">EmployeeResponse</span> <span class="fn">result</span> = <span class="fn">employeeService</span>.<span class="fn">createEmployee</span>(<span class="fn">employeeDTO</span>);
+
+        <span class="cm">// Assert</span>
+        <span class="fn">assertNotNull</span>(<span class="fn">result</span>, <span class="st">"Результат не должен быть null"</span>);
+        <span class="fn">assertEquals</span>(<span class="st">"Иван"</span>, <span class="fn">result</span>.<span class="fn">getFirstName</span>());
+        <span class="fn">assertEquals</span>(<span class="st">"ivan@test.ru"</span>, <span class="fn">result</span>.<span class="fn">getEmail</span>());
+        <span class="fn">assertEquals</span>(<span class="nu">1L</span>, <span class="fn">result</span>.<span class="fn">getId</span>(), <span class="st">"ID должен быть установлен"</span>);
+
+        <span class="cm">// Verify — проверяем порядок вызовов:</span>
+        <span class="cm">//   1. Проверка email → 2. Маппинг DTO→Entity → 3. Сохранение → 4. Маппинг Entity→Response</span>
+        <span class="fn">verify</span>(<span class="fn">employeeRepository</span>).<span class="fn">existsByEmail</span>(<span class="st">"ivan@test.ru"</span>);
+        <span class="fn">verify</span>(<span class="fn">employeeMapper</span>).<span class="fn">toEntity</span>(<span class="fn">employeeDTO</span>);
+        <span class="fn">verify</span>(<span class="fn">employeeRepository</span>).<span class="fn">save</span>(<span class="fn">any</span>(<span class="cl">Employee</span>.<span class="kw">class</span>));
+        <span class="fn">verify</span>(<span class="fn">employeeMapper</span>).<span class="fn">toResponse</span>(<span class="fn">employee</span>);
+    }
+
+    <span class="cm">// ... остальные тесты по аналогии (read, update, delete, validation)</span>
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Archive -->
+                <div class="section" id="code">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">💻</span> Полный код проекта</h2>
+                    <p>Все файлы собраны в аккордеоны для быстрого копирования. Структура пакетов:</p>
+                    <div class="box box-blue">
+                        <code>src/main/java/com/example/employeecrud/</code><br>
+                        ├── EmployeeCrudApplication.java<br>
+                        ├── controller/EmployeeController.java<br>
+                        ├── dto/EmployeeDTO.java, EmployeeResponse.java<br>
+                        ├── exception/GlobalExceptionHandler.java, ResourceNotFoundException.java<br>
+                        ├── mapper/EmployeeMapper.java<br>
+                        ├── model/Employee.java<br>
+                        ├── repository/EmployeeRepository.java<br>
+                        └── service/EmployeeService.java<br><br>
+                        <code>src/main/resources/</code><br>
+                        ├── application.yml<br>
+                        └── data.sql
+                    </div>
+                    <div class="accordion">
+                        <div class="acc-header"><span class="acc-title">📂 Все файлы проекта (развернуть для копирования)</span><span class="acc-arrow">▼</span></div>
+                        <div class="acc-body">
+                            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px">Код файлов идентичен приведённым выше в шагах 1-12. Для экономии места используйте соответствующие разделы.</p>
+                            <div class="box box-warn">
+                                <div class="box-label">🚀 Запуск</div>
+                                <code>mvn clean install</code> → сборка<br>
+                                <code>mvn spring-boot:run</code> → запуск<br>
+                                API доступен: <code>http://localhost:8080/api/employees</code><br>
+                                H2 Console: <code>http://localhost:8080/h2-console</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Best Practices -->
+                <div class="section" id="practices">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">✅</span> Best & ⚠️ Anti Practices</h2>
+                    <div class="compare-grid">
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--accent)">✅ Best Practices</div>
+                            <ul class="compare-list">
+                                <li>Разделяй DTO (вход) и Response (выход)</li>
+                                <li>Используй <code class="an">@Transactional</code>(<span class="fn">readOnly</span> = <span class="kw">true</span>) для SELECT</li>
+                                <li>Внедряй зависимости через конструктор (<code class="an">@RequiredArgsConstructor</code>)</li>
+                                <li>Выноси маппинг в отдельный <code class="an">@Component</code></li>
+                                <li>Проверяй уникальность <em>до</em> сохранения</li>
+                                <li>Используй <code class="cl">Optional</code>.<span class="fn">orElseThrow</span>() вместо <code class="kw">null</code></li>
+                                <li>Покрывай сервис и маппер юнит-тестами с Mockito</li>
+                            </ul>
+                        </div>
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--error)">⚠️ Antipatterns</div>
+                            <ul class="compare-list">
+                                <li>❌ Возвращать <code class="cl">Entity</code> напрямую в контроллере</li>
+                                <li>❌ Писать SQL в контроллере или сервисе</li>
+                                <li>❌ Использовать <code class="kw">new</code> <span class="cl">Service</span>() вместо DI</li>
+                                <li>❌ Игнорировать <code class="an">@Valid</code> на входящих DTO</li>
+                                <li>❌ Ловить <code class="cl">Exception</code> в каждом методе (используй <code class="an">@RestControllerAdvice</code>)</li>
+                                <li>❌ Хардкодить сообщения об ошибках в контроллере</li>
+                                <li>❌ Загружать <code>data.sql</code> без <code>defer-datasource-initialization</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Q&A -->
+                <div class="section" id="interview">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">❓</span> Вопросы для собеседования</h2>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Зачем разделять Entity, DTO и Response?</div>
+                                <div class="qa-q-en">Why separate Entity, DTO, and Response?</div>
+                            </div>
+                            <span class="qa-badge easy">Easy</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><code class="cl">Entity</code> привязан к БД и может содержать служебные поля, пароли или внутренние ID. Отдавать его клиенту опасно (overposting/underposting). <code class="cl">DTO</code> контролирует <b>вход</b> (валидация, нужные поля). <code class="cl">Response</code> контролирует <b>выход</b> (скрытие данных, добавление вычисляемых полей вроде <code>fullName</code>).</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="qa-1">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Чем <code class="an">@RestController</code> отличается от <code class="an">@Controller</code>?</div>
+                                <div class="qa-q-en">Difference between @RestController and @Controller?</div>
+                            </div>
+                            <span class="qa-badge easy">Easy</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><code class="an">@RestController</code> = <code class="an">@Controller</code> + <code class="an">@ResponseBody</code>. Он автоматически сериализует возвращаемые объекты в JSON (через Jackson). Обычный <code class="an">@Controller</code> ожидает возвращение имени View (HTML-страницы) и использует <code class="cl">ModelAndView</code> или <code class="cl">Thymeleaf</code>.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="qa-2">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Как работает <code class="an">@Transactional</code>? Зачем <code>readOnly</code>?</div>
+                                <div class="qa-q-en">How does @Transactional work? Why readOnly?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">Аннотация оборачивает метод в транзакцию БД. При успехе — <code>COMMIT</code>, при исключении — <code>ROLLBACK</code>. <code>readOnly = true</code> оптимизирует чтение: Hibernate отключает <em>dirty checking</em> (отслеживание изменений сущностей), что снижает потребление памяти и ускоряет выполнение SELECT-запросов.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="qa-3">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Что делает <code>defer-datasource-initialization: true</code>?</div>
+                                <div class="qa-q-en">What does defer-datasource-initialization do?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">По умолчанию Spring Boot выполняет <code>data.sql</code> <b>до</b> инициализации Hibernate. Если таблицы ещё не созданы, приложение упадет с ошибкой. Эта настройка откладывает выполнение SQL-скриптов <b>после</b> создания схемы Hibernate, что критично для <code>ddl-auto: update</code> или <code>create</code>.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="qa-4">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Зачем мокают Repository в тестах Service?</div>
+                                <div class="qa-q-en">Why mock Repository in Service tests?</div>
+                            </div>
+                            <span class="qa-badge hard">Hard</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">Чтобы тестировать <b>только</b> бизнес-логику сервиса, изолированно от БД. Mockito позволяет вернуть предсказуемые данные (<code>when().thenReturn()</code>) и проверить вызовы (<code>verify()</code>). Это ускоряет тесты в 100x раз (миллисекунды вместо секунд) и делает их детерминированными.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="qa-5">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <button id="scrollTop" title="Наверх">↑</button>
+</body>
+</html>

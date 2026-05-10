@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spring Boot | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#22d3a0"></span>📌 Конспект</a>
+    <a class="nav-link" href="#ioc-di"><span class="nav-dot" style="background:#4f8ef7"></span>IoC / DI</a>
+    <a class="nav-link" href="#beans"><span class="nav-dot" style="background:#22d3a0"></span>Бины и Scope</a>
+    <a class="nav-link" href="#autoconfiguration"><span class="nav-dot" style="background:#f5a623"></span>Auto-Configuration</a>
+    <a class="nav-link" href="#context"><span class="nav-dot" style="background:#b88bfa"></span>ApplicationContext</a>
+    <a class="nav-link" href="#properties"><span class="nav-dot" style="background:#5bcefa"></span>Properties / Profiles</a>
+    <a class="nav-link" href="#actuator"><span class="nav-dot" style="background:#22d3a0"></span>Actuator</a>
+    <a class="nav-link" href="#lifecycle"><span class="nav-dot" style="background:#f06060"></span>Lifecycle</a>
+    <a class="nav-link" href="#practices"><span class="nav-dot" style="background:#22d3a0"></span>Best Practices</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#f5a623"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="spring-security-jwt.html"><span class="nav-dot" style="background:#f06060"></span>Security + JWT</a>
+    <a class="nav-link" href="restcontroller.html"><span class="nav-dot" style="background:#4f8ef7"></span>@RestController</a>
+    <a class="nav-link" href="service.html"><span class="nav-dot" style="background:#b88bfa"></span>Service Layer</a>
+    <a class="nav-link" href="annotations.html"><span class="nav-dot" style="background:#f5a623"></span>Аннотации</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">🌱 Spring Boot</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#22d3a0;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- HERO -->
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#0a3a1a,#22d3a0)">🌱</div>
+        <div>
+          <h1>Spring Boot</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-green">Spring</span>
+            <span class="chip chip-backend">Backend</span>
+            <span class="chip chip-blue">IoC</span>
+            <span class="chip chip-warn">DI</span>
+          </div>
+        </div>
+      </div>
+      <p>IoC контейнер, Dependency Injection, Auto-configuration, ApplicationContext, Scope бинов, Profiles, Actuator — полный разбор Spring Boot от основ до продвинутых возможностей.</p>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#ioc-di">IoC / DI</a>
+        <a class="toc-link" href="#beans">Бины / Scope</a>
+        <a class="toc-link" href="#autoconfiguration">Auto-Config</a>
+        <a class="toc-link" href="#context">AppContext</a>
+        <a class="toc-link" href="#properties">Properties</a>
+        <a class="toc-link" href="#actuator">Actuator</a>
+        <a class="toc-link" href="#lifecycle">Lifecycle</a>
+        <a class="toc-link" href="#practices">Best Practices</a>
+        <a class="toc-link" href="#code">💻 Код</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-green">
+        <div class="box-label">Что такое Spring Boot</div>
+        Spring Boot = Spring Framework + <strong>Auto-configuration</strong> + <strong>Embedded Server</strong> + <strong>Starter dependencies</strong>.
+        Цель: запустить production-ready приложение с минимальной конфигурацией.
+        Принцип: <em>«Convention over Configuration»</em> — умные настройки по умолчанию.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Концепция</th><th>Суть</th><th>Аннотация / Класс</th></tr>
+          <tr><td><strong>IoC</strong></td><td>Контейнер управляет жизнью объектов (не ты)</td><td><code>ApplicationContext</code></td></tr>
+          <tr><td><strong>DI</strong></td><td>Зависимости инжектируются извне</td><td><code>@Autowired</code>, конструктор</td></tr>
+          <tr><td><strong>Bean</strong></td><td>Объект, управляемый Spring контейнером</td><td><code>@Component</code>, <code>@Bean</code></td></tr>
+          <tr><td><strong>Scope</strong></td><td>Время жизни бина</td><td><code>@Scope</code>, singleton по умолч.</td></tr>
+          <tr><td><strong>Auto-config</strong></td><td>Spring сам настраивает по зависимостям</td><td><code>@SpringBootApplication</code></td></tr>
+          <tr><td><strong>Profile</strong></td><td>Разные конфиги для разных окружений</td><td><code>@Profile("dev")</code></td></tr>
+          <tr><td><strong>Actuator</strong></td><td>Мониторинг и метрики приложения</td><td><code>spring-boot-actuator</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. IoC / DI ═══ -->
+    <div class="section" id="ioc-di">
+      <div class="section-title"><span class="s-icon">🔄</span> IoC и Dependency Injection</div>
+      <div class="prose">
+        <p><strong>IoC (Inversion of Control)</strong> — инверсия управления. Вместо того чтобы ты создавал объекты (<code>new Service()</code>), это делает контейнер Spring. Ты только описываешь зависимости — Spring сам их собирает.</p>
+        <p><strong>DI (Dependency Injection)</strong> — один из способов реализации IoC. Зависимости «вливаются» в объект снаружи — через конструктор, setter или поле.</p>
+      </div>
+
+      <div class="section-subtitle">3 способа инжекции зависимостей</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Способ</th><th>Пример</th><th>Рекомендация</th></tr>
+          <tr>
+            <td><strong>Конструктор</strong> ✅</td>
+            <td><code>public Service(Repo repo) { this.repo = repo; }</code></td>
+            <td>✅ Рекомендован: immutable, легко тестировать</td>
+          </tr>
+          <tr>
+            <td><strong>Setter</strong></td>
+            <td><code>@Autowired void setRepo(Repo r) { repo = r; }</code></td>
+            <td>⚠️ Только для опциональных зависимостей</td>
+          </tr>
+          <tr>
+            <td><strong>Поле</strong> ❌</td>
+            <td><code>@Autowired private Repo repo;</code></td>
+            <td>❌ Избегай: нельзя тестировать без Spring, скрывает зависимости</td>
+          </tr>
+        </table>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">✅ Почему конструктор — лучший способ DI</div>
+        1. Зависимости явные и обязательные — нельзя создать объект без них.<br>
+        2. Поля можно сделать <code>final</code> — объект immutable.<br>
+        3. Легко тестировать — просто передай мок в конструктор без Spring.<br>
+        4. С Lombok <code>@RequiredArgsConstructor</code> — никакого бойлерплейта.
+      </div>
+    </div>
+
+    <!-- ═══ 3. БИНЫ ═══ -->
+    <div class="section" id="beans">
+      <div class="section-title"><span class="s-icon">🫘</span> Бины и Scope</div>
+
+      <div class="section-subtitle">Как объявить бин</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Где</th><th>Назначение</th></tr>
+          <tr><td><code>@Component</code></td><td>Класс</td><td>Универсальный компонент</td></tr>
+          <tr><td><code>@Service</code></td><td>Класс</td><td>Бизнес-логика (семантика)</td></tr>
+          <tr><td><code>@Repository</code></td><td>Класс</td><td>Доступ к данным + перевод исключений БД</td></tr>
+          <tr><td><code>@Controller</code></td><td>Класс</td><td>MVC контроллер</td></tr>
+          <tr><td><code>@RestController</code></td><td>Класс</td><td>REST API = @Controller + @ResponseBody</td></tr>
+          <tr><td><code>@Configuration</code></td><td>Класс</td><td>Класс конфигурации, содержит @Bean методы</td></tr>
+          <tr><td><code>@Bean</code></td><td>Метод в @Configuration</td><td>Регистрация бина вручную (сторонние классы)</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Scope — время жизни бина</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Scope</th><th>Жизнь бина</th><th>Когда</th></tr>
+          <tr><td><code>singleton</code> ✅ default</td><td>Один на весь контейнер</td><td>Stateless сервисы (подавляющее большинство)</td></tr>
+          <tr><td><code>prototype</code></td><td>Новый экземпляр при каждом запросе</td><td>Stateful объекты, команды</td></tr>
+          <tr><td><code>request</code></td><td>Один на HTTP-запрос</td><td>Web: данные конкретного запроса</td></tr>
+          <tr><td><code>session</code></td><td>Один на HTTP-сессию</td><td>Web: данные сессии пользователя</td></tr>
+          <tr><td><code>application</code></td><td>Один на ServletContext</td><td>Web: глобальные данные приложения</td></tr>
+        </table>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Проблема: prototype бин в singleton</div>
+        Если singleton бин зависит от prototype бина — prototype создаётся один раз при инициализации singleton и больше не обновляется. Решение: <code>ApplicationContext.getBean()</code>, <code>@Lookup</code>, или <code>ObjectProvider&lt;T&gt;</code>.
+      </div>
+
+      <div class="section-subtitle">@Primary и @Qualifier — несколько реализаций</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Суть</th></tr>
+          <tr><td><code>@Primary</code></td><td>Эта реализация используется по умолчанию если несколько кандидатов</td></tr>
+          <tr><td><code>@Qualifier("name")</code></td><td>Явно указать какую реализацию инжектировать</td></tr>
+          <tr><td><code>@Conditional</code></td><td>Бин создаётся только при выполнении условия</td></tr>
+          <tr><td><code>@ConditionalOnProperty</code></td><td>Бин создаётся если есть свойство в конфиге</td></tr>
+          <tr><td><code>@ConditionalOnMissingBean</code></td><td>Бин создаётся если похожего ещё нет</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 4. AUTO-CONFIGURATION ═══ -->
+    <div class="section" id="autoconfiguration">
+      <div class="section-title"><span class="s-icon">⚙️</span> Auto-Configuration</div>
+      <div class="prose">
+        <p>Spring Boot анализирует classpath и автоматически настраивает приложение. Добавил <code>spring-boot-starter-data-jpa</code> → Spring сам настроит DataSource, EntityManagerFactory, TransactionManager.</p>
+      </div>
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Как работает Auto-Configuration изнутри</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p><strong>1.</strong> <code>@SpringBootApplication</code> включает <code>@EnableAutoConfiguration</code>.</p>
+            <p><strong>2.</strong> Spring Boot читает файл <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code> (до Boot 2.7: <code>spring.factories</code>).</p>
+            <p><strong>3.</strong> Для каждого Auto-Configuration класса проверяются условия: <code>@ConditionalOnClass</code>, <code>@ConditionalOnMissingBean</code>, <code>@ConditionalOnProperty</code>.</p>
+            <p><strong>4.</strong> Если условия выполнены — бины регистрируются. Твои собственные бины имеют приоритет (перекрывают auto-configured).</p>
+          </div>
+          <div class="box box-blue"><div class="box-label">💡 Отладка</div>Запусти с <code>--debug</code> или добавь <code>logging.level.org.springframework.boot.autoconfigure=DEBUG</code> — увидишь какие auto-configurations сработали и почему.</div>
+        </div>
+      </div>
+
+      <div class="section-subtitle">Главные стартеры</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Стартер</th><th>Что подключает</th></tr>
+          <tr><td><code>spring-boot-starter-web</code></td><td>Spring MVC, Tomcat, Jackson</td></tr>
+          <tr><td><code>spring-boot-starter-data-jpa</code></td><td>Hibernate, Spring Data JPA, HikariCP</td></tr>
+          <tr><td><code>spring-boot-starter-security</code></td><td>Spring Security</td></tr>
+          <tr><td><code>spring-boot-starter-validation</code></td><td>Bean Validation (Hibernate Validator)</td></tr>
+          <tr><td><code>spring-boot-starter-test</code></td><td>JUnit 5, Mockito, AssertJ, MockMvc</td></tr>
+          <tr><td><code>spring-boot-starter-actuator</code></td><td>Health, Metrics, Info endpoints</td></tr>
+          <tr><td><code>spring-boot-starter-mail</code></td><td>JavaMailSender</td></tr>
+          <tr><td><code>spring-boot-starter-data-redis</code></td><td>RedisTemplate, @Cacheable</td></tr>
+          <tr><td><code>spring-boot-starter-aop</code></td><td>AspectJ, @Aspect, @Around</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 5. APPLICATIONCONTEXT ═══ -->
+    <div class="section" id="context">
+      <div class="section-title"><span class="s-icon">🏭</span> ApplicationContext</div>
+      <div class="prose">
+        <p><code>ApplicationContext</code> — главный IoC-контейнер Spring. Управляет жизненным циклом бинов, разрешает зависимости, публикует события, загружает конфигурацию.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Метод контекста</th><th>Описание</th></tr>
+          <tr><td><code>getBean(Class&lt;T&gt;)</code></td><td>Получить бин по типу (кидает если нет или несколько)</td></tr>
+          <tr><td><code>getBean(String name)</code></td><td>Получить бин по имени</td></tr>
+          <tr><td><code>getBeanNamesForType(Class&lt;T&gt;)</code></td><td>Все имена бинов заданного типа</td></tr>
+          <tr><td><code>containsBean(String name)</code></td><td>Существует ли бин с таким именем</td></tr>
+          <tr><td><code>publishEvent(event)</code></td><td>Опубликовать событие</td></tr>
+          <tr><td><code>getEnvironment()</code></td><td>Доступ к properties и profiles</td></tr>
+        </table>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Не злоупотребляй getBean()</div>
+        Прямое обращение к ApplicationContext — это <strong>Service Locator</strong> антипаттерн. Используй только в крайних случаях (например, prototype бины в singleton). В обычном коде — всегда DI через конструктор.
+      </div>
+
+      <div class="section-subtitle">События Spring (Event System)</div>
+      <div class="prose">
+        <p>Spring реализует паттерн Observer через события. Можно публиковать и слушать как встроенные события (ContextRefreshedEvent, ApplicationReadyEvent), так и свои.</p>
+      </div>
+    </div>
+
+    <!-- ═══ 6. PROPERTIES / PROFILES ═══ -->
+    <div class="section" id="properties">
+      <div class="section-title"><span class="s-icon">⚙️</span> Properties и Profiles</div>
+
+      <div class="section-subtitle">Чтение конфигурации</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Способ</th><th>Пример</th><th>Когда</th></tr>
+          <tr><td><code>@Value</code></td><td><code>@Value("${app.name}")</code></td><td>Одно значение, простые случаи</td></tr>
+          <tr><td><code>@ConfigurationProperties</code></td><td><code>@ConfigurationProperties("app")</code></td><td>Группа свойств, type-safe, рекомендован</td></tr>
+          <tr><td><code>Environment</code></td><td><code>env.getProperty("app.name")</code></td><td>Программный доступ</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Порядок источников конфигурации (приоритет ↓)</div>
+      <div class="prose">
+        <p><strong>1.</strong> Аргументы командной строки (<code>--server.port=9090</code>)<br>
+        <strong>2.</strong> Переменные окружения (<code>SERVER_PORT=9090</code>)<br>
+        <strong>3.</strong> <code>application-{profile}.yml</code><br>
+        <strong>4.</strong> <code>application.yml</code><br>
+        <strong>5.</strong> <code>@PropertySource</code> файлы<br>
+        <strong>6.</strong> Дефолтные значения <code>@Value("${prop:default}")</code></p>
+      </div>
+
+      <div class="section-subtitle">Profiles</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--primary)">Активация профиля</div>
+          <ul class="compare-list">
+            <li><code>spring.profiles.active=dev</code> в application.yml</li>
+            <li>Переменная окружения: <code>SPRING_PROFILES_ACTIVE=prod</code></li>
+            <li>Аргумент JVM: <code>-Dspring.profiles.active=prod</code></li>
+            <li>Программно: <code>SpringApplication.setAdditionalProfiles()</code></li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">Типичные профили</div>
+          <ul class="compare-list">
+            <li><code>dev</code> — локальная разработка, H2, verbose logging</li>
+            <li><code>test</code> — интеграционные тесты</li>
+            <li><code>staging</code> — предпрод окружение</li>
+            <li><code>prod</code> — продакшен, реальная БД, минимум логов</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 7. ACTUATOR ═══ -->
+    <div class="section" id="actuator">
+      <div class="section-title"><span class="s-icon">📊</span> Spring Boot Actuator</div>
+      <div class="prose">
+        <p>Actuator предоставляет production-ready endpoints для мониторинга и управления приложением. Подключается добавлением <code>spring-boot-starter-actuator</code>.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Endpoint</th><th>URL</th><th>Что показывает</th></tr>
+          <tr><td><code>health</code></td><td><code>/actuator/health</code></td><td>Статус приложения (UP/DOWN), БД, диск</td></tr>
+          <tr><td><code>info</code></td><td><code>/actuator/info</code></td><td>Информация о приложении (версия, git)</td></tr>
+          <tr><td><code>metrics</code></td><td><code>/actuator/metrics</code></td><td>JVM, HTTP запросы, кастомные метрики</td></tr>
+          <tr><td><code>env</code></td><td><code>/actuator/env</code></td><td>Переменные окружения и properties</td></tr>
+          <tr><td><code>beans</code></td><td><code>/actuator/beans</code></td><td>Все зарегистрированные бины</td></tr>
+          <tr><td><code>mappings</code></td><td><code>/actuator/mappings</code></td><td>Все HTTP endpoints приложения</td></tr>
+          <tr><td><code>loggers</code></td><td><code>/actuator/loggers</code></td><td>Уровни логирования (можно менять на лету)</td></tr>
+          <tr><td><code>threaddump</code></td><td><code>/actuator/threaddump</code></td><td>Состояние всех потоков</td></tr>
+          <tr><td><code>httptrace</code></td><td><code>/actuator/httptrace</code></td><td>История HTTP запросов</td></tr>
+        </table>
+      </div>
+      <div class="box box-red">
+        <div class="box-label">🔐 Безопасность Actuator в продакшене</div>
+        По умолчанию открыт только <code>/health</code>. В продакшене: закрой <code>/actuator/**</code> за Spring Security или вынеси на отдельный порт (<code>management.server.port=8081</code>). Никогда не открывай <code>/env</code> и <code>/beans</code> публично — там секреты!
+      </div>
+    </div>
+
+    <!-- ═══ 8. LIFECYCLE ═══ -->
+    <div class="section" id="lifecycle">
+      <div class="section-title"><span class="s-icon">🔄</span> Жизненный цикл бина</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Схема</span></div>
+        <pre style="font-size:0.8rem;line-height:1.9">
+  1. <span class="kw">Instantiation</span>   — создание объекта конструктором
+  2. <span class="cl">DI</span>              — инжекция зависимостей (@Autowired, конструктор)
+  3. <span class="an">@PostConstruct</span>  — метод инициализации (после DI)
+  4. <span class="ty">afterPropertiesSet()</span> — InitializingBean (альтернатива @PostConstruct)
+  5. <span class="st">init-method</span>     — метод из @Bean(initMethod="...")
+  6. <span class="cm">── Бин готов к использованию ──</span>
+  7. <span class="an">@PreDestroy</span>     — метод перед уничтожением
+  8. <span class="ty">destroy()</span>       — DisposableBean (альтернатива @PreDestroy)
+  9. <span class="st">destroy-method</span>  — метод из @Bean(destroyMethod="...")
+        </pre>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация / Интерфейс</th><th>Когда вызывается</th><th>Использование</th></tr>
+          <tr><td><code>@PostConstruct</code></td><td>После DI, перед использованием</td><td>Инициализация данных, валидация конфига</td></tr>
+          <tr><td><code>@PreDestroy</code></td><td>Перед уничтожением бина</td><td>Закрытие соединений, сохранение состояния</td></tr>
+          <tr><td><code>ApplicationRunner</code></td><td>После старта приложения</td><td>Загрузка начальных данных, прогрев кэша</td></tr>
+          <tr><td><code>CommandLineRunner</code></td><td>После старта приложения</td><td>Аналогично, но получает String[] args</td></tr>
+          <tr><td><code>@EventListener(ContextRefreshedEvent.class)</code></td><td>При обновлении контекста</td><td>Запуск при каждом обновлении контекста</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 9. BEST PRACTICES ═══ -->
+    <div class="section" id="practices">
+      <div class="section-title"><span class="s-icon">✅</span> Best Practices и типичные ошибки</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Best Practices</div>
+          <ul class="compare-list">
+            <li>DI только через конструктор (+ Lombok <code>@RequiredArgsConstructor</code>)</li>
+            <li>Зависимости через интерфейсы, а не конкретные классы</li>
+            <li>Один <code>@SpringBootApplication</code> в корневом пакете</li>
+            <li><code>@ConfigurationProperties</code> вместо множества <code>@Value</code></li>
+            <li>Никогда не хранить секреты в application.yml — ENV переменные</li>
+            <li>Закрывать Actuator endpoints в продакшене</li>
+            <li>Использовать профили для разных окружений</li>
+            <li>Логировать через <code>@Slf4j</code> (Lombok), не <code>System.out.println</code></li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Частые ошибки</div>
+          <ul class="compare-list">
+            <li>Field injection (<code>@Autowired</code> на поле) — скрывает зависимости</li>
+            <li>Circular dependency — A зависит от B, B от A</li>
+            <li>Stateful singleton бины — потокобезопасность нарушена</li>
+            <li>Слишком много бинов с <code>@Primary</code> — неочевидное поведение</li>
+            <li>Не закрывать ExecutorService и ресурсы в <code>@PreDestroy</code></li>
+            <li>Тяжёлая логика в <code>@PostConstruct</code> — замедляет старт</li>
+            <li>Хранить секреты в application.yml в репозитории</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 10. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. @SpringBootApplication и точка входа</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@SpringBootApplication</span>   <span class="cm">// = @Configuration + @EnableAutoConfiguration + @ComponentScan</span>
+<span class="kw">public class</span> <span class="cl">MyApplication</span> {
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">SpringApplication</span>.<span class="fn">run</span>(<span class="cl">MyApplication</span>.<span class="kw">class</span>, args); <span class="cm">// запуск контейнера</span>
+    }
+}
+
+<span class="cm">// ── Настройка SpringApplication программно</span>
+<span class="an">@SpringBootApplication</span>
+<span class="kw">public class</span> <span class="cl">MyApplication</span> {
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">SpringApplication</span> app = <span class="kw">new</span> <span class="cl">SpringApplication</span>(<span class="cl">MyApplication</span>.<span class="kw">class</span>);
+        app.<span class="fn">setAdditionalProfiles</span>(<span class="st">"dev"</span>);              <span class="cm">// активировать профиль</span>
+        app.<span class="fn">setBannerMode</span>(<span class="cl">Banner</span>.<span class="cl">Mode</span>.OFF);             <span class="cm">// убрать баннер Spring</span>
+        app.<span class="fn">run</span>(args);
+    }
+}
+
+<span class="cm">// ── CommandLineRunner — выполнить код после старта</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">DataInitializer</span> <span class="kw">implements</span> <span class="cl">CommandLineRunner</span> {
+
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> userRepository;  <span class="cm">// инжектируем через конструктор</span>
+
+    <span class="kw">public</span> <span class="fn">DataInitializer</span>(<span class="cl">UserRepository</span> userRepository) {
+        <span class="kw">this</span>.userRepository = userRepository;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>(<span class="cl">String</span>... args) {              <span class="cm">// вызывается после старта</span>
+        <span class="kw">if</span> (userRepository.<span class="fn">count</span>() == <span class="nu">0</span>) {          <span class="cm">// только если БД пуста</span>
+            userRepository.<span class="fn">save</span>(<span class="kw">new</span> <span class="cl">User</span>(<span class="st">"admin"</span>, <span class="st">"admin@example.com"</span>));
+        }
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">2. @Configuration и @Bean — регистрация бинов вручную</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Configuration</span>                                    <span class="cm">// класс конфигурации Spring</span>
+<span class="kw">public class</span> <span class="cl">AppConfig</span> {
+
+    <span class="cm">// ── @Bean — регистрируем бин вручную (для сторонних классов)</span>
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">ObjectMapper</span> <span class="fn">objectMapper</span>() {           <span class="cm">// имя бина = имя метода</span>
+        <span class="cl">ObjectMapper</span> mapper = <span class="kw">new</span> <span class="cl">ObjectMapper</span>();
+        mapper.<span class="fn">configure</span>(<span class="cl">DeserializationFeature</span>.FAIL_ON_UNKNOWN_PROPERTIES, <span class="kw">false</span>);
+        mapper.<span class="fn">registerModule</span>(<span class="kw">new</span> <span class="cl">JavaTimeModule</span>());  <span class="cm">// поддержка LocalDate и др.</span>
+        <span class="kw">return</span> mapper;                               <span class="cm">// Spring управляет этим объектом</span>
+    }
+
+    <span class="cm">// ── @Bean с зависимостью — Spring автоматически передаёт параметр</span>
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">RestTemplate</span> <span class="fn">restTemplate</span>(<span class="cl">ObjectMapper</span> objectMapper) { <span class="cm">// DI через параметр</span>
+        <span class="kw">return</span> <span class="kw">new</span> <span class="cl">RestTemplateBuilder</span>()
+            .<span class="fn">messageConverters</span>(<span class="kw">new</span> <span class="cl">MappingJackson2HttpMessageConverter</span>(objectMapper))
+            .<span class="fn">build</span>();
+    }
+
+    <span class="cm">// ── @Bean с профилем — создаётся только для prod</span>
+    <span class="an">@Bean</span>
+    <span class="an">@Profile</span>(<span class="st">"prod"</span>)                               <span class="cm">// только в prod окружении</span>
+    <span class="kw">public</span> <span class="cl">DataSource</span> <span class="fn">productionDataSource</span>() {
+        <span class="kw">return</span> <span class="cl">DataSourceBuilder</span>.<span class="fn">create</span>()
+            .<span class="fn">url</span>(<span class="st">"jdbc:postgresql://prod-server:5432/mydb"</span>)
+            .<span class="fn">build</span>();
+    }
+
+    <span class="cm">// ── @Bean с условием — создаётся только если property задан</span>
+    <span class="an">@Bean</span>
+    <span class="an">@ConditionalOnProperty</span>(name = <span class="st">"feature.cache.enabled"</span>, havingValue = <span class="st">"true"</span>)
+    <span class="kw">public</span> <span class="cl">CacheManager</span> <span class="fn">cacheManager</span>() {           <span class="cm">// включён только если feature.cache.enabled=true</span>
+        <span class="kw">return</span> <span class="kw">new</span> <span class="cl">ConcurrentMapCacheManager</span>(<span class="st">"users"</span>, <span class="st">"products"</span>);
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">3. @ConfigurationProperties — type-safe конфигурация</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── application.yml</span>
+<span class="cm">// app:</span>
+<span class="cm">//   name: My App</span>
+<span class="cm">//   version: 1.0.0</span>
+<span class="cm">//   jwt:</span>
+<span class="cm">//     secret: mySecretKey</span>
+<span class="cm">//     expiration: 86400</span>
+<span class="cm">//   mail:</span>
+<span class="cm">//     host: smtp.gmail.com</span>
+<span class="cm">//     port: 587</span>
+
+<span class="an">@ConfigurationProperties</span>(prefix = <span class="st">"app"</span>)  <span class="cm">// читаем всё что начинается с "app."</span>
+<span class="an">@Component</span>                                  <span class="cm">// или @EnableConfigurationProperties в конфиге</span>
+<span class="kw">public class</span> <span class="cl">AppProperties</span> {
+
+    <span class="kw">private</span> <span class="cl">String</span> name;                    <span class="cm">// → app.name</span>
+    <span class="kw">private</span> <span class="cl">String</span> version;                 <span class="cm">// → app.version</span>
+    <span class="kw">private</span> <span class="cl">Jwt</span> jwt = <span class="kw">new</span> <span class="cl">Jwt</span>();            <span class="cm">// → app.jwt.*</span>
+    <span class="kw">private</span> <span class="cl">Mail</span> mail = <span class="kw">new</span> <span class="cl">Mail</span>();          <span class="cm">// → app.mail.*</span>
+
+    <span class="cm">// геттеры и сеттеры обязательны для @ConfigurationProperties</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getName</span>() { <span class="kw">return</span> name; }
+    <span class="kw">public void</span> <span class="fn">setName</span>(<span class="cl">String</span> name) { <span class="kw">this</span>.name = name; }
+    <span class="cm">// ... остальные геттеры/сеттеры</span>
+
+    <span class="kw">public static class</span> <span class="cl">Jwt</span> {
+        <span class="kw">private</span> <span class="cl">String</span> secret;                <span class="cm">// → app.jwt.secret</span>
+        <span class="kw">private long</span> expiration;              <span class="cm">// → app.jwt.expiration (в секундах)</span>
+        <span class="cm">// геттеры/сеттеры...</span>
+    }
+
+    <span class="kw">public static class</span> <span class="cl">Mail</span> {
+        <span class="kw">private</span> <span class="cl">String</span> host;                  <span class="cm">// → app.mail.host</span>
+        <span class="kw">private int</span> port;                     <span class="cm">// → app.mail.port</span>
+        <span class="cm">// геттеры/сеттеры...</span>
+    }
+}
+
+<span class="cm">// ── Использование в сервисе</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">JwtService</span> {
+
+    <span class="kw">private final</span> <span class="cl">AppProperties</span> appProperties;   <span class="cm">// инжектируем весь конфиг</span>
+
+    <span class="kw">public</span> <span class="fn">JwtService</span>(<span class="cl">AppProperties</span> appProperties) {
+        <span class="kw">this</span>.appProperties = appProperties;
+    }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getSecret</span>() {
+        <span class="kw">return</span> appProperties.<span class="fn">getJwt</span>().<span class="fn">getSecret</span>(); <span class="cm">// type-safe доступ к настройкам</span>
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">4. Scope, @Primary, @Qualifier</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── @Primary — реализация по умолчанию</span>
+<span class="an">@Service</span>
+<span class="an">@Primary</span>                                          <span class="cm">// используется когда не указан @Qualifier</span>
+<span class="kw">public class</span> <span class="cl">EmailNotificationService</span> <span class="kw">implements</span> <span class="cl">NotificationService</span> { ... }
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">SmsNotificationService</span> <span class="kw">implements</span> <span class="cl">NotificationService</span> { ... }
+
+<span class="cm">// ── @Qualifier — явный выбор реализации</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">OrderService</span> {
+    <span class="kw">private final</span> <span class="cl">NotificationService</span> notificationService;
+
+    <span class="kw">public</span> <span class="fn">OrderService</span>(
+        <span class="an">@Qualifier</span>(<span class="st">"smsNotificationService"</span>) <span class="cm">// имя бина = имя класса с маленькой буквы</span>
+        <span class="cl">NotificationService</span> notificationService) {
+        <span class="kw">this</span>.notificationService = notificationService;
+    }
+}
+
+<span class="cm">// ── @Scope prototype — новый объект каждый раз</span>
+<span class="an">@Component</span>
+<span class="an">@Scope</span>(<span class="st">"prototype"</span>)                              <span class="cm">// каждый getBean() = новый объект</span>
+<span class="kw">public class</span> <span class="cl">ReportGenerator</span> {
+    <span class="kw">private</span> <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; lines = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(); <span class="cm">// состояние свежее каждый раз</span>
+    <span class="kw">public void</span> <span class="fn">addLine</span>(<span class="cl">String</span> line) { lines.<span class="fn">add</span>(line); }
+}
+
+<span class="cm">// ── Правильное использование prototype в singleton</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">ReportService</span> {
+    <span class="kw">private final</span> <span class="cl">ObjectProvider</span>&lt;<span class="cl">ReportGenerator</span>&gt; generatorProvider; <span class="cm">// lazy</span>
+
+    <span class="kw">public</span> <span class="fn">ReportService</span>(<span class="cl">ObjectProvider</span>&lt;<span class="cl">ReportGenerator</span>&gt; generatorProvider) {
+        <span class="kw">this</span>.generatorProvider = generatorProvider;
+    }
+
+    <span class="kw">public void</span> <span class="fn">generateReport</span>() {
+        <span class="cl">ReportGenerator</span> gen = generatorProvider.<span class="fn">getObject</span>(); <span class="cm">// новый экземпляр!</span>
+        gen.<span class="fn">addLine</span>(<span class="st">"Отчёт сгенерирован"</span>);
+    }
+}
+
+<span class="cm">// ── @PostConstruct и @PreDestroy</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">CacheService</span> {
+    <span class="kw">private</span> <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Object</span>&gt; cache;
+
+    <span class="an">@PostConstruct</span>                                  <span class="cm">// после DI, перед первым использованием</span>
+    <span class="kw">public void</span> <span class="fn">init</span>() {
+        cache = <span class="kw">new</span> <span class="cl">ConcurrentHashMap</span>&lt;&gt;();          <span class="cm">// инициализация кэша</span>
+        <span class="fn">warmUpCache</span>();                              <span class="cm">// прогрев — загружаем часто нужные данные</span>
+    }
+
+    <span class="an">@PreDestroy</span>                                     <span class="cm">// перед уничтожением бина</span>
+    <span class="kw">public void</span> <span class="fn">cleanup</span>() {
+        cache.<span class="fn">clear</span>();                              <span class="cm">// очищаем ресурсы</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Кэш очищен при остановке"</span>);
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">5. Spring Events — публикация и обработка событий</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Своё событие</span>
+<span class="kw">public class</span> <span class="cl">UserRegisteredEvent</span> <span class="kw">extends</span> <span class="cl">ApplicationEvent</span> {  <span class="cm">// наследуем</span>
+    <span class="kw">private final</span> <span class="cl">String</span> email;                                  <span class="cm">// данные события</span>
+
+    <span class="kw">public</span> <span class="fn">UserRegisteredEvent</span>(<span class="cl">Object</span> source, <span class="cl">String</span> email) {
+        <span class="kw">super</span>(source);                                           <span class="cm">// источник события</span>
+        <span class="kw">this</span>.email = email;
+    }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getEmail</span>() { <span class="kw">return</span> email; }
+}
+
+<span class="cm">// ── Публикация события</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">UserService</span> {
+    <span class="kw">private final</span> <span class="cl">ApplicationEventPublisher</span> eventPublisher; <span class="cm">// Spring инжектирует</span>
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> userRepository;
+
+    <span class="kw">public</span> <span class="fn">UserService</span>(<span class="cl">ApplicationEventPublisher</span> pub, <span class="cl">UserRepository</span> repo) {
+        <span class="kw">this</span>.eventPublisher = pub;
+        <span class="kw">this</span>.userRepository = repo;
+    }
+
+    <span class="kw">public</span> <span class="cl">User</span> <span class="fn">register</span>(<span class="cl">String</span> email) {
+        <span class="cl">User</span> user = userRepository.<span class="fn">save</span>(<span class="kw">new</span> <span class="cl">User</span>(email));           <span class="cm">// сохраняем</span>
+        eventPublisher.<span class="fn">publishEvent</span>(<span class="kw">new</span> <span class="cl">UserRegisteredEvent</span>(<span class="kw">this</span>, email)); <span class="cm">// публикуем</span>
+        <span class="kw">return</span> user;
+    }
+}
+
+<span class="cm">// ── Слушатель события (отдельный бин)</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">WelcomeEmailListener</span> {
+
+    <span class="an">@EventListener</span>                                  <span class="cm">// слушаем событие</span>
+    <span class="kw">public void</span> <span class="fn">onUserRegistered</span>(<span class="cl">UserRegisteredEvent</span> event) {
+        <span class="cm">// вызывается автоматически при публикации UserRegisteredEvent</span>
+        <span class="fn">sendWelcomeEmail</span>(event.<span class="fn">getEmail</span>());         <span class="cm">// отправляем приветственное письмо</span>
+    }
+
+    <span class="an">@EventListener</span>
+    <span class="an">@Async</span>                                          <span class="cm">// выполнить асинхронно (не блокировать)</span>
+    <span class="kw">public void</span> <span class="fn">onUserRegisteredAsync</span>(<span class="cl">UserRegisteredEvent</span> event) {
+        <span class="fn">sendAnalyticsData</span>(event.<span class="fn">getEmail</span>());         <span class="cm">// аналитика асинхронно</span>
+    }
+}
+
+<span class="cm">// ── Слушать ApplicationReadyEvent — приложение полностью запущено</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">StartupListener</span> {
+
+    <span class="an">@EventListener</span>(<span class="cl">ApplicationReadyEvent</span>.<span class="kw">class</span>)   <span class="cm">// после полного старта</span>
+    <span class="kw">public void</span> <span class="fn">onApplicationReady</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"🚀 Приложение готово!"</span>);
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- ═══ 11. ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое IoC и DI? В чём разница?</div>
+            <div class="qa-q-en">What is IoC and DI? What is the difference?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><strong>IoC</strong> — принцип: контроль над созданием объектов передаётся от программиста к фреймворку. Вместо <code>new Service()</code> — контейнер сам создаёт и управляет объектами.<br><strong>DI</strong> — конкретная реализация IoC: зависимости «вливаются» в объект через конструктор, setter или поле. DI — один из способов IoC, самый популярный.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">🔥 Сильный ответ</div>
+            <div class="qa-text">«IoC — широкий принцип (управление передано контейнеру), DI — его реализация через передачу зависимостей. Я предпочитаю DI через конструктор: зависимости явные, поля можно сделать final, легко тестировать без Spring — просто передаю мок в конструктор.»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sb-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что делает @SpringBootApplication?</div>
+            <div class="qa-q-en">What does @SpringBootApplication do?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Это мета-аннотация, объединяющая три:<br>
+            <code>@Configuration</code> — класс является источником бин-определений.<br>
+            <code>@EnableAutoConfiguration</code> — включает авто-конфигурацию по classpath.<br>
+            <code>@ComponentScan</code> — сканирует пакет (и подпакеты) в поиске компонентов.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sb-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое Auto-Configuration? Как работает?</div>
+            <div class="qa-q-en">What is Spring Boot Auto-Configuration and how does it work?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Spring Boot анализирует classpath и автоматически создаёт нужные бины. Механизм: читает список Auto-Configuration классов из <code>META-INF/spring.factories</code> (или imports файла). Каждый класс проверяет условия через <code>@ConditionalOnClass</code>, <code>@ConditionalOnMissingBean</code> и др. Если условия выполнены — бины регистрируются. Твои бины всегда имеют приоритет.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">💡 Пример</div>
+            <div class="qa-text">Добавил <code>spring-boot-starter-data-jpa</code> → на classpath появился Hibernate → <code>HibernateJpaAutoConfiguration</code> видит это и создаёт EntityManagerFactory, TransactionManager и DataSource автоматически.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sb-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">В чём разница между @Component, @Service, @Repository?</div>
+            <div class="qa-q-en">What is the difference between @Component, @Service, and @Repository?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Все три — специализации <code>@Component</code> и регистрируют бин в контейнере. Разница — <strong>семантическая</strong> и одна техническая: <code>@Repository</code> дополнительно активирует перевод исключений БД в Spring DataAccessException. <code>@Service</code> — чистая семантика (бизнес-слой). Используй по назначению — это улучшает читаемость и позволяет AOP таргетировать по слоям.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sb-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Какие Scope есть у бинов? Что такое singleton scope?</div>
+            <div class="qa-q-en">What are bean scopes in Spring? Explain singleton scope.</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Основные: <code>singleton</code> (один на контейнер, по умолчанию), <code>prototype</code> (новый при каждом запросе), <code>request</code>, <code>session</code>, <code>application</code> (для Web). Singleton — самый частый: один экземпляр на весь контейнер, создаётся при старте. Важно: singleton-бины должны быть <strong>stateless</strong> — иначе потокобезопасность нарушена.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label err">⚠️ Ошибка кандидата</div>
+            <div class="qa-text">Путают Spring singleton и паттерн Singleton. Spring singleton — один бин на контейнер. Паттерн Singleton — один объект на JVM. Это разные вещи! В тестах может быть несколько контейнеров.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sb-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как Spring решает конфликт при нескольких реализациях одного интерфейса?</div>
+            <div class="qa-q-en">How does Spring resolve ambiguity when multiple beans implement the same interface?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Spring кидает <code>NoUniqueBeanDefinitionException</code> если не может выбрать. Решения: 1) <code>@Primary</code> — пометить основную реализацию, 2) <code>@Qualifier("beanName")</code> — явно указать какую инжектировать, 3) инжектировать <code>List&lt;Interface&gt;</code> — получишь все реализации, 4) <code>Map&lt;String, Interface&gt;</code> — имя бина → реализация.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sb-q6">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое circular dependency и как решить?</div>
+            <div class="qa-q-en">What is circular dependency in Spring and how to fix it?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Circular dependency: A зависит от B, B зависит от A. При конструкторной инжекции — Spring кидает <code>BeanCurrentlyInCreationException</code>. Решения: 1) рефакторинг архитектуры — вынести общую логику в третий класс C, 2) <code>@Lazy</code> на одной из зависимостей — создаётся прокси, 3) setter injection для одной из зависимостей. Лучшее решение — исправить архитектуру: circular dependency часто признак неправильного разделения обязанностей.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sb-q7">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>

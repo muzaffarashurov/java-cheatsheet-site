@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPA Relationships | Java Mega Cheatsheet</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../app.js" defer></script>
+</head>
+<body>
+    <div class="page-layout">
+        <!-- Sidebar -->
+        <aside class="page-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">J</div>
+                    <span>Java Cheatsheet</span>
+                </a>
+                <input type="text" class="sidebar-search" id="sideSearch" placeholder="Поиск в навигации...">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">На этой странице</div>
+                <ul>
+                    <li><a href="#summary" class="nav-link"><span class="nav-dot" style="background:var(--primary)"></span>📌 Конспект</a></li>
+                    <li><a href="#many-to-one" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔗 @ManyToOne & @OneToMany</a></li>
+                    <li><a href="#one-to-one" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔗 @OneToOne</a></li>
+                    <li><a href="#many-to-many" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔗 @ManyToMany</a></li>
+                    <li><a href="#annotations" class="nav-link"><span class="nav-dot" style="background:var(--warn)"></span>🔍 @JoinColumn, mappedBy, cascade</a></li>
+                    <li><a href="#practices" class="nav-link"><span class="nav-dot" style="background:var(--error)"></span>✅ Best / ⚠️ Anti</a></li>
+                    <li><a href="#interview" class="nav-link"><span class="nav-dot" style="background:var(--purple)"></span>❓ Интервью</a></li>
+                </ul>
+                <div class="nav-section" style="margin-top:24px">Другие темы</div>
+                <ul>
+                    <li><a href="../index.html" class="nav-link"><span class="nav-dot" style="background:var(--cyan)"></span>🏠 Все темы</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="page-main">
+            <header class="page-header">
+                <a href="../index.html" class="page-back">← Главная</a>
+                <span class="page-header-title">JPA Relationships</span>
+                <div class="page-search-wrap">
+                    <input type="text" id="pageSearch" class="page-search" placeholder="Поиск по странице...">
+                    <button id="searchClear" class="search-clear">✕</button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-header">
+                        <div class="hero-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🔗</div>
+                        <div>
+                            <h1>Связи в JPA/Hibernate</h1>
+                            <p>Полное руководство по @OneToMany, @ManyToOne, @OneToOne, @ManyToMany. Как работают owning/inverse стороны, @JoinColumn, mappedBy, cascade и fetch. Код с комментариями и best practices.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                        <span class="chip chip-purple">JPA 3.1</span>
+                        <span class="chip chip-blue">Hibernate 6</span>
+                        <span class="chip chip-warn">Связи</span>
+                        <span class="chip chip-red">Best Practices</span>
+                    </div>
+                </div>
+
+                <!-- TOC -->
+                <div class="toc">
+                    <div class="toc-title">Содержание</div>
+                    <div class="toc-list">
+                        <a href="#summary" class="toc-link">📌 Конспект</a>
+                        <a href="#many-to-one" class="toc-link">ManyToOne / OneToMany</a>
+                        <a href="#one-to-one" class="toc-link">OneToOne</a>
+                        <a href="#many-to-many" class="toc-link">ManyToMany</a>
+                        <a href="#annotations" class="toc-link">🔍 Аннотации</a>
+                        <a href="#practices" class="toc-link">Best/Bad</a>
+                        <a href="#interview" class="toc-link">❓ Вопросы</a>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="section" id="summary">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">📌</span> Краткий конспект</h2>
+                    <div class="box box-blue" style="margin-bottom:16px">
+                        <div class="box-label">Главное правило JPA-связей</div>
+                        В <b>бидирекциональной</b> связи всегда есть <b>owning side</b> (владелец, хранит FK в БД) и <b>inverse side</b> (зеркало, управляется через <code>mappedBy</code>). Hibernate слушает <b>только</b> owning side при сохранении!
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Связь</th><th>Описание</th><th>Где FK в БД?</th><th>Частота использования</th></tr></thead>
+                            <tbody>
+                                <tr><td><b>@ManyToOne</b></td><td>Много → Один</td><td>В таблице "многих"</td><td>⭐⭐⭐⭐⭐ (самая частая)</td></tr>
+                                <tr><td><b>@OneToMany</b></td><td>Один → Много</td><td>В таблице "многих" (через mappedBy)</td><td>⭐⭐⭐⭐</td></tr>
+                                <tr><td><b>@OneToOne</b></td><td>Один → Один</td><td>В любой из таблиц</td><td>⭐⭐</td></tr>
+                                <tr><td><b>@ManyToMany</b></td><td>Много → Много</td><td>В промежуточной таблице (@JoinTable)</td><td>⭐⭐</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ManyToOne & OneToMany -->
+                <div class="section" id="many-to-one">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🔗</span> @ManyToOne & @OneToMany</h2>
+                    
+                    <div class="section-subtitle">Пример: Department (1) ↔ Employee (N)</div>
+                    <div class="prose">
+                        <p><b>Логика:</b> Один отдел содержит много сотрудников. Внешний ключ (<code>department_id</code>) хранится в таблице <code>employees</code>.</p>
+                        <p><b>Правило:</b> <code>@ManyToOne</code> — owning side (владелец). <code>@OneToMany(mappedBy = "...")</code> — inverse side (зеркало).</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Department.java (Inverse Side)</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"departments"</span>)
+<span class="kw">public class</span> <span class="cl">Department</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">name</span>;
+
+    <span class="cm">/*
+     * @OneToMany — обратная сторона связи.
+     * mappedBy = "department" указывает, что владелец связи 
+     * находится в поле "department" класса Employee.
+     * 
+     * ⚠️ fetch = LAZY по умолчанию для коллекций.
+     * ⚠️ cascade = {} по умолчанию (не каскадирует операции).
+     */</span>
+    <span class="an">@OneToMany</span>(<span class="fn">mappedBy</span> = <span class="st">"department"</span>, 
+              <span class="fn">cascade</span> = <span class="cl">CascadeType</span>.<span class="cl">ALL</span>,  <span class="cm">// Опционально: каскад на сотрудников</span>
+              <span class="fn">orphanRemoval</span> = <span class="kw">true</span>)      <span class="cm">// Опционально: удалять сотрудников при отвязке</span>
+    <span class="kw">private</span> <span class="cl">List</span>&lt;<span class="cl">Employee</span>&gt; <span class="fn">employees</span> = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+}</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">Employee.java (Owning Side)</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"employees"</span>)
+<span class="kw">public class</span> <span class="cl">Employee</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">firstName</span>;
+
+    <span class="cm">/*
+     * @ManyToOne — ВЛАДЕЛЕЦ связи (owning side).
+     * Именно здесь создаётся столбец department_id в БД.
+     * 
+     * @JoinColumn настраивает FK:
+     * name = "department_id" — имя столбца в БД
+     * nullable = false       — FK обязателен
+     * 
+     * ⚠️ fetch = EAGER по умолчанию для @ManyToOne (лучше менять на LAZY!)
+     */</span>
+    <span class="an">@ManyToOne</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"department_id"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cl">Department</span> <span class="fn">department</span>;
+}</code></pre>
+                    </div>
+
+                    <div class="box box-warn" style="margin-top:16px">
+                        <div class="box-label">⚠️ Важно: Двусторонняя синхронизация</div>
+                        При добавлении сотрудника в отдел нужно обновлять <b>обе</b> стороны:<br>
+                        <code>employee.setDepartment(dept);</code><br>
+                        <code>dept.getEmployees().add(employee);</code><br>
+                        Иначе Hibernate сохранит FK, но в памяти объекта <code>Department</code> список останется пустым до перезагрузки.
+                    </div>
+                </div>
+
+                <!-- OneToOne -->
+                <div class="section" id="one-to-one">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">🔗</span> @OneToOne</h2>
+                    
+                    <div class="section-subtitle">Пример: User (1) ↔ UserProfile (1)</div>
+                    <div class="prose">
+                        <p><b>Логика:</b> У каждого пользователя ровно один профиль. FK можно разместить в любой таблице. Обычно FK кладут в "дочернюю" таблицу (<code>user_profiles.user_id</code>).</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">User.java (Owning Side)</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"users"</span>)
+<span class="kw">public class</span> <span class="cl">User</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+
+    <span class="cm">/*
+     * @OneToOne — владелец связи. FK будет в таблице profiles.
+     * mappedBy указывает на поле "user" в классе UserProfile.
+     */</span>
+    <span class="an">@OneToOne</span>(<span class="fn">mappedBy</span> = <span class="st">"user"</span>, 
+              <span class="fn">cascade</span> = <span class="cl">CascadeType</span>.<span class="cl">ALL</span>,
+              <span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="kw">private</span> <span class="cl">UserProfile</span> <span class="fn">profile</span>;
+}</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">UserProfile.java (Inverse Side / Owning)</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"user_profiles"</span>)
+<span class="kw">public class</span> <span class="cl">UserProfile</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">bio</span>;
+
+    <span class="cm">/*
+     * Владелец связи! Здесь создаётся столбец user_id.
+     * unique = true гарантирует, что один user_id не повторится → 1:1
+     */</span>
+    <span class="an">@OneToOne</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"user_id"</span>, <span class="fn">unique</span> = <span class="kw">true</span>, <span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cl">User</span> <span class="fn">user</span>;
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- ManyToMany -->
+                <div class="section" id="many-to-many">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🔗</span> @ManyToMany</h2>
+                    
+                    <div class="section-subtitle">Пример: Student (N) ↔ Course (N)</div>
+                    <div class="prose">
+                        <p><b>Логика:</b> Студент ходит на много курсов, курс посещают много студентов. В БД создаётся <b>промежуточная таблица</b> (например, <code>student_courses</code>).</p>
+                        <p><b>Важно:</b> Одна сторона должна владеть связью и описывать <code>@JoinTable</code>. Вторая сторона использует <code>mappedBy</code>.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Student.java (Owning Side)</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"students"</span>)
+<span class="kw">public class</span> <span class="cl">Student</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">name</span>;
+
+    <span class="cm">/*
+     * @ManyToMany — владелец связи. Создаёт промежуточную таблицу.
+     * 
+     * @JoinTable настраивает связь N:N:
+     * name = "student_courses"     — имя связующей таблицы
+     * joinColumns                  — FK к ТЕКУЩЕЙ таблице (students)
+     * inverseJoinColumns           — FK к СВЯЗАННОЙ таблице (courses)
+     */</span>
+    <span class="an">@ManyToMany</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>, <span class="fn">cascade</span> = <span class="cl">CascadeType</span>.<span class="cl">PERSIST</span>)
+    <span class="an">@JoinTable</span>(
+        <span class="fn">name</span> = <span class="st">"student_courses"</span>,
+        <span class="fn">joinColumns</span> = <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"student_id"</span>),
+        <span class="fn">inverseJoinColumns</span> = <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"course_id"</span>)
+    )
+    <span class="kw">private</span> <span class="cl">Set</span>&lt;<span class="cl">Course</span>&gt; <span class="fn">courses</span> = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;();
+}</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">Course.java (Inverse Side)</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"courses"</span>)
+<span class="kw">public class</span> <span class="cl">Course</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">title</span>;
+
+    <span class="cm">/*
+     * Обратная сторона. mappedBy указывает на поле "courses" в Student.
+     * Промежуточная таблица уже описана там, здесь дублировать не нужно!
+     */</span>
+    <span class="an">@ManyToMany</span>(<span class="fn">mappedBy</span> = <span class="st">"courses"</span>, <span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="kw">private</span> <span class="cl">Set</span>&lt;<span class="cl">Student</span>&gt; <span class="fn">students</span> = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;();
+}</code></pre>
+                    </div>
+                    <div class="box box-blue" style="margin-top:16px">
+                        <div class="box-label">💡 Как выглядит БД?</div>
+                        <code>students</code> (id, name)<br>
+                        <code>courses</code> (id, title)<br>
+                        <code>student_courses</code> (student_id, course_id) ← <b>Промежуточная таблица с составным PK</b>
+                    </div>
+                </div>
+
+                <!-- Annotations Deep Dive -->
+                <div class="section" id="annotations">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">🔍</span> Разбор ключевых аннотаций</h2>
+                    
+                    <div class="prose">
+                        <p><b>@JoinColumn(name = "...")</b></p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Пояснение</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*
+ * Определяет столбец ВНЕШНЕГО КЛЮЧА (Foreign Key) в БД.
+ * Ставится на ОВЛАДЕВАЮЩЕЙ стороне (@ManyToOne, @OneToOne).
+ * 
+ * Атрибуты:
+ * name         — имя столбца FK в таблице (по умолчанию: имя_поля_id)
+ * referencedColumnName — имя PK в связанной таблице (по умолчанию: id)
+ * nullable     — можно ли оставлять FK пустым (по умолчанию: true)
+ * unique       — уникален ли FK (для @OneToOne = true)
+ */</span>
+<span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"dept_id"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>)</code></pre>
+                    </div>
+
+                    <div class="prose">
+                        <p><b>@InverseJoinColumn(name = "...")</b></p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Пояснение</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*
+ * Используется ТОЛЬКО внутри @JoinTable для связи @ManyToMany.
+ * Указывает FK, который ссылается на СВЯЗАННУЮ (inverse) таблицу.
+ * 
+ * В @JoinTable есть ДВА join-столбца:
+ * 1. joinColumns        → FK к текущей сущности
+ * 2. inverseJoinColumns → FK к связанной сущности
+ */</span>
+<span class="an">@JoinTable</span>(
+    <span class="fn">name</span> = <span class="st">"user_roles"</span>,
+    <span class="fn">joinColumns</span> = <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"user_id"</span>),           <span class="cm">// FK к User</span>
+    <span class="fn">inverseJoinColumns</span> = <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"role_id"</span>)  <span class="cm">// FK к Role</span>
+)</code></pre>
+                    </div>
+
+                    <div class="prose">
+                        <p><b>mappedBy = "fieldName"</b></p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Пояснение</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*
+ * mappedBy объявляет ОБРАТНУЮ (inverse) сторону связи.
+ * Говорит Hibernate: "Не создавай новый FK, используй тот, 
+ * что уже описан в поле 'fieldName' связанного класса".
+ * 
+ * Правило: mappedBy ставится там, где НЕТ @JoinColumn.
+ * Если поставить mappedBy на обеих сторонах → ошибка при запуске.
+ * Если не поставить ни на одной → Hibernate создаст ДВА FK (лишняя таблица/столбец).
+ */</span>
+<span class="an">@OneToMany</span>(<span class="fn">mappedBy</span> = <span class="st">"department"</span>)  <span class="cm">// "department" — поле в Employee</span></code></pre>
+                    </div>
+
+                    <div class="prose">
+                        <p><b>cascade = CascadeType.???</b></p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Пояснение</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*
+ * cascade определяет, какие операции "перетекают" на связанные сущности.
+ * По умолчанию: NONE (ничего не каскадирует).
+ * 
+ * Варианты:
+ * PERSIST   — при save() владельца → save() связанных
+ * MERGE     — при merge() владельца → merge() связанных
+ * REMOVE    — при delete() владельца → delete() связанных (ОСТОРОЖНО!)
+ * REFRESH   — при refresh() владельца → refresh() связанных
+ * ALL       — все вышеперечисленные (часто используется с @OneToMany)
+ * 
+ * ⚠️ cascade REMOVE на @ManyToOne почти никогда не нужен!
+ * (Удаление отдела не должно удалять всех сотрудников!)
+ */</span>
+<span class="an">@OneToMany</span>(<span class="fn">cascade</span> = <span class="cl">CascadeType</span>.<span class="cl">ALL</span>)</code></pre>
+                    </div>
+
+                    <div class="prose">
+                        <p><b>fetch = FetchType.??? (LAZY vs EAGER)</b></p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Пояснение</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*
+ * LAZY  — загружать связанные данные ТОЛЬКО при первом обращении.
+ *         (Стандарт для коллекций @OneToMany, @ManyToMany)
+ * 
+ * EAGER — загружать ВСЕГДА вместе с основной сущностью (один JOIN-запрос).
+ *         (Стандарт для @ManyToOne, @OneToOne, но лучше менять на LAZY!)
+ * 
+ * ⚠️ Проблема N+1: если оставить EAGER на коллекциях, Hibernate 
+ *    выполнит 1 запрос для списка + N запросов для каждой связи!
+ *    Решение: всегда LAZY + JOIN FETCH в JPQL или @EntityGraph.
+ */</span>
+<span class="an">@OneToMany</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)   <span class="cm">// ✅ Правильно</span>
+<span class="an">@ManyToOne</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)   <span class="cm">// ✅ Рекомендуется</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Best Practices -->
+                <div class="section" id="practices">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">✅</span> Best & ⚠️ Anti Practices</h2>
+                    <div class="compare-grid">
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--accent)">✅ Best Practices</div>
+                            <ul class="compare-list">
+                                <li>Всегда используй <code>LAZY</code> для коллекций и <code>ManyToOne</code></li>
+                                <li>Синхронизируй обе стороны связи в коде (add/remove helper methods)</li>
+                                <li>Используй <code>@JoinTable</code> явно для ManyToMany, не полагайся на дефолтные имена</li>
+                                <li>Избегай <code>cascade = REMOVE</code> на @ManyToOne и @ManyToMany</li>
+                                <li>Возвращай DTO/Response, а не Entity, чтобы избежать <code>LazyInitializationException</code> и циклов в JSON</li>
+                                <li>Используй <code>orphanRemoval = true</code> только для композиций (владелец полностью управляет жизненным циклом)</li>
+                                <li>Для сложных выборок используй JPQL с <code>JOIN FETCH</code> или Spring Data <code>@EntityGraph</code></li>
+                            </ul>
+                        </div>
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--error)">⚠️ Anti Patterns</div>
+                            <ul class="compare-list">
+                                <li>❌ Оставлять <code>EAGER</code> на @OneToMany/ManyToMany (приведёт к N+1 и OutOfMemory)</li>
+                                <li>❌ Забывать обновлять inverse side (данные в БД сохранятся, но в памяти будет рассинхрон)</li>
+                                <li>❌ Ставить <code>mappedBy</code> на обеих сторонах (Hibernate не поймёт, где FK)</li>
+                                <li>❌ Использовать <code>cascade = ALL</code> на @ManyToMany (удаление студента удалит курсы!)</li>
+                                <li>❌ Сериализовать Entity в JSON без <code>@JsonIgnore</code> или DTO (бесконечная рекурсия Jackson)</li>
+                                <li>❌ Писать бизнес-логику внутри Entity (нарушение SRP, сложно тестировать)</li>
+                                <li>❌ Загружать огромные коллекции в память вместо пагинации</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Q&A -->
+                <div class="section" id="interview">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">❓</span> Вопросы для собеседования</h2>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">В чём разница между owning side и inverse side?</div>
+                                <div class="qa-q-en">Difference between owning and inverse side?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><b>Owning side</b> (владелец) — сторона, которая физически хранит внешний ключ (FK) в БД. Именно изменения на этой стороне Hibernate отслеживает для генерации INSERT/UPDATE. <b>Inverse side</b> (зеркало) — объявляется через <code>mappedBy</code>, не хранит FK, служит только для навигации в объектной модели. Hibernate игнорирует изменения на inverse side при сохранении.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jpa-1">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Что такое N+1 проблема и как её решить?</div>
+                                <div class="qa-q-en">What is N+1 problem and how to fix it?</div>
+                            </div>
+                            <span class="qa-badge hard">Hard</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">Проблема возникает при <code>LAZY</code> загрузке коллекций в цикле: 1 запрос на получение списка сущностей + N запросов на загрузку связей для каждой сущности. Решения: 1) <code>JOIN FETCH</code> в JPQL (<code>SELECT d FROM Department d JOIN FETCH d.employees</code>), 2) <code>@EntityGraph</code> в Spring Data, 3) Batch fetching (<code>@BatchSize</code>), 4) DTO-проекции вместо загрузки Entity.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jpa-2">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Зачем нужен mappedBy и что будет, если его забыть?</div>
+                                <div class="qa-q-en">Why mappedBy? What happens if omitted?</div>
+                            </div>
+                            <span class="qa-badge easy">Easy</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><code>mappedBy</code> указывает Hibernate, что связь уже описана на другой стороне и не нужно создавать дополнительный FK. Если забыть <code>mappedBy</code> в бидирекциональной связи, Hibernate создаст <b>две отдельные связи</b> (два FK или лишнюю промежуточную таблицу), что приведёт к дублированию данных и ошибкам целостности.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jpa-3">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">В чём разница между cascade = REMOVE и orphanRemoval = true?</div>
+                                <div class="qa-q-en">Difference between cascade REMOVE and orphanRemoval?</div>
+                            </div>
+                            <span class="qa-badge hard">Hard</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><code>cascade = REMOVE</code> удаляет связанные сущности только при удалении <b>родителя</b>. <code>orphanRemoval = true</code> удаляет "сирот" — связанные сущности, которые были отвязаны от родителя (например, <code>department.getEmployees().remove(emp)</code>), даже если родитель не удаляется. <code>orphanRemoval</code> подразумевает <code>cascade = ALL</code> и используется только для композиций (полное владение жизненным циклом).</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jpa-4">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <button id="scrollTop" title="Наверх">↑</button>
+</body>
+</html>

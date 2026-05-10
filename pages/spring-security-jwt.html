@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spring Security + JWT | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#f06060"></span>📌 Конспект</a>
+    <a class="nav-link" href="#authn-vs-authz"><span class="nav-dot" style="background:#4f8ef7"></span>Authn vs Authz</a>
+    <a class="nav-link" href="#filter-chain"><span class="nav-dot" style="background:#22d3a0"></span>SecurityFilterChain</a>
+    <a class="nav-link" href="#jwt-theory"><span class="nav-dot" style="background:#f5a623"></span>JWT теория</a>
+    <a class="nav-link" href="#jwt-flow"><span class="nav-dot" style="background:#b88bfa"></span>JWT Flow</a>
+    <a class="nav-link" href="#userdetails"><span class="nav-dot" style="background:#5bcefa"></span>UserDetails</a>
+    <a class="nav-link" href="#roles"><span class="nav-dot" style="background:#f06060"></span>Roles / Authorities</a>
+    <a class="nav-link" href="#method-security"><span class="nav-dot" style="background:#4f8ef7"></span>Method Security</a>
+    <a class="nav-link" href="#practices"><span class="nav-dot" style="background:#22d3a0"></span>Best Practices</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#f5a623"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="spring-boot.html"><span class="nav-dot" style="background:#22d3a0"></span>Spring Boot</a>
+    <a class="nav-link" href="restcontroller.html"><span class="nav-dot" style="background:#4f8ef7"></span>@RestController</a>
+    <a class="nav-link" href="global-exception-handler.html"><span class="nav-dot" style="background:#f06060"></span>ExceptionHandler</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">🔐 Spring Security + JWT</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#f06060;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- HERO -->
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#5a0a0a,#f06060)">🔐</div>
+        <div>
+          <h1>Spring Security + JWT</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-green">Spring</span>
+            <span class="chip chip-red">Security</span>
+            <span class="chip chip-warn">JWT</span>
+            <span class="chip chip-cyan">Auth</span>
+          </div>
+        </div>
+      </div>
+      <p>Authentication vs Authorization, SecurityFilterChain, JWT структура и flow, UserDetailsService, OncePerRequestFilter, Roles и Authorities, Method Security — полный разбор с реальными примерами.</p>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#authn-vs-authz">Authn vs Authz</a>
+        <a class="toc-link" href="#filter-chain">FilterChain</a>
+        <a class="toc-link" href="#jwt-theory">JWT теория</a>
+        <a class="toc-link" href="#jwt-flow">JWT Flow</a>
+        <a class="toc-link" href="#userdetails">UserDetails</a>
+        <a class="toc-link" href="#roles">Roles</a>
+        <a class="toc-link" href="#method-security">Method Security</a>
+        <a class="toc-link" href="#practices">Best Practices</a>
+        <a class="toc-link" href="#code">💻 Код</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-red">
+        <div class="box-label">Ключевые концепции</div>
+        <strong>Authentication</strong> — кто ты? (логин + пароль → токен)<br>
+        <strong>Authorization</strong> — что тебе можно? (роли, права доступа)<br>
+        <strong>JWT</strong> — самодостаточный токен (не нужна сессия на сервере)<br>
+        <strong>SecurityFilterChain</strong> — цепочка фильтров, каждый запрос проходит через неё
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Компонент</th><th>Роль</th><th>Класс / Аннотация</th></tr>
+          <tr><td><code>SecurityFilterChain</code></td><td>Настройка правил доступа и фильтров</td><td><code>@Bean SecurityFilterChain</code></td></tr>
+          <tr><td><code>UserDetailsService</code></td><td>Загрузка пользователя из БД по username</td><td><code>implements UserDetailsService</code></td></tr>
+          <tr><td><code>UserDetails</code></td><td>Объект с данными пользователя для Security</td><td><code>implements UserDetails</code></td></tr>
+          <tr><td><code>JwtFilter</code></td><td>Проверяет JWT в каждом запросе</td><td><code>extends OncePerRequestFilter</code></td></tr>
+          <tr><td><code>AuthenticationManager</code></td><td>Проверяет логин/пароль</td><td><code>authManager.authenticate()</code></td></tr>
+          <tr><td><code>PasswordEncoder</code></td><td>Хэширование паролей (BCrypt)</td><td><code>BCryptPasswordEncoder</code></td></tr>
+          <tr><td><code>SecurityContext</code></td><td>Хранит текущего аутентифицированного пользователя</td><td><code>SecurityContextHolder</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. AUTHN VS AUTHZ ═══ -->
+    <div class="section" id="authn-vs-authz">
+      <div class="section-title"><span class="s-icon">🆚</span> Authentication vs Authorization</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--primary)">🔑 Authentication (Аутентификация)</div>
+          <ul class="compare-list">
+            <li><strong>Кто ты?</strong> — проверка личности</li>
+            <li>Логин + пароль → токен / сессия</li>
+            <li>Происходит один раз при входе</li>
+            <li>Пример: POST /api/auth/login</li>
+            <li>HTTP 401 Unauthorized — не аутентифицирован</li>
+            <li>Spring: <code>AuthenticationManager.authenticate()</code></li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">🛡 Authorization (Авторизация)</div>
+          <ul class="compare-list">
+            <li><strong>Что тебе можно?</strong> — проверка прав</li>
+            <li>Роли и полномочия (ROLE_ADMIN, READ_USERS)</li>
+            <li>Проверяется при каждом запросе</li>
+            <li>Пример: только ADMIN может DELETE /users</li>
+            <li>HTTP 403 Forbidden — нет прав</li>
+            <li>Spring: <code>@PreAuthorize</code>, <code>hasRole()</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 3. FILTER CHAIN ═══ -->
+    <div class="section" id="filter-chain">
+      <div class="section-title"><span class="s-icon">⛓</span> SecurityFilterChain</div>
+      <div class="prose">
+        <p>Каждый HTTP-запрос проходит через цепочку фильтров Spring Security. Фильтры выполняются последовательно. Если один отклоняет запрос — следующие не вызываются.</p>
+      </div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Порядок фильтров</span></div>
+        <pre style="font-size:0.78rem;line-height:1.8">
+HTTP Request
+    │
+    ▼
+<span class="cl">SecurityContextPersistenceFilter</span>  — восстанавливает SecurityContext из сессии/токена
+    │
+    ▼
+<span class="cl">UsernamePasswordAuthenticationFilter</span>  — проверяет форму логина (если используется)
+    │
+    ▼
+<span class="an">JwtAuthenticationFilter</span>  ← наш кастомный фильтр (OncePerRequestFilter)
+    │   • Читает токен из заголовка Authorization: Bearer &lt;token&gt;
+    │   • Валидирует JWT
+    │   • Устанавливает Authentication в SecurityContextHolder
+    ▼
+<span class="cl">ExceptionTranslationFilter</span>  — перехватывает 401/403 и возвращает правильный ответ
+    │
+    ▼
+<span class="cl">FilterSecurityInterceptor</span>  — проверяет права доступа к ресурсу
+    │
+    ▼
+Controller / Handler
+        </pre>
+      </div>
+      <div class="box box-blue">
+        <div class="box-label">💡 OncePerRequestFilter</div>
+        Базовый класс для кастомных фильтров. Гарантирует выполнение ровно <strong>один раз</strong> на запрос (даже при forward/include внутри приложения). Всегда наследуй от него для JWT фильтра.
+      </div>
+    </div>
+
+    <!-- ═══ 4. JWT ТЕОРИЯ ═══ -->
+    <div class="section" id="jwt-theory">
+      <div class="section-title"><span class="s-icon">🪙</span> JWT — структура и принцип</div>
+      <div class="prose">
+        <p><strong>JWT (JSON Web Token)</strong> — компактный, самодостаточный токен для передачи данных между сторонами. Состоит из трёх частей, разделённых точкой: <code>header.payload.signature</code></p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Часть</th><th>Содержимое</th><th>Пример</th></tr>
+          <tr><td><strong>Header</strong></td><td>Алгоритм подписи + тип токена</td><td><code>{"alg":"HS256","typ":"JWT"}</code></td></tr>
+          <tr><td><strong>Payload</strong></td><td>Claims: sub, exp, iat, roles, + кастомные</td><td><code>{"sub":"ivan","exp":1234,"roles":["ADMIN"]}</code></td></tr>
+          <tr><td><strong>Signature</strong></td><td>HMAC(base64(header)+"."+base64(payload), secret)</td><td><code>SflKxwRJSMeKKF2QT4fwpM...</code></td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Стандартные Claims (поля Payload)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Claim</th><th>Описание</th><th>Тип</th></tr>
+          <tr><td><code>sub</code></td><td>Subject — кому выдан (username / userId)</td><td>String</td></tr>
+          <tr><td><code>iss</code></td><td>Issuer — кто выдал (название сервиса)</td><td>String</td></tr>
+          <tr><td><code>exp</code></td><td>Expiration — когда истекает (Unix timestamp)</td><td>Long</td></tr>
+          <tr><td><code>iat</code></td><td>Issued At — когда выдан</td><td>Long</td></tr>
+          <tr><td><code>jti</code></td><td>JWT ID — уникальный идентификатор токена</td><td>String</td></tr>
+        </table>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Плюсы JWT</div>
+          <ul class="compare-list">
+            <li>Stateless — не нужна сессия на сервере</li>
+            <li>Масштабируется — любой сервер проверит токен</li>
+            <li>Самодостаточный — содержит все нужные данные</li>
+            <li>Работает в микросервисах</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">⚠️ Минусы JWT</div>
+          <ul class="compare-list">
+            <li>Нельзя отозвать до истечения (нет logout)</li>
+            <li>Payload виден всем (не шифруется, только подпись)</li>
+            <li>Не храни секреты в Payload!</li>
+            <li>При компрометации secret — все токены невалидны</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 5. JWT FLOW ═══ -->
+    <div class="section" id="jwt-flow">
+      <div class="section-title"><span class="s-icon">🔄</span> JWT Authentication Flow</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Flow схема</span></div>
+        <pre style="font-size:0.78rem;line-height:2.0">
+<span class="cm">── STEP 1: LOGIN ─────────────────────────────────────────</span>
+
+Client  ──POST /api/auth/login──▶  AuthController
+        { "username": "ivan",          │
+          "password": "pass123" }      │
+                                  AuthService
+                                       │ authManager.authenticate()
+                                  UserDetailsService.loadUserByUsername()
+                                       │ ← проверяет пароль через BCrypt
+                                       │
+                              <span class="ty">генерируем JWT токен</span>
+                                       │
+Client  ◀── { "token": "eyJ..." } ────┘
+
+<span class="cm">── STEP 2: ЗАЩИЩЁННЫЙ ЗАПРОС ─────────────────────────────</span>
+
+Client  ──GET /api/users──▶  <span class="cl">JwtAuthFilter</span> (OncePerRequestFilter)
+  Header:                         │
+  Authorization: Bearer eyJ...    │ 1. Читаем токен из заголовка
+                                  │ 2. Извлекаем username из JWT
+                                  │ 3. Загружаем UserDetails из БД
+                                  │ 4. Валидируем подпись + exp
+                                  │ 5. Устанавливаем Authentication
+                                  │    в SecurityContextHolder
+                                  ▼
+                         <span class="an">SecurityFilterChain</span>
+                                  │ проверяет роли и права
+                                  ▼
+                            <span class="cl">UserController</span>
+                                  │ получает данные из БД
+                                  ▼
+Client  ◀── 200 OK { users: [...] }
+        </pre>
+      </div>
+    </div>
+
+    <!-- ═══ 6. USERDETAILS ═══ -->
+    <div class="section" id="userdetails">
+      <div class="section-title"><span class="s-icon">👤</span> UserDetails и UserDetailsService</div>
+      <div class="prose">
+        <p><code>UserDetails</code> — интерфейс Spring Security для объекта пользователя. <code>UserDetailsService</code> — интерфейс с одним методом <code>loadUserByUsername()</code>, который Spring вызывает при аутентификации.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Метод UserDetails</th><th>Описание</th></tr>
+          <tr><td><code>getUsername()</code></td><td>Логин / email пользователя</td></tr>
+          <tr><td><code>getPassword()</code></td><td>Хэшированный пароль (BCrypt)</td></tr>
+          <tr><td><code>getAuthorities()</code></td><td>Роли и права: <code>ROLE_ADMIN</code>, <code>READ_USERS</code></td></tr>
+          <tr><td><code>isAccountNonExpired()</code></td><td>Аккаунт не просрочен (обычно true)</td></tr>
+          <tr><td><code>isAccountNonLocked()</code></td><td>Аккаунт не заблокирован</td></tr>
+          <tr><td><code>isCredentialsNonExpired()</code></td><td>Пароль не просрочен</td></tr>
+          <tr><td><code>isEnabled()</code></td><td>Аккаунт активен</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 7. ROLES ═══ -->
+    <div class="section" id="roles">
+      <div class="section-title"><span class="s-icon">🎭</span> Roles и Authorities</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--primary)">Role (Роль)</div>
+          <ul class="compare-list">
+            <li>Группа прав</li>
+            <li>Prefix <code>ROLE_</code> обязателен в Spring Security</li>
+            <li>Пример: <code>ROLE_ADMIN</code>, <code>ROLE_USER</code></li>
+            <li><code>hasRole("ADMIN")</code> → ищет <code>ROLE_ADMIN</code></li>
+            <li>Назначается пользователю целиком</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">Authority (Полномочие)</div>
+          <ul class="compare-list">
+            <li>Конкретное право на действие</li>
+            <li>Без обязательного префикса</li>
+            <li>Пример: <code>READ_USERS</code>, <code>DELETE_ORDERS</code></li>
+            <li><code>hasAuthority("READ_USERS")</code></li>
+            <li>Более гранулярный контроль</li>
+          </ul>
+        </div>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ ROLE_ префикс</div>
+        <code>hasRole("ADMIN")</code> автоматически добавляет префикс и ищет <code>ROLE_ADMIN</code>.<br>
+        <code>hasAuthority("ROLE_ADMIN")</code> ищет точное совпадение.<br>
+        В <code>getAuthorities()</code> всегда возвращай <code>ROLE_</code> с префиксом.
+      </div>
+    </div>
+
+    <!-- ═══ 8. METHOD SECURITY ═══ -->
+    <div class="section" id="method-security">
+      <div class="section-title"><span class="s-icon">🔒</span> Method Security</div>
+      <div class="prose">
+        <p>Кроме настройки в SecurityFilterChain, можно защищать отдельные методы аннотациями. Включается через <code>@EnableMethodSecurity</code>.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Когда проверяется</th><th>Пример</th></tr>
+          <tr><td><code>@PreAuthorize</code></td><td>До выполнения метода</td><td><code>@PreAuthorize("hasRole('ADMIN')")</code></td></tr>
+          <tr><td><code>@PostAuthorize</code></td><td>После выполнения (проверяет результат)</td><td><code>@PostAuthorize("returnObject.owner == authentication.name")</code></td></tr>
+          <tr><td><code>@Secured</code></td><td>До выполнения (устаревший, проще)</td><td><code>@Secured("ROLE_ADMIN")</code></td></tr>
+          <tr><td><code>@RolesAllowed</code></td><td>До выполнения (JSR-250)</td><td><code>@RolesAllowed("ADMIN")</code></td></tr>
+          <tr><td><code>@PreFilter</code></td><td>Фильтрует входную коллекцию</td><td><code>@PreFilter("filterObject.owner == authentication.name")</code></td></tr>
+          <tr><td><code>@PostFilter</code></td><td>Фильтрует выходную коллекцию</td><td><code>@PostFilter("filterObject.owner == authentication.name")</code></td></tr>
+        </table>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">💡 SpEL выражения в @PreAuthorize</div>
+        <code>hasRole('ADMIN')</code> — роль ADMIN<br>
+        <code>hasAnyRole('ADMIN','MODERATOR')</code> — любая из ролей<br>
+        <code>hasAuthority('READ_USERS')</code> — конкретное право<br>
+        <code>isAuthenticated()</code> — просто аутентифицирован<br>
+        <code>authentication.name == #username</code> — сравниваем с параметром метода<br>
+        <code>#user.id == authentication.principal.id</code> — доступ к своим данным
+      </div>
+    </div>
+
+    <!-- ═══ 9. BEST PRACTICES ═══ -->
+    <div class="section" id="practices">
+      <div class="section-title"><span class="s-icon">✅</span> Best Practices и ошибки</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Best Practices</div>
+          <ul class="compare-list">
+            <li>Всегда хэшируй пароли через BCrypt (factor ≥ 10)</li>
+            <li>Короткий срок жизни Access Token (15–60 мин)</li>
+            <li>Используй Refresh Token для обновления</li>
+            <li>Храни JWT secret в ENV, не в application.yml</li>
+            <li>HTTPS всегда — токен в заголовке виден при HTTP</li>
+            <li>Не храни секреты (пароли, карты) в JWT payload</li>
+            <li>DI через конструктор, не field injection в Security классах</li>
+            <li>Настраивай CORS явно — не разрешай все origins в prod</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Частые ошибки</div>
+          <ul class="compare-list">
+            <li>Хранить JWT в localStorage — XSS уязвимость</li>
+            <li>Длинный срок жизни токена (7+ дней) без refresh</li>
+            <li>Не валидировать exp и подпись токена</li>
+            <li>Разрешать все origins через <code>cors().disable()</code></li>
+            <li>Отключать CSRF без понимания последствий</li>
+            <li>Возвращать стектрейс в 403/401 ответах</li>
+            <li>Хранить plain text пароли или MD5/SHA1</li>
+            <li>Забывать <code>sessionManagement(STATELESS)</code> при JWT</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 10. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. SecurityFilterChain — настройка правил доступа</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Configuration</span>
+<span class="an">@EnableWebSecurity</span>                                    <span class="cm">// включаем Spring Security</span>
+<span class="an">@EnableMethodSecurity</span>                                 <span class="cm">// включаем @PreAuthorize и др.</span>
+<span class="kw">public class</span> <span class="cl">SecurityConfig</span> {
+
+    <span class="kw">private final</span> <span class="cl">JwtAuthFilter</span> jwtAuthFilter;         <span class="cm">// наш JWT фильтр</span>
+    <span class="kw">private final</span> <span class="cl">UserDetailsService</span> userDetailsService; <span class="cm">// загрузка пользователя</span>
+
+    <span class="kw">public</span> <span class="fn">SecurityConfig</span>(<span class="cl">JwtAuthFilter</span> jwtAuthFilter,
+                           <span class="cl">UserDetailsService</span> userDetailsService) {
+        <span class="kw">this</span>.jwtAuthFilter = jwtAuthFilter;
+        <span class="kw">this</span>.userDetailsService = userDetailsService;
+    }
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">SecurityFilterChain</span> <span class="fn">securityFilterChain</span>(<span class="cl">HttpSecurity</span> http) <span class="kw">throws</span> <span class="cl">Exception</span> {
+        <span class="kw">return</span> http
+            <span class="cm">// ── CSRF отключаем для REST API (токены сами защищают)</span>
+            .<span class="fn">csrf</span>(csrf -> csrf.<span class="fn">disable</span>())
+
+            <span class="cm">// ── CORS настройка</span>
+            .<span class="fn">cors</span>(cors -> cors.<span class="fn">configurationSource</span>(<span class="fn">corsConfigurationSource</span>()))
+
+            <span class="cm">// ── Управление сессиями: STATELESS для JWT</span>
+            .<span class="fn">sessionManagement</span>(session ->
+                session.<span class="fn">sessionCreationPolicy</span>(<span class="cl">SessionCreationPolicy</span>.STATELESS))
+
+            <span class="cm">// ── Правила доступа к endpoints</span>
+            .<span class="fn">authorizeHttpRequests</span>(auth -> auth
+                <span class="cm">// публичные endpoints — без токена</span>
+                .<span class="fn">requestMatchers</span>(<span class="st">"/api/auth/**"</span>).<span class="fn">permitAll</span>()
+                .<span class="fn">requestMatchers</span>(<span class="st">"/api/public/**"</span>).<span class="fn">permitAll</span>()
+                .<span class="fn">requestMatchers</span>(<span class="st">"/actuator/health"</span>).<span class="fn">permitAll</span>()
+                .<span class="fn">requestMatchers</span>(<span class="st">"/swagger-ui/**"</span>, <span class="st">"/v3/api-docs/**"</span>).<span class="fn">permitAll</span>()
+
+                <span class="cm">// только ADMIN</span>
+                .<span class="fn">requestMatchers</span>(<span class="cl">HttpMethod</span>.DELETE, <span class="st">"/api/users/**"</span>).<span class="fn">hasRole</span>(<span class="st">"ADMIN"</span>)
+                .<span class="fn">requestMatchers</span>(<span class="st">"/api/admin/**"</span>).<span class="fn">hasRole</span>(<span class="st">"ADMIN"</span>)
+
+                <span class="cm">// аутентифицированные пользователи</span>
+                .<span class="fn">anyRequest</span>().<span class="fn">authenticated</span>()                  <span class="cm">// всё остальное — с токеном</span>
+            )
+
+            <span class="cm">// ── Добавляем наш JWT фильтр ПЕРЕД стандартным фильтром аутентификации</span>
+            .<span class="fn">addFilterBefore</span>(jwtAuthFilter,
+                <span class="cl">UsernamePasswordAuthenticationFilter</span>.<span class="kw">class</span>)
+
+            <span class="cm">// ── Обработчики 401 и 403</span>
+            .<span class="fn">exceptionHandling</span>(ex -> ex
+                .<span class="fn">authenticationEntryPoint</span>((<span class="fn">req</span>, <span class="fn">res</span>, <span class="fn">e</span>) -> {
+                    res.<span class="fn">setStatus</span>(<span class="nu">401</span>);                          <span class="cm">// 401 — не аутентифицирован</span>
+                    res.<span class="fn">setContentType</span>(<span class="st">"application/json"</span>);
+                    res.<span class="fn">getWriter</span>().<span class="fn">write</span>(<span class="st">"{\"error\":\"Unauthorized\"}"</span>);
+                })
+                .<span class="fn">accessDeniedHandler</span>((<span class="fn">req</span>, <span class="fn">res</span>, <span class="fn">e</span>) -> {
+                    res.<span class="fn">setStatus</span>(<span class="nu">403</span>);                          <span class="cm">// 403 — нет прав</span>
+                    res.<span class="fn">setContentType</span>(<span class="st">"application/json"</span>);
+                    res.<span class="fn">getWriter</span>().<span class="fn">write</span>(<span class="st">"{\"error\":\"Forbidden\"}"</span>);
+                })
+            )
+            .<span class="fn">build</span>();
+    }
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">PasswordEncoder</span> <span class="fn">passwordEncoder</span>() {
+        <span class="kw">return</span> <span class="kw">new</span> <span class="cl">BCryptPasswordEncoder</span>(<span class="nu">12</span>);             <span class="cm">// factor 12 — хорошая защита</span>
+    }
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">AuthenticationManager</span> <span class="fn">authenticationManager</span>(
+            <span class="cl">AuthenticationConfiguration</span> config) <span class="kw">throws</span> <span class="cl">Exception</span> {
+        <span class="kw">return</span> config.<span class="fn">getAuthenticationManager</span>();            <span class="cm">// нужен для AuthController</span>
+    }
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">CorsConfigurationSource</span> <span class="fn">corsConfigurationSource</span>() {
+        <span class="cl">CorsConfiguration</span> config = <span class="kw">new</span> <span class="cl">CorsConfiguration</span>();
+        config.<span class="fn">setAllowedOrigins</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"http://localhost:3000"</span>)); <span class="cm">// фронт</span>
+        config.<span class="fn">setAllowedMethods</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"GET"</span>,<span class="st">"POST"</span>,<span class="st">"PUT"</span>,<span class="st">"DELETE"</span>,<span class="st">"PATCH"</span>));
+        config.<span class="fn">setAllowedHeaders</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"*"</span>));
+        config.<span class="fn">setAllowCredentials</span>(<span class="kw">true</span>);
+        <span class="cl">UrlBasedCorsConfigurationSource</span> source = <span class="kw">new</span> <span class="cl">UrlBasedCorsConfigurationSource</span>();
+        source.<span class="fn">registerCorsConfiguration</span>(<span class="st">"/**"</span>, config);   <span class="cm">// для всех путей</span>
+        <span class="kw">return</span> source;
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">2. JwtService — генерация и валидация токена</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// Зависимость в pom.xml:</span>
+<span class="cm">// &lt;dependency&gt;</span>
+<span class="cm">//   &lt;groupId&gt;io.jsonwebtoken&lt;/groupId&gt;</span>
+<span class="cm">//   &lt;artifactId&gt;jjwt-api&lt;/artifactId&gt;</span>
+<span class="cm">//   &lt;version&gt;0.12.3&lt;/version&gt;</span>
+<span class="cm">// &lt;/dependency&gt;</span>
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">JwtService</span> {
+
+    <span class="an">@Value</span>(<span class="st">"${app.jwt.secret}"</span>)
+    <span class="kw">private</span> <span class="cl">String</span> secret;                                <span class="cm">// секрет из ENV, не в коде!</span>
+
+    <span class="an">@Value</span>(<span class="st">"${app.jwt.expiration:86400000}"</span>)
+    <span class="kw">private long</span> expiration;                              <span class="cm">// мс, по умолч. 24 часа</span>
+
+    <span class="cm">// ── Генерация ключа из секрета</span>
+    <span class="kw">private</span> <span class="cl">SecretKey</span> <span class="fn">getSigningKey</span>() {
+        <span class="kw">byte</span>[] keyBytes = <span class="cl">Decoders</span>.BASE64.<span class="fn">decode</span>(secret);  <span class="cm">// декодируем Base64 секрет</span>
+        <span class="kw">return</span> <span class="cl">Keys</span>.<span class="fn">hmacShaKeyFor</span>(keyBytes);               <span class="cm">// создаём HMAC-SHA ключ</span>
+    }
+
+    <span class="cm">// ── Генерация JWT токена</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">generateToken</span>(<span class="cl">UserDetails</span> userDetails) {
+        <span class="kw">return</span> <span class="fn">generateToken</span>(<span class="cl">Map</span>.<span class="fn">of</span>(), userDetails);        <span class="cm">// без доп. claims</span>
+    }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">generateToken</span>(
+            <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Object</span>&gt; extraClaims,              <span class="cm">// дополнительные данные в токен</span>
+            <span class="cl">UserDetails</span> userDetails) {
+
+        <span class="kw">return</span> <span class="cl">Jwts</span>.<span class="fn">builder</span>()
+            .<span class="fn">claims</span>(extraClaims)                          <span class="cm">// добавляем доп. claims</span>
+            .<span class="fn">subject</span>(userDetails.<span class="fn">getUsername</span>())           <span class="cm">// sub = username</span>
+            .<span class="fn">issuedAt</span>(<span class="kw">new</span> <span class="cl">Date</span>(<span class="cl">System</span>.<span class="fn">currentTimeMillis</span>())) <span class="cm">// iat = сейчас</span>
+            .<span class="fn">expiration</span>(<span class="kw">new</span> <span class="cl">Date</span>(                         <span class="cm">// exp = сейчас + expiration</span>
+                <span class="cl">System</span>.<span class="fn">currentTimeMillis</span>() + expiration))
+            .<span class="fn">signWith</span>(<span class="fn">getSigningKey</span>())                    <span class="cm">// подписываем HMAC-SHA256</span>
+            .<span class="fn">compact</span>();                                   <span class="cm">// собираем строку токена</span>
+    }
+
+    <span class="cm">// ── Извлечение username из токена</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">extractUsername</span>(<span class="cl">String</span> token) {
+        <span class="kw">return</span> <span class="fn">extractClaim</span>(token, <span class="cl">Claims</span>::<span class="fn">getSubject</span>);    <span class="cm">// sub claim = username</span>
+    }
+
+    <span class="cm">// ── Извлечение любого claim</span>
+    <span class="kw">public</span> &lt;<span class="ty">T</span>&gt; <span class="ty">T</span> <span class="fn">extractClaim</span>(<span class="cl">String</span> token,
+            <span class="cl">Function</span>&lt;<span class="cl">Claims</span>, <span class="ty">T</span>&gt; claimsResolver) {
+        <span class="kw">final</span> <span class="cl">Claims</span> claims = <span class="fn">extractAllClaims</span>(token);     <span class="cm">// парсим все claims</span>
+        <span class="kw">return</span> claimsResolver.<span class="fn">apply</span>(claims);               <span class="cm">// применяем функцию</span>
+    }
+
+    <span class="cm">// ── Парсинг всех claims из токена</span>
+    <span class="kw">private</span> <span class="cl">Claims</span> <span class="fn">extractAllClaims</span>(<span class="cl">String</span> token) {
+        <span class="kw">return</span> <span class="cl">Jwts</span>.<span class="fn">parser</span>()
+            .<span class="fn">verifyWith</span>(<span class="fn">getSigningKey</span>())                  <span class="cm">// проверяем подпись</span>
+            .<span class="fn">build</span>()
+            .<span class="fn">parseSignedClaims</span>(token)                     <span class="cm">// парсим (кидает исключение при ошибке)</span>
+            .<span class="fn">getPayload</span>();                                 <span class="cm">// возвращаем payload</span>
+    }
+
+    <span class="cm">// ── Валидация токена</span>
+    <span class="kw">public boolean</span> <span class="fn">isTokenValid</span>(<span class="cl">String</span> token, <span class="cl">UserDetails</span> userDetails) {
+        <span class="kw">final</span> <span class="cl">String</span> username = <span class="fn">extractUsername</span>(token);    <span class="cm">// достаём username из токена</span>
+        <span class="kw">return</span> username.<span class="fn">equals</span>(userDetails.<span class="fn">getUsername</span>()) <span class="cm">// совпадает с пользователем</span>
+            && !<span class="fn">isTokenExpired</span>(token);                   <span class="cm">// и токен не истёк</span>
+    }
+
+    <span class="kw">private boolean</span> <span class="fn">isTokenExpired</span>(<span class="cl">String</span> token) {
+        <span class="kw">return</span> <span class="fn">extractExpiration</span>(token).<span class="fn">before</span>(<span class="kw">new</span> <span class="cl">Date</span>()); <span class="cm">// exp < сейчас</span>
+    }
+
+    <span class="kw">private</span> <span class="cl">Date</span> <span class="fn">extractExpiration</span>(<span class="cl">String</span> token) {
+        <span class="kw">return</span> <span class="fn">extractClaim</span>(token, <span class="cl">Claims</span>::<span class="fn">getExpiration</span>); <span class="cm">// exp claim</span>
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">3. JwtAuthFilter — проверка токена в каждом запросе</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">JwtAuthFilter</span> <span class="kw">extends</span> <span class="cl">OncePerRequestFilter</span> { <span class="cm">// один раз на запрос</span>
+
+    <span class="kw">private final</span> <span class="cl">JwtService</span> jwtService;
+    <span class="kw">private final</span> <span class="cl">UserDetailsService</span> userDetailsService;
+
+    <span class="kw">public</span> <span class="fn">JwtAuthFilter</span>(<span class="cl">JwtService</span> jwtService,
+                          <span class="cl">UserDetailsService</span> userDetailsService) {
+        <span class="kw">this</span>.jwtService = jwtService;
+        <span class="kw">this</span>.userDetailsService = userDetailsService;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> <span class="fn">doFilterInternal</span>(
+            <span class="cl">HttpServletRequest</span> request,                   <span class="cm">// входящий запрос</span>
+            <span class="cl">HttpServletResponse</span> response,                  <span class="cm">// ответ</span>
+            <span class="cl">FilterChain</span> filterChain)                        <span class="cm">// следующий фильтр</span>
+            <span class="kw">throws</span> <span class="cl">ServletException</span>, <span class="cl">IOException</span> {
+
+        <span class="cm">// ── 1. Читаем заголовок Authorization</span>
+        <span class="kw">final</span> <span class="cl">String</span> authHeader = request.<span class="fn">getHeader</span>(<span class="st">"Authorization"</span>);
+
+        <span class="cm">// ── 2. Если нет заголовка или не Bearer — пропускаем (публичный endpoint)</span>
+        <span class="kw">if</span> (authHeader == <span class="kw">null</span> || !authHeader.<span class="fn">startsWith</span>(<span class="st">"Bearer "</span>)) {
+            filterChain.<span class="fn">doFilter</span>(request, response);      <span class="cm">// передаём дальше</span>
+            <span class="kw">return</span>;
+        }
+
+        <span class="cm">// ── 3. Извлекаем токен (убираем "Bearer ")</span>
+        <span class="kw">final</span> <span class="cl">String</span> jwt = authHeader.<span class="fn">substring</span>(<span class="nu">7</span>);        <span class="cm">// "Bearer " = 7 символов</span>
+
+        <span class="kw">try</span> {
+            <span class="cm">// ── 4. Извлекаем username из токена</span>
+            <span class="kw">final</span> <span class="cl">String</span> username = jwtService.<span class="fn">extractUsername</span>(jwt);
+
+            <span class="cm">// ── 5. Если username есть и пользователь ещё не аутентифицирован</span>
+            <span class="kw">if</span> (username != <span class="kw">null</span> &&
+                <span class="cl">SecurityContextHolder</span>.<span class="fn">getContext</span>().<span class="fn">getAuthentication</span>() == <span class="kw">null</span>) {
+
+                <span class="cm">// ── 6. Загружаем пользователя из БД</span>
+                <span class="cl">UserDetails</span> userDetails =
+                    userDetailsService.<span class="fn">loadUserByUsername</span>(username);
+
+                <span class="cm">// ── 7. Проверяем валидность токена</span>
+                <span class="kw">if</span> (jwtService.<span class="fn">isTokenValid</span>(jwt, userDetails)) {
+
+                    <span class="cm">// ── 8. Создаём объект аутентификации</span>
+                    <span class="cl">UsernamePasswordAuthenticationToken</span> authToken =
+                        <span class="kw">new</span> <span class="cl">UsernamePasswordAuthenticationToken</span>(
+                            userDetails,                    <span class="cm">// principal</span>
+                            <span class="kw">null</span>,                           <span class="cm">// credentials (не нужны)</span>
+                            userDetails.<span class="fn">getAuthorities</span>()    <span class="cm">// роли</span>
+                        );
+
+                    <span class="cm">// ── 9. Добавляем детали запроса</span>
+                    authToken.<span class="fn">setDetails</span>(
+                        <span class="kw">new</span> <span class="cl">WebAuthenticationDetailsSource</span>().<span class="fn">buildDetails</span>(request));
+
+                    <span class="cm">// ── 10. Устанавливаем аутентификацию в SecurityContext</span>
+                    <span class="cl">SecurityContextHolder</span>.<span class="fn">getContext</span>()
+                        .<span class="fn">setAuthentication</span>(authToken);     <span class="cm">// теперь запрос аутентифицирован</span>
+                }
+            }
+        } <span class="kw">catch</span> (<span class="cl">JwtException</span> e) {
+            <span class="cm">// ── Невалидный токен — просто не устанавливаем аутентификацию</span>
+            <span class="cm">// SecurityFilterChain сам вернёт 401</span>
+        }
+
+        <span class="cm">// ── 11. Передаём запрос следующему фильтру</span>
+        filterChain.<span class="fn">doFilter</span>(request, response);
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">4. UserDetails и UserDetailsService</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Entity пользователя реализует UserDetails</span>
+<span class="an">@Entity</span>
+<span class="an">@Table</span>(name = <span class="st">"users"</span>)
+<span class="an">@Getter</span> <span class="an">@Setter</span> <span class="an">@Builder</span> <span class="an">@NoArgsConstructor</span> <span class="an">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">User</span> <span class="kw">implements</span> <span class="cl">UserDetails</span> {        <span class="cm">// Spring Security интерфейс</span>
+
+    <span class="an">@Id</span>
+    <span class="an">@GeneratedValue</span>(strategy = <span class="cl">GenerationType</span>.IDENTITY)
+    <span class="kw">private</span> <span class="cl">Long</span> id;
+
+    <span class="an">@Column</span>(unique = <span class="kw">true</span>, nullable = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cl">String</span> email;                           <span class="cm">// используем как username</span>
+
+    <span class="kw">private</span> <span class="cl">String</span> password;                        <span class="cm">// хэшированный BCrypt пароль</span>
+
+    <span class="an">@Enumerated</span>(<span class="cl">EnumType</span>.STRING)
+    <span class="kw">private</span> <span class="cl">Role</span> role;                              <span class="cm">// ROLE_ADMIN, ROLE_USER</span>
+
+    <span class="kw">private boolean</span> enabled = <span class="kw">true</span>;               <span class="cm">// активен ли аккаунт</span>
+
+    <span class="cm">// ── Обязательные методы UserDetails</span>
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">Collection</span>&lt;? <span class="kw">extends</span> <span class="cl">GrantedAuthority</span>&gt; <span class="fn">getAuthorities</span>() {
+        <span class="kw">return</span> <span class="cl">List</span>.<span class="fn">of</span>(<span class="kw">new</span> <span class="cl">SimpleGrantedAuthority</span>(role.<span class="fn">name</span>())); <span class="cm">// ROLE_ADMIN</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getUsername</span>() { <span class="kw">return</span> email; }  <span class="cm">// email как логин</span>
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">isAccountNonExpired</span>()   { <span class="kw">return true</span>; }
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">isAccountNonLocked</span>()    { <span class="kw">return true</span>; }
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">isCredentialsNonExpired</span>(){ <span class="kw">return true</span>; }
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">isEnabled</span>()             { <span class="kw">return</span> enabled; } <span class="cm">// из поля</span>
+}
+
+<span class="cm">// ── UserDetailsService — загрузка пользователя при аутентификации</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>                               <span class="cm">// Lombok: конструктор для final полей</span>
+<span class="kw">public class</span> <span class="cl">UserDetailsServiceImpl</span> <span class="kw">implements</span> <span class="cl">UserDetailsService</span> {
+
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> userRepository;
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">UserDetails</span> <span class="fn">loadUserByUsername</span>(<span class="cl">String</span> username) <span class="kw">throws</span> <span class="cl">UsernameNotFoundException</span> {
+        <span class="kw">return</span> userRepository.<span class="fn">findByEmail</span>(username)          <span class="cm">// ищем по email</span>
+            .<span class="fn">orElseThrow</span>(() ->
+                <span class="kw">new</span> <span class="cl">UsernameNotFoundException</span>(<span class="st">"Пользователь не найден: "</span> + username));
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">5. AuthController — login endpoint</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── DTO запроса и ответа</span>
+<span class="kw">public record</span> <span class="cl">LoginRequest</span>(<span class="cl">String</span> email, <span class="cl">String</span> password) {}  <span class="cm">// record = краткий DTO</span>
+<span class="kw">public record</span> <span class="cl">AuthResponse</span>(<span class="cl">String</span> token) {}                    <span class="cm">// возвращаем токен</span>
+<span class="kw">public record</span> <span class="cl">RegisterRequest</span>(<span class="cl">String</span> email, <span class="cl">String</span> password, <span class="cl">String</span> name) {}
+
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/auth"</span>)
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">AuthController</span> {
+
+    <span class="kw">private final</span> <span class="cl">AuthService</span> authService;            <span class="cm">// бизнес-логика в сервисе</span>
+
+    <span class="an">@PostMapping</span>(<span class="st">"/login"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">AuthResponse</span>&gt; <span class="fn">login</span>(
+            <span class="an">@RequestBody</span> <span class="an">@Valid</span> <span class="cl">LoginRequest</span> request) {  <span class="cm">// @Valid — валидируем</span>
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">ok</span>(authService.<span class="fn">login</span>(request));
+    }
+
+    <span class="an">@PostMapping</span>(<span class="st">"/register"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">AuthResponse</span>&gt; <span class="fn">register</span>(
+            <span class="an">@RequestBody</span> <span class="an">@Valid</span> <span class="cl">RegisterRequest</span> request) {
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">status</span>(<span class="cl">HttpStatus</span>.CREATED)
+            .<span class="fn">body</span>(authService.<span class="fn">register</span>(request));
+    }
+}
+
+<span class="cm">// ── AuthService — логика входа и регистрации</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">AuthService</span> {
+
+    <span class="kw">private final</span> <span class="cl">UserRepository</span>      userRepository;
+    <span class="kw">private final</span> <span class="cl">PasswordEncoder</span>      passwordEncoder;
+    <span class="kw">private final</span> <span class="cl">JwtService</span>           jwtService;
+    <span class="kw">private final</span> <span class="cl">AuthenticationManager</span> authManager;
+
+    <span class="kw">public</span> <span class="cl">AuthResponse</span> <span class="fn">login</span>(<span class="cl">LoginRequest</span> request) {
+        <span class="cm">// authenticate() проверяет логин/пароль через UserDetailsService + BCrypt</span>
+        <span class="cm">// кидает AuthenticationException если неверно</span>
+        authManager.<span class="fn">authenticate</span>(
+            <span class="kw">new</span> <span class="cl">UsernamePasswordAuthenticationToken</span>(
+                request.<span class="fn">email</span>(),
+                request.<span class="fn">password</span>()
+            )
+        );
+        <span class="cm">// если дошли сюда — аутентификация прошла</span>
+        <span class="cl">User</span> user = userRepository.<span class="fn">findByEmail</span>(request.<span class="fn">email</span>())
+            .<span class="fn">orElseThrow</span>();
+        <span class="cl">String</span> token = jwtService.<span class="fn">generateToken</span>(user);      <span class="cm">// генерируем JWT</span>
+        <span class="kw">return</span> <span class="kw">new</span> <span class="cl">AuthResponse</span>(token);                     <span class="cm">// возвращаем токен</span>
+    }
+
+    <span class="kw">public</span> <span class="cl">AuthResponse</span> <span class="fn">register</span>(<span class="cl">RegisterRequest</span> request) {
+        <span class="kw">if</span> (userRepository.<span class="fn">existsByEmail</span>(request.<span class="fn">email</span>())) {
+            <span class="kw">throw new</span> <span class="cl">EmailAlreadyExistsException</span>(request.<span class="fn">email</span>());
+        }
+        <span class="cl">User</span> user = <span class="cl">User</span>.<span class="fn">builder</span>()
+            .<span class="fn">email</span>(request.<span class="fn">email</span>())
+            .<span class="fn">password</span>(passwordEncoder.<span class="fn">encode</span>(request.<span class="fn">password</span>())) <span class="cm">// BCrypt хэш</span>
+            .<span class="fn">role</span>(<span class="cl">Role</span>.ROLE_USER)                              <span class="cm">// роль по умолчанию</span>
+            .<span class="fn">build</span>();
+        userRepository.<span class="fn">save</span>(user);
+        <span class="kw">return</span> <span class="kw">new</span> <span class="cl">AuthResponse</span>(jwtService.<span class="fn">generateToken</span>(user)); <span class="cm">// сразу выдаём токен</span>
+    }
+}
+</pre>
+      </div>
+
+      <div class="section-subtitle">6. @PreAuthorize — защита методов</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/users"</span>)
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">UserController</span> {
+
+    <span class="kw">private final</span> <span class="cl">UserService</span> userService;
+
+    <span class="cm">// ── Только ADMIN может видеть всех пользователей</span>
+    <span class="an">@GetMapping</span>
+    <span class="an">@PreAuthorize</span>(<span class="st">"hasRole('ADMIN')"</span>)                  <span class="cm">// проверка ДО выполнения</span>
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">UserResponse</span>&gt; <span class="fn">getAllUsers</span>() {
+        <span class="kw">return</span> userService.<span class="fn">findAll</span>();
+    }
+
+    <span class="cm">// ── Пользователь видит только свой профиль, ADMIN — любой</span>
+    <span class="an">@GetMapping</span>(<span class="st">"/{id}"</span>)
+    <span class="an">@PreAuthorize</span>(<span class="st">"hasRole('ADMIN') or #id == authentication.principal.id"</span>)
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">getUser</span>(<span class="an">@PathVariable</span> <span class="cl">Long</span> id) { <span class="cm">// #id = параметр метода</span>
+        <span class="kw">return</span> userService.<span class="fn">findById</span>(id);
+    }
+
+    <span class="cm">// ── Только ADMIN может удалять</span>
+    <span class="an">@DeleteMapping</span>(<span class="st">"/{id}"</span>)
+    <span class="an">@PreAuthorize</span>(<span class="st">"hasRole('ADMIN')"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">Void</span>&gt; <span class="fn">deleteUser</span>(<span class="an">@PathVariable</span> <span class="cl">Long</span> id) {
+        userService.<span class="fn">delete</span>(id);
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">noContent</span>().<span class="fn">build</span>();          <span class="cm">// 204 No Content</span>
+    }
+
+    <span class="cm">// ── Получить текущего пользователя из SecurityContext</span>
+    <span class="an">@GetMapping</span>(<span class="st">"/me"</span>)
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">getCurrentUser</span>(
+            <span class="an">@AuthenticationPrincipal</span> <span class="cl">User</span> currentUser) { <span class="cm">// Spring инжектирует из контекста</span>
+        <span class="kw">return</span> userService.<span class="fn">toResponse</span>(currentUser);
+    }
+
+    <span class="cm">// ── Программный доступ к SecurityContext</span>
+    <span class="kw">public</span> <span class="cl">User</span> <span class="fn">getAuthenticatedUser</span>() {
+        <span class="kw">return</span> (<span class="cl">User</span>) <span class="cl">SecurityContextHolder</span>              <span class="cm">// получаем контекст</span>
+            .<span class="fn">getContext</span>()
+            .<span class="fn">getAuthentication</span>()                         <span class="cm">// объект аутентификации</span>
+            .<span class="fn">getPrincipal</span>();                              <span class="cm">// principal = наш User объект</span>
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- ═══ 11. ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">В чём разница между Authentication и Authorization?</div>
+            <div class="qa-q-en">What is the difference between Authentication and Authorization?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><strong>Authentication</strong> — «кто ты?». Проверка личности через логин/пароль или токен. Происходит один раз при входе. HTTP 401 при ошибке.<br><strong>Authorization</strong> — «что тебе можно?». Проверка прав доступа к ресурсу. Проверяется при каждом запросе. HTTP 403 при отказе.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">🔥 Пример</div>
+            <div class="qa-text">«Ты вошёл в систему (auth) — это аутентификация. Но у тебя нет роли ADMIN, поэтому ты не можешь удалить пользователя — это авторизация.»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sec-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Из чего состоит JWT? Что хранится в Payload?</div>
+            <div class="qa-q-en">What is the structure of JWT? What is stored in the Payload?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">JWT состоит из трёх частей: <strong>Header</strong> (алгоритм подписи, тип), <strong>Payload</strong> (claims: sub, exp, iat + кастомные), <strong>Signature</strong> (HMAC(header+payload, secret)). Все части — Base64 encoded, разделены точкой. Payload <strong>не зашифрован</strong> — его видит любой. Никогда не храни пароли и секреты в Payload!</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sec-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как реализовать logout при использовании JWT?</div>
+            <div class="qa-q-en">How do you implement logout with JWT?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">JWT stateless — токен нельзя «отозвать» просто так. Варианты: 1) <strong>Blacklist</strong> — хранить отозванные jti в Redis, проверять при каждом запросе. 2) <strong>Короткий TTL</strong> — access token 15 мин, refresh token в БД — logout удаляет refresh. 3) <strong>Версия пользователя</strong> — в JWT хранить tokenVersion, при logout увеличивать версию в БД — старые токены невалидны.</div>
+          </div>
+          <div class="qa-row"><div class="qa-label tip">🔥 Лучший ответ</div>
+            <div class="qa-text">«Я использую связку: access token (15 мин, stateless) + refresh token (7 дней, в БД). Logout удаляет refresh token из БД. Access истекает сам через 15 мин. Для немедленного отзыва — Redis blacklist с TTL = оставшееся время жизни токена.»</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sec-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Зачем нужен OncePerRequestFilter?</div>
+            <div class="qa-q-en">Why do we use OncePerRequestFilter for JWT?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Обычный фильтр может вызываться несколько раз на один HTTP запрос (при forward/include/error dispatch внутри приложения). <code>OncePerRequestFilter</code> гарантирует выполнение ровно один раз. Для JWT это критично — не нужно парсить и валидировать токен несколько раз.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sec-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Почему нельзя хранить JWT в localStorage?</div>
+            <div class="qa-q-en">Why shouldn't you store JWT in localStorage?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">localStorage доступен через JavaScript — уязвим к <strong>XSS атакам</strong>. Если злоумышленник внедрит JS-код, он прочитает токен и получит полный доступ. Безопаснее хранить в <code>HttpOnly Cookie</code> — её нельзя прочитать через JS. Но тогда нужна защита от CSRF. Компромисс для SPA: access token в памяти (JS переменная), refresh token в HttpOnly cookie.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sec-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как работает @PreAuthorize и SpEL в нём?</div>
+            <div class="qa-q-en">How does @PreAuthorize work and what is SpEL?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>@PreAuthorize</code> — AOP аннотация, перехватывает вызов метода до его выполнения. Использует <strong>SpEL (Spring Expression Language)</strong> для гибких выражений. В контексте доступны: <code>authentication</code> (текущий пользователь), <code>#paramName</code> (параметры метода), <code>returnObject</code> (для @PostAuthorize). Включается через <code>@EnableMethodSecurity</code>.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="sec-q6">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>

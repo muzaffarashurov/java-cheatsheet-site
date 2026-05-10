@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Patterns | Java Mega Cheatsheet</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../app.js" defer></script>
+</head>
+<body>
+    <div class="page-layout">
+        <!-- Sidebar -->
+        <aside class="page-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">J</div>
+                    <span>Java Cheatsheet</span>
+                </a>
+                <input type="text" class="sidebar-search" id="sideSearch" placeholder="Поиск в навигации...">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">На этой странице</div>
+                <ul>
+                    <li><a href="#summary" class="nav-link"><span class="nav-dot" style="background:var(--primary)"></span>📌 Краткий конспект</a></li>
+                    <li><a href="#sorting" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔄 Сортировки</a></li>
+                    <li><a href="#search" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔍 Поиск</a></li>
+                    <li><a href="#two-pointers" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>👉 Два указателя</a></li>
+                    <li><a href="#sliding-window" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🪟 Скользящее окно</a></li>
+                    <li><a href="#hashmap" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🗂️ HashMap паттерны</a></li>
+                    <li><a href="#stack-queue" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>📦 Stack / Queue</a></li>
+                    <li><a href="#recursion" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔁 Рекурсия</a></li>
+                    <li><a href="#dp" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🧮 Динамическое программирование</a></li>
+                    <li><a href="#trees" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🌳 Деревья (BFS/DFS)</a></li>
+                    <li><a href="#graphs" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🕸️ Графы</a></li>
+                    <li><a href="#interview" class="nav-link"><span class="nav-dot" style="background:var(--purple)"></span>❓ Топ-10 задач</a></li>
+                </ul>
+                <div class="nav-section" style="margin-top:24px">Другие темы</div>
+                <ul>
+                    <li><a href="../index.html" class="nav-link"><span class="nav-dot" style="background:var(--cyan)"></span>🏠 Все темы</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="page-main">
+            <header class="page-header">
+                <a href="../index.html" class="page-back">← Главная</a>
+                <span class="page-header-title">LeetCode Patterns</span>
+                <div class="page-search-wrap">
+                    <input type="text" id="pageSearch" class="page-search" placeholder="Поиск по странице...">
+                    <button id="searchClear" class="search-clear">✕</button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-header">
+                        <div class="hero-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">🏆</div>
+                        <div>
+                            <h1>LeetCode Patterns — Алгоритмы на Java</h1>
+                            <p>Все основные паттерны для решения задач на LeetCode: от сортировок до динамического программирования. Код с подробными комментариями, сложность, примеры задач.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                        <span class="chip chip-warn">20+ Паттернов</span>
+                        <span class="chip chip-blue">O-нотация</span>
+                        <span class="chip chip-green">Java 17</span>
+                        <span class="chip chip-purple">Комментарии</span>
+                    </div>
+                </div>
+
+                <!-- TOC -->
+                <div class="toc">
+                    <div class="toc-title">Содержание</div>
+                    <div class="toc-list">
+                        <a href="#summary" class="toc-link">📌 Конспект</a>
+                        <a href="#sorting" class="toc-link">🔄 Сортировки</a>
+                        <a href="#search" class="toc-link">🔍 Поиск</a>
+                        <a href="#two-pointers" class="toc-link">👉 Два указателя</a>
+                        <a href="#sliding-window" class="toc-link">🪟 Окно</a>
+                        <a href="#hashmap" class="toc-link">🗂️ HashMap</a>
+                        <a href="#stack-queue" class="toc-link">📦 Stack</a>
+                        <a href="#recursion" class="toc-link">🔁 Рекурсия</a>
+                        <a href="#dp" class="toc-link">🧮 DP</a>
+                        <a href="#trees" class="toc-link">🌳 Деревья</a>
+                        <a href="#graphs" class="toc-link">🕸️ Графы</a>
+                        <a href="#interview" class="toc-link">❓ Топ-10</a>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="section" id="summary">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">📌</span> Краткий конспект</h2>
+                    <div class="box box-blue" style="margin-bottom:16px">
+                        <div class="box-label">Как решать задачи на LeetCode</div>
+                        1. <b>Пойми задачу</b> — перескажи своими словами, найди ограничения.<br>
+                        2. <b>Придумай брутфорс</b> — даже если он медленный.<br>
+                        3. <b>Оптимизируй</b> — какой паттерн подходит? (Two Pointers, HashMap, DP...)<br>
+                        4. <b>Напиши код</b> — с комментариями и обработкой краевых случаев.<br>
+                        5. <b>Протестируй</b> — минимальные, максимальные, пустые входные данные.
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Паттерн</th><th>Когда использовать</th><th>Сложность</th><th>Пример задачи</th></tr></thead>
+                            <tbody>
+                                <tr><td><b>Two Pointers</b></td><td>Отсортированный массив, поиск пары</td><td>O(n)</td><td>Two Sum (sorted), Container With Most Water</td></tr>
+                                <tr><td><b>Sliding Window</b></td><td>Подмассив/подстрока с условием</td><td>O(n)</td><td>Longest Substring Without Repeating</td></tr>
+                                <tr><td><b>HashMap</b></td><td>Поиск дубликатов, частот, пар</td><td>O(n)</td><td>Two Sum, Group Anagrams</td></tr>
+                                <tr><td><b>Binary Search</b></td><td>Отсортированный массив, поиск границы</td><td>O(log n)</td><td>Search in Rotated Array, Find Peak</td></tr>
+                                <tr><td><b>DFS/BFS</b></td><td>Обход дерева/графа, поиск пути</td><td>O(V+E)</td><td>Max Depth, Number of Islands</td></tr>
+                                <tr><td><b>DP</b></td><td>Оптимальное решение с перекрывающимися подзадачами</td><td>O(n²) или O(n)</td><td>Climbing Stairs, Coin Change</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sorting Algorithms -->
+                <div class="section" id="sorting">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🔄</span> Сортировки — Базовые алгоритмы</h2>
+                    
+                    <div class="section-subtitle">Bubble Sort — Пузырьковая сортировка</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Сравниваем соседние элементы и меняем их местами, если они в неправильном порядке. "Большие" элементы "всплывают" в конец, как пузырьки.</p>
+                        <p><b>Сложность:</b> O(n²) время, O(1) память</p>
+                        <p><b>Когда использовать:</b> Только для обучения! На собеседовании могут попросить написать, но в реальных задачах используй Arrays.sort().</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Bubble Sort — для понимания принципа</span>
+<span class="kw">public void</span> <span class="fn">bubbleSort</span>(<span class="ty">int</span>[] <span class="fn">arr</span>) {
+    <span class="ty">int</span> <span class="fn">n</span> = <span class="fn">arr</span>.<span class="fn">length</span>;
+    <span class="kw">boolean</span> <span class="fn">swapped</span>;  <span class="cm">// Флаг оптимизации: если за проход ничего не менялось — массив уже отсортирован</span>
+
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>; <span class="fn">i</span> &lt; <span class="fn">n</span> - <span class="nu">1</span>; <span class="fn">i</span>++) {
+        <span class="fn">swapped</span> = <span class="kw">false</span>;  <span class="cm">// Сбрасываем флаг в начале каждого прохода</span>
+        
+        <span class="cm">// Последний i элементов уже на своих местах, не трогаем их</span>
+        <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">j</span> = <span class="nu">0</span>; <span class="fn">j</span> &lt; <span class="fn">n</span> - <span class="fn">i</span> - <span class="nu">1</span>; <span class="fn">j</span>++) {
+            <span class="cm">// Если текущий элемент больше следующего — меняем местами</span>
+            <span class="kw">if</span> (<span class="fn">arr</span>[<span class="fn">j</span>] &gt; <span class="fn">arr</span>[<span class="fn">j</span> + <span class="nu">1</span>]) {
+                <span class="cm">// Обмен через временную переменную</span>
+                <span class="ty">int</span> <span class="fn">temp</span> = <span class="fn">arr</span>[<span class="fn">j</span>];
+                <span class="fn">arr</span>[<span class="fn">j</span>] = <span class="fn">arr</span>[<span class="fn">j</span> + <span class="nu">1</span>];
+                <span class="fn">arr</span>[<span class="fn">j</span> + <span class="nu">1</span>] = <span class="fn">temp</span>;
+                <span class="fn">swapped</span> = <span class="kw">true</span>;  <span class="cm">// Запоминаем, что была перестановка</span>
+            }
+        }
+        
+        <span class="cm">// Если за весь проход ничего не поменялось — массив отсортирован, выходим</span>
+        <span class="kw">if</span> (!<span class="fn">swapped</span>) <span class="kw">break</span>;
+    }
+}
+
+<span class="cm">// 💡 На LeetCode: почти никогда не пиши сортировку вручную!</span>
+<span class="cm">// Используй: Arrays.sort(arr);  // O(n log n), Dual-Pivot Quicksort</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Quick Sort — Быстрая сортировка (рекурсивная)</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Divide and Conquer. Выбираем "опорный" элемент (pivot), разделяем массив на две части: меньше pivot и больше pivot, рекурсивно сортируем части.</p>
+                        <p><b>Сложность:</b> O(n log n) среднее, O(n²) худшее, O(log n) память (стек рекурсии)</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Quick Sort — понимание рекурсии и partition</span>
+<span class="kw">public void</span> <span class="fn">quickSort</span>(<span class="ty">int</span>[] <span class="fn">arr</span>, <span class="ty">int</span> <span class="fn">left</span>, <span class="ty">int</span> <span class="fn">right</span>) {
+    <span class="cm">// Базовый случай рекурсии: если подмассив из 0 или 1 элемента — он уже отсортирован</span>
+    <span class="kw">if</span> (<span class="fn">left</span> >= <span class="fn">right</span>) <span class="kw">return</span>;
+
+    <span class="cm">// Partition: размещаем pivot на своё место, возвращаем его индекс</span>
+    <span class="ty">int</span> <span class="fn">pivotIndex</span> = <span class="fn">partition</span>(<span class="fn">arr</span>, <span class="fn">left</span>, <span class="fn">right</span>);
+
+    <span class="cm">// Рекурсивно сортируем левую и правую части</span>
+    <span class="fn">quickSort</span>(<span class="fn">arr</span>, <span class="fn">left</span>, <span class="fn">pivotIndex</span> - <span class="nu">1</span>);   <span class="cm">// Элементы &lt; pivot</span>
+    <span class="fn">quickSort</span>(<span class="fn">arr</span>, <span class="fn">pivotIndex</span> + <span class="nu">1</span>, <span class="fn">right</span>);  <span class="cm">// Элементы &gt; pivot</span>
+}
+
+<span class="cm">// Partition: Lomuto scheme (проще для понимания)</span>
+<span class="kw">private int</span> <span class="fn">partition</span>(<span class="ty">int</span>[] <span class="fn">arr</span>, <span class="ty">int</span> <span class="fn">left</span>, <span class="ty">int</span> <span class="fn">right</span>) {
+    <span class="cm">// Выбираем pivot — последний элемент (можно выбрать случайно для улучшения)</span>
+    <span class="ty">int</span> <span class="fn">pivot</span> = <span class="fn">arr</span>[<span class="fn">right</span>];
+    <span class="ty">int</span> <span class="fn">i</span> = <span class="fn">left</span> - <span class="nu">1</span>;  <span class="cm">// Индекс последнего элемента, который &lt; pivot</span>
+
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">j</span> = <span class="fn">left</span>; <span class="fn">j</span> &lt; <span class="fn">right</span>; <span class="fn">j</span>++) {
+        <span class="cm">// Если текущий элемент меньше pivot — "поднимаем" его в левую часть</span>
+        <span class="kw">if</span> (<span class="fn">arr</span>[<span class="fn">j</span>] &lt;= <span class="fn">pivot</span>) {
+            <span class="fn">i</span>++;  <span class="cm">// Расширяем левую часть</span>
+            <span class="fn">swap</span>(<span class="fn">arr</span>, <span class="fn">i</span>, <span class="fn">j</span>);  <span class="cm">// Меняем местами текущий элемент с границей левой части</span>
+        }
+    }
+    
+    <span class="cm">// Ставим pivot на своё место — между левой и правой частями</span>
+    <span class="fn">swap</span>(<span class="fn">arr</span>, <span class="fn">i</span> + <span class="nu">1</span>, <span class="fn">right</span>);
+    <span class="kw">return</span> <span class="fn">i</span> + <span class="nu">1</span>;  <span class="cm">// Возвращаем индекс pivot</span>
+}
+
+<span class="cm">// Вспомогательный метод для обмена</span>
+<span class="kw">private void</span> <span class="fn">swap</span>(<span class="ty">int</span>[] <span class="fn">arr</span>, <span class="ty">int</span> <span class="fn">i</span>, <span class="ty">int</span> <span class="fn">j</span>) {
+    <span class="ty">int</span> <span class="fn">temp</span> = <span class="fn">arr</span>[<span class="fn">i</span>];
+    <span class="fn">arr</span>[<span class="fn">i</span>] = <span class="fn">arr</span>[<span class="fn">j</span>];
+    <span class="fn">arr</span>[<span class="fn">j</span>] = <span class="fn">temp</span>;
+}</code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Merge Sort — Сортировка слиянием</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Divide and Conquer. Делим массив пополам, рекурсивно сортируем половины, затем сливаем две отсортированные половины в одну.</p>
+                        <p><b>Сложность:</b> O(n log n) всегда, O(n) дополнительная память</p>
+                        <p><b>Плюсы:</b> Стабильная сортировка, предсказуемая сложность. Часто спрашивают на собеседованиях.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Merge Sort — стабильная, предсказуемая сложность</span>
+<span class="kw">public void</span> <span class="fn">mergeSort</span>(<span class="ty">int</span>[] <span class="fn">arr</span>, <span class="ty">int</span> <span class="fn">left</span>, <span class="ty">int</span> <span class="fn">right</span>) {
+    <span class="kw">if</span> (<span class="fn">left</span> >= <span class="fn">right</span>) <span class="kw">return</span>;  <span class="cm">// Базовый случай: 1 элемент уже отсортирован</span>
+
+    <span class="cm">// Делим массив пополам (mid = середина)</span>
+    <span class="ty">int</span> <span class="fn">mid</span> = <span class="fn">left</span> + (<span class="fn">right</span> - <span class="fn">left</span>) / <span class="nu">2</span>;  <span class="cm">// Так безопаснее, чем (left+right)/2 (переполнение)</span>
+
+    <span class="cm">// Рекурсивно сортируем левую и правую половины</span>
+    <span class="fn">mergeSort</span>(<span class="fn">arr</span>, <span class="fn">left</span>, <span class="fn">mid</span>);
+    <span class="fn">mergeSort</span>(<span class="fn">arr</span>, <span class="fn">mid</span> + <span class="nu">1</span>, <span class="fn">right</span>);
+
+    <span class="cm">// Сливаем две отсортированные половины</span>
+    <span class="fn">merge</span>(<span class="fn">arr</span>, <span class="fn">left</span>, <span class="fn">mid</span>, <span class="fn">right</span>);
+}
+
+<span class="cm">// Merge: сливаем arr[left..mid] и arr[mid+1..right] в один отсортированный массив</span>
+<span class="kw">private void</span> <span class="fn">merge</span>(<span class="ty">int</span>[] <span class="fn">arr</span>, <span class="ty">int</span> <span class="fn">left</span>, <span class="ty">int</span> <span class="fn">mid</span>, <span class="ty">int</span> <span class="fn">right</span>) {
+    <span class="cm">// Создаём временные массивы для левой и правой частей</span>
+    <span class="ty">int</span> <span class="fn">n1</span> = <span class="fn">mid</span> - <span class="fn">left</span> + <span class="nu">1</span>;
+    <span class="ty">int</span> <span class="fn">n2</span> = <span class="fn">right</span> - <span class="fn">mid</span>;
+    <span class="ty">int</span>[] <span class="fn">L</span> = <span class="kw">new</span> <span class="ty">int</span>[<span class="fn">n1</span>];
+    <span class="ty">int</span>[] <span class="fn">R</span> = <span class="kw">new</span> <span class="ty">int</span>[<span class="fn">n2</span>];
+
+    <span class="cm">// Копируем данные во временные массивы</span>
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>; <span class="fn">i</span> &lt; <span class="fn">n1</span>; <span class="fn">i</span>++) <span class="fn">L</span>[<span class="fn">i</span>] = <span class="fn">arr</span>[<span class="fn">left</span> + <span class="fn">i</span>];
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">j</span> = <span class="nu">0</span>; <span class="fn">j</span> &lt; <span class="fn">n2</span>; <span class="fn">j</span>++) <span class="fn">R</span>[<span class="fn">j</span>] = <span class="fn">arr</span>[<span class="fn">mid</span> + <span class="nu">1</span> + <span class="fn">j</span>];
+
+    <span class="cm">// Сливаем временные массивы обратно в arr[left..right]</span>
+    <span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>, <span class="fn">j</span> = <span class="nu">0</span>, <span class="fn">k</span> = <span class="fn">left</span>;  <span class="cm">// i — индекс в L, j — в R, k — в arr</span>
+
+    <span class="kw">while</span> (<span class="fn">i</span> &lt; <span class="fn">n1</span> && <span class="fn">j</span> &lt; <span class="fn">n2</span>) {
+        <span class="cm">// Берём меньший элемент из двух массивов</span>
+        <span class="kw">if</span> (<span class="fn">L</span>[<span class="fn">i</span>] &lt;= <span class="fn">R</span>[<span class="fn">j</span>]) {
+            <span class="fn">arr</span>[<span class="fn">k</span>++] = <span class="fn">L</span>[<span class="fn">i</span>++];  <span class="cm">// Берём из L, увеличиваем i и k</span>
+        } <span class="kw">else</span> {
+            <span class="fn">arr</span>[<span class="fn">k</span>++] = <span class="fn">R</span>[<span class="fn">j</span>++];  <span class="cm">// Берём из R, увеличиваем j и k</span>
+        }
+    }
+
+    <span class="cm">// Копируем оставшиеся элементы (один из массивов уже пуст)</span>
+    <span class="kw">while</span> (<span class="fn">i</span> &lt; <span class="fn">n1</span>) <span class="fn">arr</span>[<span class="fn">k</span>++] = <span class="fn">L</span>[<span class="fn">i</span>++];  <span class="cm">// Остались в L</span>
+    <span class="kw">while</span> (<span class="fn">j</span> &lt; <span class="fn">n2</span>) <span class="fn">arr</span>[<span class="fn">k</span>++] = <span class="fn">R</span>[<span class="fn">j</span>++];  <span class="cm">// Остались в R</span>
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Search Algorithms -->
+                <div class="section" id="search">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">🔍</span> Поиск — Linear и Binary Search</h2>
+                    
+                    <div class="section-subtitle">Linear Search — Линейный поиск</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Проходим по массиву слева направо, сравниваем каждый элемент с искомым.</p>
+                        <p><b>Сложность:</b> O(n) время, O(1) память</p>
+                        <p><b>Когда использовать:</b> Маленькие массивы, неотсортированные данные, или когда нужно найти ВСЕ вхождения.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Linear Search — простой, но медленный для больших массивов</span>
+<span class="kw">public int</span> <span class="fn">linearSearch</span>(<span class="ty">int</span>[] <span class="fn">arr</span>, <span class="ty">int</span> <span class="fn">target</span>) {
+    <span class="cm">// Проходим по ВСЕМ элементам</span>
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>; <span class="fn">i</span> &lt; <span class="fn">arr</span>.<span class="fn">length</span>; <span class="fn">i</span>++) {
+        <span class="cm">// Нашли! Возвращаем индекс</span>
+        <span class="kw">if</span> (<span class="fn">arr</span>[<span class="fn">i</span>] == <span class="fn">target</span>) {
+            <span class="kw">return</span> <span class="fn">i</span>;
+        }
+    }
+    <span class="cm">// Не нашли — возвращаем -1 (стандартное соглашение в задачах)</span>
+    <span class="kw">return</span> -<span class="nu">1</span>;
+}
+
+<span class="cm">// 💡 На LeetCode: используй, когда массив маленький (&lt;100 элементов) или неотсортированный</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Binary Search — Бинарный поиск (итеративный)</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Массив отсортирован? Делим пополам, сравниваем середину с target, отбрасываем половину, повторяем.</p>
+                        <p><b>Сложность:</b> O(log n) время, O(1) память</p>
+                        <p><b>Когда использовать:</b> Отсортированный массив, поиск элемента, поиск границы (первый/последний), поиск в rotated array.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Binary Search — ИТЕРАТИВНЫЙ (предпочтительный, нет риска переполнения стека)</span>
+<span class="kw">public int</span> <span class="fn">binarySearch</span>(<span class="ty">int</span>[] <span class="fn">arr</span>, <span class="ty">int</span> <span class="fn">target</span>) {
+    <span class="ty">int</span> <span class="fn">left</span> = <span class="nu">0</span>;                    <span class="cm">// Левая граница поиска</span>
+    <span class="ty">int</span> <span class="fn">right</span> = <span class="fn">arr</span>.<span class="fn">length</span> - <span class="nu">1</span>;    <span class="cm">// Правая граница поиска</span>
+
+    <span class="cm">// Пока есть где искать (left <= right)</span>
+    <span class="kw">while</span> (<span class="fn">left</span> <= <span class="fn">right</span>) {
+        <span class="cm">// Находим середину БЕЗ переполнения: left + (right-left)/2</span>
+        <span class="ty">int</span> <span class="fn">mid</span> = <span class="fn">left</span> + (<span class="fn">right</span> - <span class="fn">left</span>) / <span class="nu">2</span>;
+
+        <span class="cm">// Нашли target!</span>
+        <span class="kw">if</span> (<span class="fn">arr</span>[<span class="fn">mid</span>] == <span class="fn">target</span>) {
+            <span class="kw">return</span> <span class="fn">mid</span>;
+        }
+        <span class="cm">// Target в левой половине — сужаем правую границу</span>
+        <span class="kw">else if</span> (<span class="fn">arr</span>[<span class="fn">mid</span>] > <span class="fn">target</span>) {
+            <span class="fn">right</span> = <span class="fn">mid</span> - <span class="nu">1</span>;  <span class="cm">// mid уже проверили, исключаем его</span>
+        }
+        <span class="cm">// Target в правой половине — сужаем левую границу</span>
+        <span class="kw">else</span> {
+            <span class="fn">left</span> = <span class="fn">mid</span> + <span class="nu">1</span>;   <span class="cm">// mid уже проверили, исключаем его</span>
+        }
+    }
+
+    <span class="cm">// Не нашли</span>
+    <span class="kw">return</span> -<span class="nu">1</span>;
+}
+
+<span class="cm">// 💡 Шаблон для запоминания:</span>
+<span class="cm">// while (left <= right) { int mid = left + (right-left)/2; if (arr[mid]==target) return mid; else if (arr[mid]>target) right=mid-1; else left=mid+1; }</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Binary Search — Рекурсивный вариант</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Binary Search — РЕКУРСИВНЫЙ (красиво, но риск StackOverflow для очень больших массивов)</span>
+<span class="kw">public int</span> <span class="fn">binarySearchRecursive</span>(<span class="ty">int</span>[] <span class="fn">arr</span>, <span class="ty">int</span> <span class="fn">target</span>, <span class="ty">int</span> <span class="fn">left</span>, <span class="ty">int</span> <span class="fn">right</span>) {
+    <span class="cm">// Базовый случай: не нашли</span>
+    <span class="kw">if</span> (<span class="fn">left</span> > <span class="fn">right</span>) <span class="kw">return</span> -<span class="nu">1</span>;
+
+    <span class="ty">int</span> <span class="fn">mid</span> = <span class="fn">left</span> + (<span class="fn">right</span> - <span class="fn">left</span>) / <span class="nu">2</span>;
+
+    <span class="kw">if</span> (<span class="fn">arr</span>[<span class="fn">mid</span>] == <span class="fn">target</span>) {
+        <span class="kw">return</span> <span class="fn">mid</span>;
+    } <span class="kw">else if</span> (<span class="fn">arr</span>[<span class="fn">mid</span>] > <span class="fn">target</span>) {
+        <span class="cm">// Ищем в левой половине</span>
+        <span class="kw">return</span> <span class="fn">binarySearchRecursive</span>(<span class="fn">arr</span>, <span class="fn">target</span>, <span class="fn">left</span>, <span class="fn">mid</span> - <span class="nu">1</span>);
+    } <span class="kw">else</span> {
+        <span class="cm">// Ищем в правой половине</span>
+        <span class="kw">return</span> <span class="fn">binarySearchRecursive</span>(<span class="fn">arr</span>, <span class="fn">target</span>, <span class="fn">mid</span> + <span class="nu">1</span>, <span class="fn">right</span>);
+    }
+}
+
+<span class="cm">// Вызов: binarySearchRecursive(arr, target, 0, arr.length - 1);</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Two Pointers Pattern -->
+                <div class="section" id="two-pointers">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">👉</span> Two Pointers — Два указателя</h2>
+                    
+                    <div class="section-subtitle">Паттерн: Схождение с двух концов</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Один указатель в начале, другой в конце. Двигаем их навстречу друг другу в зависимости от условия.</p>
+                        <p><b>Когда использовать:</b> Отсортированный массив, поиск пары с заданной суммой, проверка палиндрома, удаление дубликатов.</p>
+                        <p><b>Сложность:</b> O(n) время, O(1) память</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Two Sum II — Input Array Is Sorted (LeetCode 167)</span>
+<span class="cm">// Дано: отсортированный массив, найти два числа, сумма которых = target</span>
+<span class="kw">public int</span>[] <span class="fn">twoSumSorted</span>(<span class="ty">int</span>[] <span class="fn">numbers</span>, <span class="ty">int</span> <span class="fn">target</span>) {
+    <span class="ty">int</span> <span class="fn">left</span> = <span class="nu">0</span>;                          <span class="cm">// Левый указатель — начало</span>
+    <span class="ty">int</span> <span class="fn">right</span> = <span class="fn">numbers</span>.<span class="fn">length</span> - <span class="nu">1</span>;      <span class="cm">// Правый указатель — конец</span>
+
+    <span class="cm">// Пока указатели не встретились</span>
+    <span class="kw">while</span> (<span class="fn">left</span> &lt; <span class="fn">right</span>) {
+        <span class="ty">int</span> <span class="fn">sum</span> = <span class="fn">numbers</span>[<span class="fn">left</span>] + <span class="fn">numbers</span>[<span class="fn">right</span>];
+
+        <span class="kw">if</span> (<span class="fn">sum</span> == <span class="fn">target</span>) {
+            <span class="cm">// Нашли! Возвращаем индексы (1-based, как в задаче)</span>
+            <span class="kw">return new int</span>[] {<span class="fn">left</span> + <span class="nu">1</span>, <span class="fn">right</span> + <span class="nu">1</span>};
+        }
+        <span class="cm">// Сумма слишком маленькая — двигаем left вправо (увеличиваем сумму)</span>
+        <span class="kw">else if</span> (<span class="fn">sum</span> &lt; <span class="fn">target</span>) {
+            <span class="fn">left</span>++;
+        }
+        <span class="cm">// Сумма слишком большая — двигаем right влево (уменьшаем сумму)</span>
+        <span class="kw">else</span> {
+            <span class="fn">right</span>--;
+        }
+    }
+
+    <span class="cm">// По условию задачи гарантируется решение, но на всякий случай:</span>
+    <span class="kw">return new int</span>[] {-<span class="nu">1</span>, -<span class="nu">1</span>};
+}
+
+<span class="cm">// 💡 Почему это работает? Массив отсортирован!</span>
+<span class="cm">// Если сумма мала — нужно взять число побольше → left++</span>
+<span class="cm">// Если сумма велика — нужно взять число поменьше → right--</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Паттерн: Быстрый и медленный указатели (Floyd's Cycle)</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Один указатель движется быстрее другого. Если есть цикл — они встретятся.</p>
+                        <p><b>Когда использовать:</b> Обнаружение цикла в связном списке, поиск середины списка, удаление N-го элемента с конца.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Linked List Cycle (LeetCode 141)</span>
+<span class="cm">// Определить, есть ли цикл в связном списке</span>
+<span class="kw">public boolean</span> <span class="fn">hasCycle</span>(<span class="cl">ListNode</span> <span class="fn">head</span>) {
+    <span class="kw">if</span> (<span class="fn">head</span> == <span class="kw">null</span>) <span class="kw">return false</span>;
+
+    <span class="cl">ListNode</span> <span class="fn">slow</span> = <span class="fn">head</span>;   <span class="cm">// Медленный: 1 шаг за итерацию</span>
+    <span class="cl">ListNode</span> <span class="fn">fast</span> = <span class="fn">head</span>;   <span class="cm">// Быстрый: 2 шага за итерацию</span>
+
+    <span class="cm">// Пока fast может сделать 2 шага</span>
+    <span class="kw">while</span> (<span class="fn">fast</span> != <span class="kw">null</span> && <span class="fn">fast</span>.<span class="fn">next</span> != <span class="kw">null</span>) {
+        <span class="fn">slow</span> = <span class="fn">slow</span>.<span class="fn">next</span>;           <span class="cm">// slow += 1</span>
+        <span class="fn">fast</span> = <span class="fn">fast</span>.<span class="fn">next</span>.<span class="fn">next</span>;     <span class="cm">// fast += 2</span>
+
+        <span class="cm">// Если встретились — есть цикл!</span>
+        <span class="kw">if</span> (<span class="fn">slow</span> == <span class="fn">fast</span>) {
+            <span class="kw">return true</span>;
+        }
+    }
+
+    <span class="cm">// fast достиг конца — цикла нет</span>
+    <span class="kw">return false</span>;
+}
+
+<span class="cm">// 💡 Почему это работает? Если есть цикл, fast "догонит" slow внутри цикла.</span>
+<span class="cm">// Разница в скорости = 1 шаг/итерацию → гарантированная встреча.</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Sliding Window Pattern -->
+                <div class="section" id="sliding-window">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">🪟</span> Sliding Window — Скользящее окно</h2>
+                    
+                    <div class="section-subtitle">Паттерн: Фиксированное окно</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Окно фиксированного размера "скользит" по массиву. Добавляем новый элемент справа, удаляем старый слева.</p>
+                        <p><b>Когда использовать:</b> Найти максимум/сумму/среднее подмассива фиксированной длины.</p>
+                        <p><b>Сложность:</b> O(n) вместо O(n*k) у брутфорса!</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Maximum Sum Subarray of Size K (аналог LeetCode)</span>
+<span class="cm">// Найти максимальную сумму подмассива длины k</span>
+<span class="kw">public int</span> <span class="fn">maxSumSubarray</span>(<span class="ty">int</span>[] <span class="fn">arr</span>, <span class="ty">int</span> <span class="fn">k</span>) {
+    <span class="ty">int</span> <span class="fn">maxSum</span> = <span class="cl">Integer</span>.<span class="cl">MIN_VALUE</span>;  <span class="cm">// Инициализируем минимальным значением</span>
+    <span class="ty">int</span> <span class="fn">windowSum</span> = <span class="nu">0</span>;                 <span class="cm">// Текущая сумма окна</span>
+    <span class="ty">int</span> <span class="fn">windowStart</span> = <span class="nu">0</span>;               <span class="cm">// Левая граница окна</span>
+
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">windowEnd</span> = <span class="nu">0</span>; <span class="fn">windowEnd</span> &lt; <span class="fn">arr</span>.<span class="fn">length</span>; <span class="fn">windowEnd</span>++) {
+        <span class="cm">// 1. Добавляем новый элемент в окно (справа)</span>
+        <span class="fn">windowSum</span> += <span class="fn">arr</span>[<span class="fn">windowEnd</span>];
+
+        <span class="cm">// 2. Когда окно достигло размера k — считаем и сдвигаем</span>
+        <span class="kw">if</span> (<span class="fn">windowEnd</span> >= <span class="fn">k</span> - <span class="nu">1</span>) {
+            <span class="cm">// Обновляем максимум</span>
+            <span class="fn">maxSum</span> = <span class="cl">Math</span>.<span class="fn">max</span>(<span class="fn">maxSum</span>, <span class="fn">windowSum</span>);
+
+            <span class="cm">// 3. Удаляем элемент слева и сдвигаем окно</span>
+            <span class="fn">windowSum</span> -= <span class="fn">arr</span>[<span class="fn">windowStart</span>];
+            <span class="fn">windowStart</span>++;
+        }
+    }
+
+    <span class="kw">return</span> <span class="fn">maxSum</span>;
+}
+
+<span class="cm">// 💡 Почему O(n)? Каждый элемент добавляется и удаляется из окна ровно 1 раз.</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Паттерн: Динамическое окно (переменной длины)</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Окно расширяется, пока условие выполняется, затем сжимается, пока условие не нарушится.</p>
+                        <p><b>Когда использовать:</b> Найти минимальную/максимальную подстроку с условием (без повторов, с определённым набором символов).</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Longest Substring Without Repeating Characters (LeetCode 3)</span>
+<span class="cm">// Найти длину самой длинной подстроки без повторяющихся символов</span>
+<span class="kw">public int</span> <span class="fn">lengthOfLongestSubstring</span>(<span class="ty">String</span> <span class="fn">s</span>) {
+    <span class="ty">int</span> <span class="fn">maxLen</span> = <span class="nu">0</span>;                          <span class="cm">// Результат</span>
+    <span class="ty">int</span> <span class="fn">left</span> = <span class="nu">0</span>;                             <span class="cm">// Левая граница окна</span>
+    <span class="ty">java.util.HashSet</span>&lt;<span class="ty">Character</span>&gt; <span class="fn">seen</span> = <span class="kw">new</span> <span class="cl">java.util.HashSet</span>&lt;&gt;();  <span class="cm">// Храним символы в окне</span>
+
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">right</span> = <span class="nu">0</span>; <span class="fn">right</span> &lt; <span class="fn">s</span>.<span class="fn">length</span>(); <span class="fn">right</span>++) {
+        <span class="ty">char</span> <span class="fn">curr</span> = <span class="fn">s</span>.<span class="fn">charAt</span>(<span class="fn">right</span>);
+
+        <span class="cm">// Если символ уже в окне — сжимаем окно слева, пока не уберём дубликат</span>
+        <span class="kw">while</span> (<span class="fn">seen</span>.<span class="fn">contains</span>(<span class="fn">curr</span>)) {
+            <span class="fn">seen</span>.<span class="fn">remove</span>(<span class="fn">s</span>.<span class="fn">charAt</span>(<span class="fn">left</span>));  <span class="cm">// Удаляем левый символ из множества</span>
+            <span class="fn">left</span>++;                       <span class="cm">// Сдвигаем левую границу</span>
+        }
+
+        <span class="cm">// Добавляем текущий символ в окно</span>
+        <span class="fn">seen</span>.<span class="fn">add</span>(<span class="fn">curr</span>);
+
+        <span class="cm">// Обновляем максимум: правая граница - левая + 1 = длина окна</span>
+        <span class="fn">maxLen</span> = <span class="cl">Math</span>.<span class="fn">max</span>(<span class="fn">maxLen</span>, <span class="fn">right</span> - <span class="fn">left</span> + <span class="nu">1</span>);
+    }
+
+    <span class="kw">return</span> <span class="fn">maxLen</span>;
+}
+
+<span class="cm">// 💡 Ключевая идея: while-цикл "сжимает" окно, пока условие не выполнится.</span>
+<span class="cm">// Это гарантирует, что в окне всегда нет дубликатов.</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- HashMap Patterns -->
+                <div class="section" id="hashmap">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">🗂️</span> HashMap / HashSet — Паттерны поиска</h2>
+                    
+                    <div class="section-subtitle">Паттерн: Поиск пары за один проход</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Проходим по массиву один раз. Для каждого элемента проверяем: есть ли в HashMap нужное дополнение (target - current). Если нет — сохраняем текущий элемент.</p>
+                        <p><b>Когда использовать:</b> Two Sum, поиск дубликатов, подсчёт частот.</p>
+                        <p><b>Сложность:</b> O(n) время, O(n) память</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Two Sum (LeetCode 1) — КЛАССИКА!</span>
+<span class="cm">// Найти два индекса, сумма значений которых = target</span>
+<span class="kw">public int</span>[] <span class="fn">twoSum</span>(<span class="ty">int</span>[] <span class="fn">nums</span>, <span class="ty">int</span> <span class="fn">target</span>) {
+    <span class="cm">// HashMap: key = значение из массива, value = его индекс</span>
+    <span class="ty">java.util.HashMap</span>&lt;<span class="ty">Integer</span>, <span class="ty">Integer</span>&gt; <span class="fn">map</span> = <span class="kw">new</span> <span class="cl">java.util.HashMap</span>&lt;&gt;();
+
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>; <span class="fn">i</span> &lt; <span class="fn">nums</span>.<span class="fn">length</span>; <span class="fn">i</span>++) {
+        <span class="ty">int</span> <span class="fn">complement</span> = <span class="fn">target</span> - <span class="fn">nums</span>[<span class="fn">i</span>];  <span class="cm">// Какое число нужно, чтобы получить target?</span>
+
+        <span class="cm">// Если дополнение уже есть в карте — мы нашли пару!</span>
+        <span class="kw">if</span> (<span class="fn">map</span>.<span class="fn">containsKey</span>(<span class="fn">complement</span>)) {
+            <span class="kw">return new int</span>[] {<span class="fn">map</span>.<span class="fn">get</span>(<span class="fn">complement</span>), <span class="fn">i</span>};
+        }
+
+        <span class="cm">// Сохраняем текущее значение и его индекс для будущих проверок</span>
+        <span class="fn">map</span>.<span class="fn">put</span>(<span class="fn">nums</span>[<span class="fn">i</span>], <span class="fn">i</span>);
+    }
+
+    <span class="cm">// По условию задачи решение гарантировано, но на всякий случай:</span>
+    <span class="kw">return new int</span>[] {-<span class="nu">1</span>, -<span class="nu">1</span>};
+}
+
+<span class="cm">// 💡 Почему это работает? Мы ищем "прошлое": для текущего nums[i] проверяем,</span>
+<span class="cm">// встречали ли мы раньше число (target - nums[i]). Если да — пара найдена!</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Паттерн: Подсчёт частот (Frequency Map)</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Contains Duplicate II (LeetCode 219)</span>
+<span class="cm">// Есть ли два одинаковых числа на расстоянии ≤ k?</span>
+<span class="kw">public boolean</span> <span class="fn">containsNearbyDuplicate</span>(<span class="ty">int</span>[] <span class="fn">nums</span>, <span class="ty">int</span> <span class="fn">k</span>) {
+    <span class="cm">// HashMap: key = число, value = последний индекс, где оно встречалось</span>
+    <span class="ty">java.util.HashMap</span>&lt;<span class="ty">Integer</span>, <span class="ty">Integer</span>&gt; <span class="fn">lastIndex</span> = <span class="kw">new</span> <span class="cl">java.util.HashMap</span>&lt;&gt;();
+
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>; <span class="fn">i</span> &lt; <span class="fn">nums</span>.<span class="fn">length</span>; <span class="fn">i</span>++) {
+        <span class="kw">if</span> (<span class="fn">lastIndex</span>.<span class="fn">containsKey</span>(<span class="fn">nums</span>[<span class="fn">i</span>])) {
+            <span class="ty">int</span> <span class="fn">prevIdx</span> = <span class="fn">lastIndex</span>.<span class="fn">get</span>(<span class="fn">nums</span>[<span class="fn">i</span>]);
+            <span class="cm">// Проверяем расстояние между текущим и предыдущим вхождением</span>
+            <span class="kw">if</span> (<span class="fn">i</span> - <span class="fn">prevIdx</span> <= <span class="fn">k</span>) {
+                <span class="kw">return true</span>;  <span class="cm">// Нашли дубликат в пределах k!</span>
+            }
+        }
+        <span class="cm">// Обновляем последний индекс для этого числа</span>
+        <span class="fn">lastIndex</span>.<span class="fn">put</span>(<span class="fn">nums</span>[<span class="fn">i</span>], <span class="fn">i</span>);
+    }
+
+    <span class="kw">return false</span>;
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Stack / Queue Patterns -->
+                <div class="section" id="stack-queue">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">📦</span> Stack / Queue — Стек и Очередь</h2>
+                    
+                    <div class="section-subtitle">Паттерн: Valid Parentheses (Стек)</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Открывающая скобка — кладём в стек. Закрывающая — проверяем, что верх стека — соответствующая открывающая.</p>
+                        <p><b>Когда использовать:</b> Проверка скобок, обратный порядок, undo-операции, DFS.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Valid Parentheses (LeetCode 20)</span>
+<span class="kw">public boolean</span> <span class="fn">isValid</span>(<span class="ty">String</span> <span class="fn">s</span>) {
+    <span class="cm">// Стек для хранения открывающих скобок</span>
+    <span class="ty">java.util.Stack</span>&lt;<span class="ty">Character</span>&gt; <span class="fn">stack</span> = <span class="kw">new</span> <span class="cl">java.util.Stack</span>&lt;&gt;();
+
+    <span class="cm">// Карта: закрывающая скобка → соответствующая открывающая</span>
+    <span class="ty">java.util.Map</span>&lt;<span class="ty">Character</span>, <span class="ty">Character</span>&gt; <span class="fn">pairs</span> = <span class="cl">Map</span>.<span class="fn">of</span>(
+        <span class="st">')'</span>, <span class="st">'('</span>,
+        <span class="st">']'</span>, <span class="st">'['</span>,
+        <span class="st">'}'</span>, <span class="st">'{'</span>
+    );
+
+    <span class="kw">for</span> (<span class="ty">char</span> <span class="fn">c</span> : <span class="fn">s</span>.<span class="fn">toCharArray</span>()) {
+        <span class="cm">// Если открывающая скобка — кладём в стек</span>
+        <span class="kw">if</span> (<span class="fn">c</span> == <span class="st">'('</span> || <span class="fn">c</span> == <span class="st">'['</span> || <span class="fn">c</span> == <span class="st">'{'</span>) {
+            <span class="fn">stack</span>.<span class="fn">push</span>(<span class="fn">c</span>);
+        }
+        <span class="cm">// Если закрывающая — проверяем соответствие</span>
+        <span class="kw">else</span> {
+            <span class="cm">// Стек пуст или верхний элемент не соответствует — ошибка</span>
+            <span class="kw">if</span> (<span class="fn">stack</span>.<span class="fn">isEmpty</span>() || <span class="fn">stack</span>.<span class="fn">pop</span>() != <span class="fn">pairs</span>.<span class="fn">get</span>(<span class="fn">c</span>)) {
+                <span class="kw">return false</span>;
+            }
+        }
+    }
+
+    <span class="cm">// В конце стек должен быть пуст (все скобки закрыты)</span>
+    <span class="kw">return</span> <span class="fn">stack</span>.<span class="fn">isEmpty</span>();
+}
+
+<span class="cm">// 💡 Ключевая идея: закрывающая скобка должна соответствовать ПОСЛЕДНЕЙ</span>
+<span class="cm">// не закрытой открывающей — это идеально для стека (LIFO)!</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Паттерн: Монотонный стек (Next Greater Element)</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Next Greater Element I (LeetCode 496)</span>
+<span class="cm">// Для каждого элемента найти первый больший элемент справа</span>
+<span class="kw">public int</span>[] <span class="fn">nextGreaterElement</span>(<span class="ty">int</span>[] <span class="fn">nums1</span>, <span class="ty">int</span>[] <span class="fn">nums2</span>) {
+    <span class="cm">// Стек хранит индексы элементов, для которых ещё не нашли больший</span>
+    <span class="ty">java.util.Stack</span>&lt;<span class="ty">Integer</span>&gt; <span class="fn">stack</span> = <span class="kw">new</span> <span class="cl">java.util.Stack</span>&lt;&gt;();
+    <span class="cm">// Карта: элемент → его следующий больший</span>
+    <span class="ty">java.util.Map</span>&lt;<span class="ty">Integer</span>, <span class="ty">Integer</span>&gt; <span class="fn">nextGreater</span> = <span class="kw">new</span> <span class="cl">java.util.HashMap</span>&lt;&gt;();
+
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">num</span> : <span class="fn">nums2</span>) {
+        <span class="cm">// Пока текущий элемент больше верхнего в стеке — он для него "следующий больший"</span>
+        <span class="kw">while</span> (!<span class="fn">stack</span>.<span class="fn">isEmpty</span>() && <span class="fn">num</span> > <span class="fn">stack</span>.<span class="fn">peek</span>()) {
+            <span class="fn">nextGreater</span>.<span class="fn">put</span>(<span class="fn">stack</span>.<span class="fn">pop</span>(), <span class="fn">num</span>);
+        }
+        <span class="fn">stack</span>.<span class="fn">push</span>(<span class="fn">num</span>);  <span class="cm">// Текущий элемент ждёт своего "большего"</span>
+    }
+
+    <span class="cm">// Формируем ответ для nums1</span>
+    <span class="ty">int</span>[] <span class="fn">result</span> = <span class="kw">new int</span>[<span class="fn">nums1</span>.<span class="fn">length</span>];
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>; <span class="fn">i</span> &lt; <span class="fn">nums1</span>.<span class="fn">length</span>; <span class="fn">i</span>++) {
+        <span class="fn">result</span>[<span class="fn">i</span>] = <span class="fn">nextGreater</span>.<span class="fn">getOrDefault</span>(<span class="fn">nums1</span>[<span class="fn">i</span>], -<span class="nu">1</span>);
+    }
+
+    <span class="kw">return</span> <span class="fn">result</span>;
+}
+
+<span class="cm">// 💡 Монотонный стек: элементы в стеке идут в убывающем порядке.</span>
+<span class="cm">// Когда приходит больший элемент — он "выталкивает" меньшие, становясь для них ответом.</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Recursion & Backtracking -->
+                <div class="section" id="recursion">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🔁</span> Рекурсия и Бэктрекинг</h2>
+                    
+                    <div class="section-subtitle">Паттерн: Базовая рекурсия (Factorial)</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Функция вызывает сама себя с уменьшенным входом. Обязательно: базовый случай (остановка) + прогресс к нему.</p>
+                        <p><b>Когда использовать:</b> Факториал, числа Фибоначчи, обход деревьев, генерация комбинаций.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Факториал: n! = n * (n-1) * ... * 1</span>
+<span class="kw">public int</span> <span class="fn">factorial</span>(<span class="ty">int</span> <span class="fn">n</span>) {
+    <span class="cm">// Базовый случай: 0! = 1, 1! = 1</span>
+    <span class="kw">if</span> (<span class="fn">n</span> <= <span class="nu">1</span>) {
+        <span class="kw">return</span> <span class="nu">1</span>;
+    }
+    <span class="cm">// Рекурсивный случай: n! = n * (n-1)!</span>
+    <span class="kw">return</span> <span class="fn">n</span> * <span class="fn">factorial</span>(<span class="fn">n</span> - <span class="nu">1</span>);
+}
+
+<span class="cm">// 💡 Важно: всегда проверяй базовый случай ПЕРЕД рекурсивным вызовом!</span>
+<span class="cm">// Иначе — StackOverflowError (бесконечная рекурсия).</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Паттерн: Бэктрекинг (генерация комбинаций)</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Пробуем добавить элемент → рекурсивно решаем подзадачу → отменяем выбор (бэктрек) → пробуем следующий вариант.</p>
+                        <p><b>Когда использовать:</b> Подмножества, перестановки, комбинации, судоку, N-Queens.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Subsets (LeetCode 78) — все подмножества множества</span>
+<span class="kw">public</span> <span class="ty">java.util.List</span>&lt;<span class="ty">java.util.List</span>&lt;<span class="ty">Integer</span>&gt;&gt; <span class="fn">subsets</span>(<span class="ty">int</span>[] <span class="fn">nums</span>) {
+    <span class="ty">java.util.List</span>&lt;<span class="ty">java.util.List</span>&lt;<span class="ty">Integer</span>&gt;&gt; <span class="fn">result</span> = <span class="kw">new</span> <span class="cl">java.util.ArrayList</span>&lt;&gt;();
+    <span class="fn">backtrack</span>(<span class="fn">nums</span>, <span class="nu">0</span>, <span class="kw">new</span> <span class="cl">java.util.ArrayList</span>&lt;&gt;(), <span class="fn">result</span>);
+    <span class="kw">return</span> <span class="fn">result</span>;
+}
+
+<span class="cm">// Backtracking-функция</span>
+<span class="kw">private void</span> <span class="fn">backtrack</span>(<span class="ty">int</span>[] <span class="fn">nums</span>, <span class="ty">int</span> <span class="fn">start</span>, 
+                     <span class="ty">java.util.List</span>&lt;<span class="ty">Integer</span>&gt; <span class="fn">path</span>,
+                     <span class="ty">java.util.List</span>&lt;<span class="ty">java.util.List</span>&lt;<span class="ty">Integer</span>&gt;&gt; <span class="fn">result</span>) {
+    
+    <span class="cm">// Добавляем текущую комбинацию в результат (включая пустую!)</span>
+    <span class="fn">result</span>.<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">java.util.ArrayList</span>&lt;&gt;(<span class="fn">path</span>));  <span class="cm">// Копируем, т.к. path будет меняться!</span>
+
+    <span class="cm">// Пробуем добавить каждый элемент, начиная с start</span>
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="fn">start</span>; <span class="fn">i</span> &lt; <span class="fn">nums</span>.<span class="fn">length</span>; <span class="fn">i</span>++) {
+        <span class="cm">// 1. Выбрать: добавляем nums[i] в текущий путь</span>
+        <span class="fn">path</span>.<span class="fn">add</span>(<span class="fn">nums</span>[<span class="fn">i</span>]);
+
+        <span class="cm">// 2. Исследовать: рекурсивно генерируем подмножества с оставшихся элементов</span>
+        <span class="fn">backtrack</span>(<span class="fn">nums</span>, <span class="fn">i</span> + <span class="nu">1</span>, <span class="fn">path</span>, <span class="fn">result</span>);  <span class="cm">// i+1, чтобы не повторять элементы</span>
+
+        <span class="cm">// 3. Отменить выбор (БЭКТРЕК): убираем последний элемент, пробуем следующий вариант</span>
+        <span class="fn">path</span>.<span class="fn">remove</span>(<span class="fn">path</span>.<span class="fn">size</span>() - <span class="nu">1</span>);
+    }
+}
+
+<span class="cm">// 💡 Шаблон бэктрекинга:</span>
+<span class="cm">// 1. Добавить текущий выбор в path</span>
+<span class="cm">// 2. Рекурсивный вызов с обновлёнными параметрами</span>
+<span class="cm">// 3. Убрать выбор (откат) — это КЛЮЧЕВОЙ шаг!</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Dynamic Programming -->
+                <div class="section" id="dp">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(240,96,96,0.12);color:var(--error)">🧮</span> Dynamic Programming — Динамическое программирование</h2>
+                    
+                    <div class="section-subtitle">Паттерн: 1D DP (Climbing Stairs)</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Решение большой задачи через решение меньших подзадач. Запоминаем результаты, чтобы не пересчитывать.</p>
+                        <p><b>Когда использовать:</b> Оптимизация, подсчёт способов, минимальная стоимость, перекрывающиеся подзадачи.</p>
+                        <p><b>Два подхода:</b> Top-down (рекурсия + мемоизация) и Bottom-up (итерация + таблица).</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Climbing Stairs (LeetCode 70)</span>
+<span class="cm">// Сколько способов подняться по лестнице из n ступенек, если можно шагать на 1 или 2?</span>
+
+<span class="cm">// ── BOTTOM-UP (итеративный, предпочтительный) ──</span>
+<span class="kw">public int</span> <span class="fn">climbStairs</span>(<span class="ty">int</span> <span class="fn">n</span>) {
+    <span class="cm">// Базовые случаи</span>
+    <span class="kw">if</span> (<span class="fn">n</span> <= <span class="nu">2</span>) <span class="kw">return</span> <span class="fn">n</span>;  <span class="cm">// 1 ступенька: 1 способ, 2 ступеньки: 2 способа</span>
+
+    <span class="cm">// dp[i] = количество способов дойти до i-й ступеньки</span>
+    <span class="cm">// Рекуррентная формула: dp[i] = dp[i-1] + dp[i-2]</span>
+    <span class="cm">// (можно прийти с (i-1) шагом в 1 или с (i-2) шагом в 2)</span>
+
+    <span class="ty">int</span> <span class="fn">prev2</span> = <span class="nu">1</span>;  <span class="cm">// dp[1] — два шага назад</span>
+    <span class="ty">int</span> <span class="fn">prev1</span> = <span class="nu">2</span>;  <span class="cm">// dp[2] — один шаг назад</span>
+    <span class="ty">int</span> <span class="fn">curr</span> = <span class="nu">0</span>;   <span class="cm">// dp[i] — текущее</span>
+
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">3</span>; <span class="fn">i</span> <= <span class="fn">n</span>; <span class="fn">i</span>++) {
+        <span class="fn">curr</span> = <span class="fn">prev1</span> + <span class="fn">prev2</span>;  <span class="cm">// dp[i] = dp[i-1] + dp[i-2]</span>
+        <span class="cm">// Сдвигаем "окно" вперёд</span>
+        <span class="fn">prev2</span> = <span class="fn">prev1</span>;
+        <span class="fn">prev1</span> = <span class="fn">curr</span>;
+    }
+
+    <span class="kw">return</span> <span class="fn">curr</span>;
+}
+
+<span class="cm">// 💡 Оптимизация памяти: нам не нужен весь массив dp[],</span>
+<span class="cm">// достаточно хранить только два предыдущих значения → O(1) память!</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Паттерн: 2D DP (Grid Unique Paths)</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Unique Paths (LeetCode 62)</span>
+<span class="cm">// Сколько путей из левого верхнего в правый нижний угол сетки m×n?</span>
+<span class="cm">// Можно двигаться только вправо или вниз.</span>
+
+<span class="kw">public int</span> <span class="fn">uniquePaths</span>(<span class="ty">int</span> <span class="fn">m</span>, <span class="ty">int</span> <span class="fn">n</span>) {
+    <span class="cm">// dp[i][j] = количество путей до клетки (i, j)</span>
+    <span class="ty">int</span>[][] <span class="fn">dp</span> = <span class="kw">new int</span>[<span class="fn">m</span>][<span class="fn">n</span>];
+
+    <span class="cm">// Базовый случай: первая строка и первый столбец — только 1 путь (прямо)</span>
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>; <span class="fn">i</span> &lt; <span class="fn">m</span>; <span class="fn">i</span>++) <span class="fn">dp</span>[<span class="fn">i</span>][<span class="nu">0</span>] = <span class="nu">1</span>;  <span class="cm">// Первый столбец</span>
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">j</span> = <span class="nu">0</span>; <span class="fn">j</span> &lt; <span class="fn">n</span>; <span class="fn">j</span>++) <span class="fn">dp</span>[<span class="nu">0</span>][<span class="fn">j</span>] = <span class="nu">1</span>;  <span class="cm">// Первая строка</span>
+
+    <span class="cm">// Заполняем таблицу: в клетку (i,j) можно прийти сверху или слева</span>
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">1</span>; <span class="fn">i</span> &lt; <span class="fn">m</span>; <span class="fn">i</span>++) {
+        <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">j</span> = <span class="nu">1</span>; <span class="fn">j</span> &lt; <span class="fn">n</span>; <span class="fn">j</span>++) {
+            <span class="fn">dp</span>[<span class="fn">i</span>][<span class="fn">j</span>] = <span class="fn">dp</span>[<span class="fn">i</span>-<span class="nu">1</span>][<span class="fn">j</span>] + <span class="fn">dp</span>[<span class="fn">i</span>][<span class="fn">j</span>-<span class="nu">1</span>];  <span class="cm">// Сверху + Слева</span>
+        }
+    }
+
+    <span class="kw">return</span> <span class="fn">dp</span>[<span class="fn">m</span>-<span class="nu">1</span>][<span class="fn">n</span>-<span class="nu">1</span>];  <span class="cm">// Ответ в правом нижнем углу</span>
+}
+
+<span class="cm">// 💡 Рекуррентная формула — сердце ДП! Сначала определи её, потом кодируй.</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Tree Traversal -->
+                <div class="section" id="trees">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">🌳</span> Деревья — BFS и DFS</h2>
+                    
+                    <div class="section-subtitle">Паттерн: DFS — Рекурсивный обход</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Идём вглубь до конца, затем возвращаемся (backtrack). Три порядка: Pre-order (корень-левый-правый), In-order (левый-корень-правый), Post-order (левый-правый-корень).</p>
+                        <p><b>Когда использовать:</b> Обход дерева, поиск пути, проверка условий, сериализация.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Maximum Depth of Binary Tree (LeetCode 104)</span>
+<span class="kw">public int</span> <span class="fn">maxDepth</span>(<span class="cl">TreeNode</span> <span class="fn">root</span>) {
+    <span class="cm">// Базовый случай: пустое дерево имеет глубину 0</span>
+    <span class="kw">if</span> (<span class="fn">root</span> == <span class="kw">null</span>) {
+        <span class="kw">return</span> <span class="nu">0</span>;
+    }
+
+    <span class="cm">// Рекурсивно считаем глубину левого и правого поддеревьев</span>
+    <span class="ty">int</span> <span class="fn">leftDepth</span> = <span class="fn">maxDepth</span>(<span class="fn">root</span>.<span class="fn">left</span>);
+    <span class="ty">int</span> <span class="fn">rightDepth</span> = <span class="fn">maxDepth</span>(<span class="fn">root</span>.<span class="fn">right</span>);
+
+    <span class="cm">// Глубина текущего узла = 1 (сам узел) + максимум из глубин детей</span>
+    <span class="kw">return</span> <span class="nu">1</span> + <span class="cl">Math</span>.<span class="fn">max</span>(<span class="fn">leftDepth</span>, <span class="fn">rightDepth</span>);
+}
+
+<span class="cm">// 💡 Шаблон рекурсивного DFS для дерева:</span>
+<span class="cm">// 1. Проверка на null (база)</span>
+<span class="cm">// 2. Рекурсивные вызовы для left и right</span>
+<span class="cm">// 3. Комбинация результатов + обработка текущего узла</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Паттерн: BFS — Обход по уровням</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Используем очередь (Queue). Обрабатываем узлы уровень за уровнем: добавляем детей в очередь, пока очередь не пуста.</p>
+                        <p><b>Когда использовать:</b> Поиск кратчайшего пути, обход по уровням, проверка "соседей".</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Binary Tree Level Order Traversal (LeetCode 102)</span>
+<span class="kw">public</span> <span class="ty">java.util.List</span>&lt;<span class="ty">java.util.List</span>&lt;<span class="ty">Integer</span>&gt;&gt; <span class="fn">levelOrder</span>(<span class="cl">TreeNode</span> <span class="fn">root</span>) {
+    <span class="ty">java.util.List</span>&lt;<span class="ty">java.util.List</span>&lt;<span class="ty">Integer</span>&gt;&gt; <span class="fn">result</span> = <span class="kw">new</span> <span class="cl">java.util.ArrayList</span>&lt;&gt;();
+    <span class="kw">if</span> (<span class="fn">root</span> == <span class="kw">null</span>) <span class="kw">return</span> <span class="fn">result</span>;
+
+    <span class="cm">// Очередь для BFS</span>
+    <span class="ty">java.util.Queue</span>&lt;<span class="cl">TreeNode</span>&gt; <span class="fn">queue</span> = <span class="kw">new</span> <span class="cl">java.util.LinkedList</span>&lt;&gt;();
+    <span class="fn">queue</span>.<span class="fn">offer</span>(<span class="fn">root</span>);  <span class="cm">// Начинаем с корня</span>
+
+    <span class="kw">while</span> (!<span class="fn">queue</span>.<span class="fn">isEmpty</span>()) {
+        <span class="ty">int</span> <span class="fn">levelSize</span> = <span class="fn">queue</span>.<span class="fn">size</span>();  <span class="cm">// Количество узлов на текущем уровне</span>
+        <span class="ty">java.util.List</span>&lt;<span class="ty">Integer</span>&gt; <span class="fn">currentLevel</span> = <span class="kw">new</span> <span class="cl">java.util.ArrayList</span>&lt;&gt;();
+
+        <span class="cm">// Обрабатываем ВСЕ узлы текущего уровня</span>
+        <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>; <span class="fn">i</span> &lt; <span class="fn">levelSize</span>; <span class="fn">i</span>++) {
+            <span class="cl">TreeNode</span> <span class="fn">node</span> = <span class="fn">queue</span>.<span class="fn">poll</span>();  <span class="cm">// Берём узел из очереди</span>
+            <span class="fn">currentLevel</span>.<span class="fn">add</span>(<span class="fn">node</span>.<span class="fn">val</span>);   <span class="cm">// Добавляем его значение</span>
+
+            <span class="cm">// Добавляем детей в очередь для следующего уровня</span>
+            <span class="kw">if</span> (<span class="fn">node</span>.<span class="fn">left</span> != <span class="kw">null</span>) <span class="fn">queue</span>.<span class="fn">offer</span>(<span class="fn">node</span>.<span class="fn">left</span>);
+            <span class="kw">if</span> (<span class="fn">node</span>.<span class="fn">right</span> != <span class="kw">null</span>) <span class="fn">queue</span>.<span class="fn">offer</span>(<span class="fn">node</span>.<span class="fn">right</span>);
+        }
+
+        <span class="fn">result</span>.<span class="fn">add</span>(<span class="fn">currentLevel</span>);  <span class="cm">// Добавляем уровень в результат</span>
+    }
+
+    <span class="kw">return</span> <span class="fn">result</span>;
+}
+
+<span class="cm">// 💡 Ключевой момент: levelSize = queue.size() в начале цикла фиксирует</span>
+<span class="cm">// количество узлов на ТЕКУЩЕМ уровне, прежде чем мы добавим детей.</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Graph Algorithms -->
+                <div class="section" id="graphs">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🕸️</span> Графы — BFS, DFS, Union Find</h2>
+                    
+                    <div class="section-subtitle">Паттерн: Number of Islands (DFS на матрице)</div>
+                    <div class="prose">
+                        <p><b>Идея:</b> Проходим по всем клеткам. Если видим '1' (земля) — запускаем DFS, чтобы "закрасить" весь остров (пометить как посещённый). Считаем количество запусков DFS.</p>
+                        <p><b>Когда использовать:</b> Связные компоненты, заливка, поиск областей.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Задача: Number of Islands (LeetCode 200)</span>
+<span class="kw">public int</span> <span class="fn">numIslands</span>(<span class="ty">char</span>[][] <span class="fn">grid</span>) {
+    <span class="kw">if</span> (<span class="fn">grid</span> == <span class="kw">null</span> || <span class="fn">grid</span>.<span class="fn">length</span> == <span class="nu">0</span>) <span class="kw">return</span> <span class="nu">0</span>;
+
+    <span class="ty">int</span> <span class="fn">count</span> = <span class="nu">0</span>;
+    <span class="ty">int</span> <span class="fn">rows</span> = <span class="fn">grid</span>.<span class="fn">length</span>;
+    <span class="ty">int</span> <span class="fn">cols</span> = <span class="fn">grid</span>[<span class="nu">0</span>].<span class="fn">length</span>;
+
+    <span class="cm">// Проходим по всем клеткам</span>
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">r</span> = <span class="nu">0</span>; <span class="fn">r</span> &lt; <span class="fn">rows</span>; <span class="fn">r</span>++) {
+        <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">c</span> = <span class="nu">0</span>; <span class="fn">c</span> &lt; <span class="fn">cols</span>; <span class="fn">c</span>++) {
+            <span class="cm">// Если нашли землю — новый остров!</span>
+            <span class="kw">if</span> (<span class="fn">grid</span>[<span class="fn">r</span>][<span class="fn">c</span>] == <span class="st">'1'</span>) {
+                <span class="fn">count</span>++;  <span class="cm">// Увеличиваем счётчик</span>
+                <span class="fn">dfs</span>(<span class="fn">grid</span>, <span class="fn">r</span>, <span class="fn">c</span>, <span class="fn">rows</span>, <span class="fn">cols</span>);  <span class="cm">// "Закрашиваем" весь остров</span>
+            }
+        }
+    }
+
+    <span class="kw">return</span> <span class="fn">count</span>;
+}
+
+<span class="cm">// DFS: помечаем все клетки острова как посещённые ('0')</span>
+<span class="kw">private void</span> <span class="fn">dfs</span>(<span class="ty">char</span>[][] <span class="fn">grid</span>, <span class="ty">int</span> <span class="fn">r</span>, <span class="ty">int</span> <span class="fn">c</span>, <span class="ty">int</span> <span class="fn">rows</span>, <span class="ty">int</span> <span class="fn">cols</span>) {
+    <span class="cm">// Проверка границ и "воды" / уже посещённых</span>
+    <span class="kw">if</span> (<span class="fn">r</span> &lt; <span class="nu">0</span> || <span class="fn">r</span> >= <span class="fn">rows</span> || <span class="fn">c</span> &lt; <span class="nu">0</span> || <span class="fn">c</span> >= <span class="fn">cols</span> || <span class="fn">grid</span>[<span class="fn">r</span>][<span class="fn">c</span>] != <span class="st">'1'</span>) {
+        <span class="kw">return</span>;
+    }
+
+    <span class="cm">// Помечаем как посещённую (чтобы не зайти снова)</span>
+    <span class="fn">grid</span>[<span class="fn">r</span>][<span class="fn">c</span>] = <span class="st">'0'</span>;
+
+    <span class="cm">// Рекурсивно обходим 4 направления: вверх, вниз, влево, вправо</span>
+    <span class="fn">dfs</span>(<span class="fn">grid</span>, <span class="fn">r</span>-<span class="nu">1</span>, <span class="fn">c</span>, <span class="fn">rows</span>, <span class="fn">cols</span>);  <span class="cm">// Вверх</span>
+    <span class="fn">dfs</span>(<span class="fn">grid</span>, <span class="fn">r</span>+<span class="nu">1</span>, <span class="fn">c</span>, <span class="fn">rows</span>, <span class="fn">cols</span>);  <span class="cm">// Вниз</span>
+    <span class="fn">dfs</span>(<span class="fn">grid</span>, <span class="fn">r</span>, <span class="fn">c</span>-<span class="nu">1</span>, <span class="fn">rows</span>, <span class="fn">cols</span>);  <span class="cm">// Влево</span>
+    <span class="fn">dfs</span>(<span class="fn">grid</span>, <span class="fn">r</span>, <span class="fn">c</span>+<span class="nu">1</span>, <span class="fn">rows</span>, <span class="fn">cols</span>);  <span class="cm">// Вправо</span>
+}
+
+<span class="cm">// 💡 Важно: меняем grid[r][c] на '0' ПЕРЕД рекурсивными вызовами,</span>
+<span class="cm">// иначе можно зациклиться между соседними клетками!</span></code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Паттерн: Union Find (Disjoint Set Union)</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Union Find — для задач на связность (LeetCode 200, 547, 684)</span>
+<span class="kw">class</span> <span class="cl">UnionFind</span> {
+    <span class="kw">private int</span>[] <span class="fn">parent</span>;  <span class="cm">// parent[i] = родитель узла i</span>
+    <span class="kw">private int</span>[] <span class="fn">rank</span>;    <span class="cm">// rank[i] = "высота" дерева для оптимизации</span>
+    <span class="kw">private int</span> <span class="fn">count</span>;     <span class="cm">// Количество компонент связности</span>
+
+    <span class="kw">public</span> <span class="cl">UnionFind</span>(<span class="ty">int</span> <span class="fn">n</span>) {
+        <span class="fn">count</span> = <span class="fn">n</span>;
+        <span class="fn">parent</span> = <span class="kw">new int</span>[<span class="fn">n</span>];
+        <span class="fn">rank</span> = <span class="kw">new int</span>[<span class="fn">n</span>];
+        <span class="cm">// Изначально каждый узел — сам себе родитель</span>
+        <span class="kw">for</span> (<span class="ty">int</span> <span class="fn">i</span> = <span class="nu">0</span>; <span class="fn">i</span> &lt; <span class="fn">n</span>; <span class="fn">i</span>++) {
+            <span class="fn">parent</span>[<span class="fn">i</span>] = <span class="fn">i</span>;
+            <span class="fn">rank</span>[<span class="fn">i</span>] = <span class="nu">1</span>;
+        }
+    }
+
+    <span class="cm">// Найти корень с оптимизацией: Path Compression</span>
+    <span class="kw">public int</span> <span class="fn">find</span>(<span class="ty">int</span> <span class="fn">x</span>) {
+        <span class="kw">if</span> (<span class="fn">parent</span>[<span class="fn">x</span>] != <span class="fn">x</span>) {
+            <span class="cm">// "Сплющиваем" дерево: делаем всех предков прямыми детьми корня</span>
+            <span class="fn">parent</span>[<span class="fn">x</span>] = <span class="fn">find</span>(<span class="fn">parent</span>[<span class="fn">x</span>]);
+        }
+        <span class="kw">return</span> <span class="fn">parent</span>[<span class="fn">x</span>];
+    }
+
+    <span class="cm">// Объединить две компоненты с оптимизацией: Union by Rank</span>
+    <span class="kw">public boolean</span> <span class="fn">union</span>(<span class="ty">int</span> <span class="fn">x</span>, <span class="ty">int</span> <span class="fn">y</span>) {
+        <span class="ty">int</span> <span class="fn">rootX</span> = <span class="fn">find</span>(<span class="fn">x</span>);
+        <span class="ty">int</span> <span class="fn">rootY</span> = <span class="fn">find</span>(<span class="fn">y</span>);
+
+        <span class="cm">// Если уже в одной компоненте — не нужно объединять</span>
+        <span class="kw">if</span> (<span class="fn">rootX</span> == <span class="fn">rootY</span>) <span class="kw">return false</span>;
+
+        <span class="cm">// Прикрепляем меньшее дерево к большему (по rank)</span>
+        <span class="kw">if</span> (<span class="fn">rank</span>[<span class="fn">rootX</span>] > <span class="fn">rank</span>[<span class="fn">rootY</span>]) {
+            <span class="fn">parent</span>[<span class="fn">rootY</span>] = <span class="fn">rootX</span>;
+        } <span class="kw">else if</span> (<span class="fn">rank</span>[<span class="fn">rootX</span>] &lt; <span class="fn">rank</span>[<span class="fn">rootY</span>]) {
+            <span class="fn">parent</span>[<span class="fn">rootX</span>] = <span class="fn">rootY</span>;
+        } <span class="kw">else</span> {
+            <span class="fn">parent</span>[<span class="fn">rootY</span>] = <span class="fn">rootX</span>;
+            <span class="fn">rank</span>[<span class="fn">rootX</span>]++;  <span class="cm">// Ранг увеличился</span>
+        }
+
+        <span class="fn">count</span>--;  <span class="cm">// Количество компонент уменьшилось на 1</span>
+        <span class="kw">return true</span>;
+    }
+
+    <span class="kw">public int</span> <span class="fn">getCount</span>() {
+        <span class="kw">return</span> <span class="fn">count</span>;
+    }
+}
+
+<span class="cm">// 💡 Оптимизации:</span>
+<span class="cm">// 1. Path Compression: find() делает дерево плоским → почти O(1)</span>
+<span class="cm">// 2. Union by Rank: объединяем по высоте → дерево остаётся сбалансированным</span>
+<span class="cm">// Амортизированная сложность: ~O(α(n)) ≈ O(1), где α — обратная функция Аккермана</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Top Interview Questions -->
+                <div class="section" id="interview">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">❓</span> Топ-10 задач для тренировки</h2>
+                    
+                    <div class="box box-blue">
+                        <div class="box-label">🎯 Стратегия подготовки</div>
+                        1. <b>Начни с лёгких</b> — отработай базовые паттерны.<br>
+                        2. <b>Решай по категориям</b> — не прыгай между темами.<br>
+                        3. <b>Пиши код на бумаге</b> — на собеседовании не будет IDE.<br>
+                        4. <b>Говори вслух</b> — объясняй ход мыслей, даже если застрял.<br>
+                        5. <b>Тестируй на краевых случаях</b> — пустой массив, один элемент, дубликаты.
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>№</th><th>Задача</th><th>Паттерн</th><th>Сложность</th><th>LeetCode</th></tr></thead>
+                            <tbody>
+                                <tr><td>1</td><td><b>Two Sum</b></td><td>HashMap</td><td>Easy</td><td>#1</td></tr>
+                                <tr><td>2</td><td><b>Valid Parentheses</b></td><td>Stack</td><td>Easy</td><td>#20</td></tr>
+                                <tr><td>3</td><td><b>Maximum Subarray</b></td><td>Kadane's Algorithm</td><td>Medium</td><td>#53</td></tr>
+                                <tr><td>4</td><td><b>Merge Intervals</b></td><td>Sorting + Merge</td><td>Medium</td><td>#56</td></tr>
+                                <tr><td>5</td><td><b>Number of Islands</b></td><td>DFS/BFS</td><td>Medium</td><td>#200</td></tr>
+                                <tr><td>6</td><td><b>Longest Substring Without Repeating</b></td><td>Sliding Window + HashSet</td><td>Medium</td><td>#3</td></tr>
+                                <tr><td>7</td><td><b>Binary Tree Level Order</b></td><td>BFS</td><td>Medium</td><td>#102</td></tr>
+                                <tr><td>8</td><td><b>Climbing Stairs</b></td><td>1D DP</td><td>Easy</td><td>#70</td></tr>
+                                <tr><td>9</td><td><b>Subsets</b></td><td>Backtracking</td><td>Medium</td><td>#78</td></tr>
+                                <tr><td>10</td><td><b>Course Schedule</b></td><td>Topological Sort / DFS</td><td>Medium</td><td>#207</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <button id="scrollTop" title="Наверх">↑</button>
+</body>
+</html>
