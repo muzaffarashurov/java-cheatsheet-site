@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MapStruct | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#22d3a0"></span>📌 Конспект</a>
+    <a class="nav-link" href="#setup"><span class="nav-dot" style="background:#4f8ef7"></span>Подключение</a>
+    <a class="nav-link" href="#basic"><span class="nav-dot" style="background:#22d3a0"></span>Базовый маппинг</a>
+    <a class="nav-link" href="#mapping-anno"><span class="nav-dot" style="background:#f5a623"></span>@Mapping аннотации</a>
+    <a class="nav-link" href="#update"><span class="nav-dot" style="background:#b88bfa"></span>Обновление объекта</a>
+    <a class="nav-link" href="#custom"><span class="nav-dot" style="background:#5bcefa"></span>Кастомные методы</a>
+    <a class="nav-link" href="#spring"><span class="nav-dot" style="background:#22d3a0"></span>Spring интеграция</a>
+    <a class="nav-link" href="#practices"><span class="nav-dot" style="background:#f5a623"></span>Best Practices</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#f5a623"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="dto.html"><span class="nav-dot" style="background:#5bcefa"></span>DTO Pattern</a>
+    <a class="nav-link" href="service.html"><span class="nav-dot" style="background:#b88bfa"></span>Service Layer</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">🔄 MapStruct</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#22d3a0;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#0a3a2a,#22d3a0)">🔄</div>
+        <div>
+          <h1>MapStruct</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-green">Spring</span>
+            <span class="chip chip-blue">Java</span>
+            <span class="chip chip-cyan">Mapping</span>
+            <span class="chip chip-warn">Code Gen</span>
+          </div>
+        </div>
+      </div>
+      <p>MapStruct — генератор маппинга Entity ↔ DTO на этапе компиляции. Быстрее ModelMapper, type-safe, без рефлексии. @Mapper, @Mapping, @MappingTarget, кастомные конвертеры, Spring интеграция.</p>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#setup">Подключение</a>
+        <a class="toc-link" href="#basic">Базовый</a>
+        <a class="toc-link" href="#mapping-anno">@Mapping</a>
+        <a class="toc-link" href="#update">Обновление</a>
+        <a class="toc-link" href="#custom">Кастомные</a>
+        <a class="toc-link" href="#spring">Spring</a>
+        <a class="toc-link" href="#practices">Best Practices</a>
+        <a class="toc-link" href="#code">💻 Код</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-green">
+        <div class="box-label">Как работает MapStruct</div>
+        MapStruct — аннотационный процессор. На этапе компиляции читает твои интерфейсы с <code>@Mapper</code> и <strong>генерирует обычный Java код</strong> (геттеры/сеттеры). Никакой рефлексии в рантайме — работает как ручной маппинг, но без бойлерплейта.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Критерий</th><th>MapStruct</th><th>ModelMapper</th><th>Ручной маппинг</th></tr>
+          <tr><td>Скорость</td><td>✅ Как ручной</td><td>❌ Медленнее (рефлексия)</td><td>✅ Максимальная</td></tr>
+          <tr><td>Type-safe</td><td>✅ Компиляция</td><td>❌ Runtime ошибки</td><td>✅ Компиляция</td></tr>
+          <tr><td>Бойлерплейт</td><td>✅ Минимальный</td><td>✅ Минимальный</td><td>❌ Много кода</td></tr>
+          <tr><td>Отладка</td><td>✅ Видно сгенерированный код</td><td>❌ Сложно</td><td>✅ Просто</td></tr>
+          <tr><td>Spring интеграция</td><td>✅ componentModel</td><td>✅ Bean</td><td>✅ @Component</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. ПОДКЛЮЧЕНИЕ ═══ -->
+    <div class="section" id="setup">
+      <div class="section-title"><span class="s-icon">⚙️</span> Подключение в pom.xml</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">XML — pom.xml</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">&lt;!-- Свойства для версий --&gt;</span>
+&lt;<span class="kw">properties</span>&gt;
+    &lt;<span class="cl">mapstruct.version</span>&gt;1.5.5.Final&lt;/<span class="cl">mapstruct.version</span>&gt;
+    &lt;<span class="cl">lombok.version</span>&gt;1.18.30&lt;/<span class="cl">lombok.version</span>&gt;   <span class="cm">&lt;!-- Lombok тоже нужен --&gt;</span>
+&lt;/<span class="kw">properties</span>&gt;
+
+&lt;<span class="kw">dependencies</span>&gt;
+    <span class="cm">&lt;!-- MapStruct API --&gt;</span>
+    &lt;<span class="kw">dependency</span>&gt;
+        &lt;<span class="cl">groupId</span>&gt;org.mapstruct&lt;/<span class="cl">groupId</span>&gt;
+        &lt;<span class="cl">artifactId</span>&gt;mapstruct&lt;/<span class="cl">artifactId</span>&gt;
+        &lt;<span class="cl">version</span>&gt;${mapstruct.version}&lt;/<span class="cl">version</span>&gt;
+    &lt;/<span class="kw">dependency</span>&gt;
+&lt;/<span class="kw">dependencies</span>&gt;
+
+&lt;<span class="kw">build</span>&gt;
+  &lt;<span class="kw">plugins</span>&gt;
+    &lt;<span class="kw">plugin</span>&gt;
+      &lt;<span class="cl">groupId</span>&gt;org.apache.maven.plugins&lt;/<span class="cl">groupId</span>&gt;
+      &lt;<span class="cl">artifactId</span>&gt;maven-compiler-plugin&lt;/<span class="cl">artifactId</span>&gt;
+      &lt;<span class="cl">configuration</span>&gt;
+        &lt;<span class="cl">annotationProcessorPaths</span>&gt;
+          <span class="cm">&lt;!-- Lombok ОБЯЗАТЕЛЬНО ПЕРЕД MapStruct --&gt;</span>
+          &lt;<span class="kw">path</span>&gt;
+            &lt;<span class="cl">groupId</span>&gt;org.projectlombok&lt;/<span class="cl">groupId</span>&gt;
+            &lt;<span class="cl">artifactId</span>&gt;lombok&lt;/<span class="cl">artifactId</span>&gt;
+            &lt;<span class="cl">version</span>&gt;${lombok.version}&lt;/<span class="cl">version</span>&gt;
+          &lt;/<span class="kw">path</span>&gt;
+          <span class="cm">&lt;!-- MapStruct процессор --&gt;</span>
+          &lt;<span class="kw">path</span>&gt;
+            &lt;<span class="cl">groupId</span>&gt;org.mapstruct&lt;/<span class="cl">groupId</span>&gt;
+            &lt;<span class="cl">artifactId</span>&gt;mapstruct-processor&lt;/<span class="cl">artifactId</span>&gt;
+            &lt;<span class="cl">version</span>&gt;${mapstruct.version}&lt;/<span class="cl">version</span>&gt;
+          &lt;/<span class="kw">path</span>&gt;
+          <span class="cm">&lt;!-- Интеграция Lombok + MapStruct --&gt;</span>
+          &lt;<span class="kw">path</span>&gt;
+            &lt;<span class="cl">groupId</span>&gt;org.projectlombok&lt;/<span class="cl">groupId</span>&gt;
+            &lt;<span class="cl">artifactId</span>&gt;lombok-mapstruct-binding&lt;/<span class="cl">artifactId</span>&gt;
+            &lt;<span class="cl">version</span>&gt;0.2.0&lt;/<span class="cl">version</span>&gt;
+          &lt;/<span class="kw">path</span>&gt;
+        &lt;/<span class="cl">annotationProcessorPaths</span>&gt;
+      &lt;/<span class="cl">configuration</span>&gt;
+    &lt;/<span class="kw">plugin</span>&gt;
+  &lt;/<span class="kw">plugins</span>&gt;
+&lt;/<span class="kw">build</span>&gt;</pre>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ Важно: порядок процессоров</div>
+        Lombok должен идти <strong>перед</strong> MapStruct в <code>annotationProcessorPaths</code>. Иначе MapStruct не увидит геттеры/сеттеры сгенерированные Lombok и маппинг не скомпилируется.
+      </div>
+    </div>
+
+    <!-- ═══ 3. БАЗОВЫЙ МАППИНГ ═══ -->
+    <div class="section" id="basic">
+      <div class="section-title"><span class="s-icon">🗺</span> Базовый маппинг</div>
+      <div class="prose">
+        <p>MapStruct автоматически маппит поля с <strong>одинаковыми именами и совместимыми типами</strong>. Если имена или типы отличаются — используй <code>@Mapping</code>.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Сценарий</th><th>Что делает MapStruct</th></tr>
+          <tr><td>Одинаковое имя, одинаковый тип</td><td>✅ Маппит автоматически</td></tr>
+          <tr><td>Одинаковое имя, совместимый тип (int → long)</td><td>✅ Маппит с конвертацией</td></tr>
+          <tr><td>Одинаковое имя, String → int</td><td>✅ Маппит через Integer.parseInt()</td></tr>
+          <tr><td>Разные имена</td><td>❌ Нужен <code>@Mapping(source, target)</code></td></tr>
+          <tr><td>Вложенный объект → поле</td><td>❌ Нужен <code>@Mapping(source="obj.field")</code></td></tr>
+          <tr><td>Enum → String</td><td>✅ Через .name()</td></tr>
+          <tr><td>null значения</td><td>✅ Передаёт как null</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 4. @MAPPING АННОТАЦИИ ═══ -->
+    <div class="section" id="mapping-anno">
+      <div class="section-title"><span class="s-icon">🏷</span> @Mapping — ключевые атрибуты</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Атрибут</th><th>Описание</th><th>Пример</th></tr>
+          <tr><td><code>source</code></td><td>Поле источника (откуда берём)</td><td><code>source = "firstName"</code></td></tr>
+          <tr><td><code>target</code></td><td>Поле назначения (куда кладём)</td><td><code>target = "name"</code></td></tr>
+          <tr><td><code>ignore = true</code></td><td>Игнорировать это поле</td><td><code>@Mapping(target = "password", ignore = true)</code></td></tr>
+          <tr><td><code>expression</code></td><td>Java выражение для значения</td><td><code>expression = "java(source.getAge() + 1)"</code></td></tr>
+          <tr><td><code>constant</code></td><td>Константное значение</td><td><code>constant = "ACTIVE"</code></td></tr>
+          <tr><td><code>defaultValue</code></td><td>Значение если source = null</td><td><code>defaultValue = "Неизвестно"</code></td></tr>
+          <tr><td><code>dateFormat</code></td><td>Формат даты при String ↔ Date</td><td><code>dateFormat = "dd.MM.yyyy"</code></td></tr>
+          <tr><td><code>numberFormat</code></td><td>Формат числа</td><td><code>numberFormat = "#.##"</code></td></tr>
+          <tr><td><code>qualifiedByName</code></td><td>Использовать кастомный метод</td><td><code>qualifiedByName = "formatPhone"</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 5. ОБНОВЛЕНИЕ ОБЪЕКТА ═══ -->
+    <div class="section" id="update">
+      <div class="section-title"><span class="s-icon">✏️</span> @MappingTarget — обновление существующего объекта</div>
+      <div class="prose">
+        <p><code>@MappingTarget</code> позволяет обновлять поля существующего объекта вместо создания нового. Идеально для PUT/PATCH операций — не нужно создавать новый Entity при обновлении.</p>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">✅ Применение в сервисе</div>
+        При обновлении: загружаем Entity из БД → маппим Request DTO в Entity через @MappingTarget → сохраняем. JPA dirty checking сам сделает UPDATE только изменённых полей.
+      </div>
+    </div>
+
+    <!-- ═══ 6. КАСТОМНЫЕ МЕТОДЫ ═══ -->
+    <div class="section" id="custom">
+      <div class="section-title"><span class="s-icon">🔧</span> Кастомные методы и конвертеры</div>
+      <div class="prose">
+        <p>Когда стандартного маппинга недостаточно — добавляй <code>default</code> методы в интерфейс маппера или помечай их <code>@Named</code> для использования в <code>@Mapping(qualifiedByName=...)</code>.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Назначение</th></tr>
+          <tr><td><code>@Named("methodName")</code></td><td>Именовать метод для qualifiedByName</td></tr>
+          <tr><td><code>@BeforeMapping</code></td><td>Вызвать метод перед маппингом</td></tr>
+          <tr><td><code>@AfterMapping</code></td><td>Вызвать метод после маппинга</td></tr>
+          <tr><td><code>@Condition</code></td><td>Условие — маппить поле или нет</td></tr>
+          <tr><td><code>default</code> метод</td><td>Встроить логику прямо в маппер</td></tr>
+          <tr><td><code>uses = {OtherMapper.class}</code></td><td>Переиспользовать другой маппер</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 7. SPRING ИНТЕГРАЦИЯ ═══ -->
+    <div class="section" id="spring">
+      <div class="section-title"><span class="s-icon">🌱</span> Spring интеграция</div>
+      <div class="prose">
+        <p><code>@Mapper(componentModel = "spring")</code> — MapStruct сгенерирует класс с <code>@Component</code>, который можно инжектировать через <code>@Autowired</code> или конструктор.</p>
+      </div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Сгенерированный код (упрощённо)</span></div>
+        <pre><span class="cm">// MapStruct генерирует это автоматически:</span>
+<span class="an">@Component</span>                                     <span class="cm">// Spring бин!</span>
+<span class="kw">public class</span> <span class="cl">UserMapperImpl</span> <span class="kw">implements</span> <span class="cl">UserMapper</span> {
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">toResponse</span>(<span class="cl">User</span> user) {
+        <span class="kw">if</span> (user == <span class="kw">null</span>) <span class="kw">return null</span>;
+        <span class="cl">UserResponse</span> userResponse = <span class="kw">new</span> <span class="cl">UserResponse</span>();
+        userResponse.<span class="fn">setId</span>(user.<span class="fn">getId</span>());         <span class="cm">// обычные геттеры/сеттеры</span>
+        userResponse.<span class="fn">setName</span>(user.<span class="fn">getName</span>());
+        userResponse.<span class="fn">setEmail</span>(user.<span class="fn">getEmail</span>());
+        <span class="kw">return</span> userResponse;
+    }
+}
+<span class="cm">// Никакой рефлексии — чистый быстрый Java код</span></pre>
+      </div>
+    </div>
+
+    <!-- ═══ 8. BEST PRACTICES ═══ -->
+    <div class="section" id="practices">
+      <div class="section-title"><span class="s-icon">✅</span> Best Practices</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Правильно</div>
+          <ul class="compare-list">
+            <li><code>componentModel = "spring"</code> всегда</li>
+            <li>Lombok перед MapStruct в процессорах</li>
+            <li>Явно игнорировать чувствительные поля (<code>password</code>)</li>
+            <li>Использовать <code>@MappingTarget</code> для обновления</li>
+            <li>Кастомные методы через <code>@Named</code></li>
+            <li>Один маппер на доменный объект</li>
+            <li>Инжектировать маппер в сервис через конструктор</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Ошибки</div>
+          <ul class="compare-list">
+            <li>Забыть добавить <code>componentModel = "spring"</code></li>
+            <li>Lombok после MapStruct в процессорах</li>
+            <li>Не игнорировать поля которые не должны маппиться</li>
+            <li>Маппинг в контроллере вместо сервиса</li>
+            <li>Слишком сложная логика в маппере — выноси в сервис</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 9. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. Базовый UserMapper</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Entity</span>
+<span class="an">@Entity</span>
+<span class="an">@Table</span>(name = <span class="st">"users"</span>)
+<span class="an">@Data</span> <span class="an">@Builder</span> <span class="an">@NoArgsConstructor</span> <span class="an">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">User</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>
+    <span class="kw">private</span> <span class="cl">Long</span>    id;
+    <span class="kw">private</span> <span class="cl">String</span>  firstName;       <span class="cm">// разные имена!</span>
+    <span class="kw">private</span> <span class="cl">String</span>  lastName;
+    <span class="kw">private</span> <span class="cl">String</span>  email;
+    <span class="kw">private</span> <span class="cl">String</span>  password;        <span class="cm">// секрет — не должен идти в DTO</span>
+    <span class="an">@Enumerated</span>(<span class="cl">EnumType</span>.STRING)
+    <span class="kw">private</span> <span class="cl">Role</span>    role;
+    <span class="kw">private</span> <span class="cl">Instant</span> createdAt;
+}
+
+<span class="cm">// ── DTO ответа</span>
+<span class="an">@Data</span>                                           <span class="cm">// Lombok: геттеры, сеттеры, equals, hashCode</span>
+<span class="kw">public class</span> <span class="cl">UserResponse</span> {
+    <span class="kw">private</span> <span class="cl">Long</span>    id;
+    <span class="kw">private</span> <span class="cl">String</span>  fullName;        <span class="cm">// объединяем firstName + lastName</span>
+    <span class="kw">private</span> <span class="cl">String</span>  email;
+    <span class="kw">private</span> <span class="cl">String</span>  role;            <span class="cm">// Enum → String</span>
+    <span class="kw">private</span> <span class="cl">Instant</span> createdAt;
+}
+
+<span class="cm">// ── DTO запроса</span>
+<span class="kw">public record</span> <span class="cl">CreateUserRequest</span>(
+    <span class="an">@NotBlank</span> <span class="cl">String</span> firstName,
+    <span class="an">@NotBlank</span> <span class="cl">String</span> lastName,
+    <span class="an">@Email</span>    <span class="cl">String</span> email,
+    <span class="an">@Size</span>(min=<span class="nu">8</span>) <span class="cl">String</span> password
+) {}
+
+<span class="cm">// ── Маппер</span>
+<span class="an">@Mapper</span>(componentModel = <span class="st">"spring"</span>)             <span class="cm">// генерировать @Component Spring бин</span>
+<span class="kw">public interface</span> <span class="cl">UserMapper</span> {
+
+    <span class="cm">// ── Entity → Response DTO</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"fullName"</span>,               <span class="cm">// поле назначения</span>
+             expression = <span class="st">"java(user.getFirstName() + ' ' + user.getLastName())"</span>)
+    <span class="an">@Mapping</span>(target = <span class="st">"role"</span>,
+             expression = <span class="st">"java(user.getRole().name())"</span>)  <span class="cm">// Enum → String</span>
+    <span class="cl">UserResponse</span> <span class="fn">toResponse</span>(<span class="cl">User</span> user);
+
+    <span class="cm">// ── Request DTO → Entity</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"id"</span>,        ignore = <span class="kw">true</span>) <span class="cm">// id генерирует БД</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"password"</span>, ignore = <span class="kw">true</span>) <span class="cm">// пароль хэшируется в сервисе</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"role"</span>,     ignore = <span class="kw">true</span>) <span class="cm">// роль задаётся в сервисе</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"createdAt"</span>, ignore = <span class="kw">true</span>) <span class="cm">// задаётся автоматически</span>
+    <span class="cl">User</span> <span class="fn">toEntity</span>(<span class="cl">CreateUserRequest</span> request);
+
+    <span class="cm">// ── Маппинг списка (MapStruct генерирует автоматически)</span>
+    <span class="cl">List</span>&lt;<span class="cl">UserResponse</span>&gt; <span class="fn">toResponseList</span>(<span class="cl">List</span>&lt;<span class="cl">User</span>&gt; users); <span class="cm">// stream().map(toResponse)</span>
+}</pre>
+      </div>
+
+      <div class="section-subtitle">2. @MappingTarget — обновление существующего Entity</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Mapper</span>(componentModel = <span class="st">"spring"</span>)
+<span class="kw">public interface</span> <span class="cl">UserMapper</span> {
+
+    <span class="cm">// ── Обновление полей существующего Entity из DTO</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"id"</span>,        ignore = <span class="kw">true</span>)  <span class="cm">// id не трогаем</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"password"</span>, ignore = <span class="kw">true</span>)  <span class="cm">// пароль меняется отдельно</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"createdAt"</span>, ignore = <span class="kw">true</span>) <span class="cm">// дата создания не меняется</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"role"</span>,     ignore = <span class="kw">true</span>)   <span class="cm">// роль не меняется через update</span>
+    <span class="kw">void</span> <span class="fn">updateEntity</span>(<span class="cl">UpdateUserRequest</span> request,    <span class="cm">// источник — DTO</span>
+                       <span class="an">@MappingTarget</span> <span class="cl">User</span> user);  <span class="cm">// цель — существующий Entity</span>
+    <span class="cm">// MapStruct генерирует: user.setFirstName(request.firstName()); и т.д.</span>
+}
+
+<span class="cm">// ── Использование в сервисе</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">UserService</span> {
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> userRepository;
+    <span class="kw">private final</span> <span class="cl">UserMapper</span>     userMapper;
+
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">update</span>(<span class="cl">Long</span> id, <span class="cl">UpdateUserRequest</span> request) {
+        <span class="cl">User</span> user = userRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"User"</span>, id));
+
+        userMapper.<span class="fn">updateEntity</span>(request, user);     <span class="cm">// обновляем поля Entity</span>
+        <span class="cm">// JPA dirty checking сохранит изменения при коммите</span>
+        <span class="cm">// save() не обязателен, но можно вызвать явно</span>
+        <span class="kw">return</span> userMapper.<span class="fn">toResponse</span>(userRepository.<span class="fn">save</span>(user));
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">3. @Named — кастомные методы конвертации</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Mapper</span>(componentModel = <span class="st">"spring"</span>)
+<span class="kw">public interface</span> <span class="cl">ProductMapper</span> {
+
+    <span class="cm">// ── Использование кастомного метода через qualifiedByName</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"price"</span>,
+             source = <span class="st">"price"</span>,
+             qualifiedByName = <span class="st">"formatPrice"</span>)    <span class="cm">// использовать наш метод</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"category"</span>,
+             source = <span class="st">"category.name"</span>)           <span class="cm">// вложенный объект → строка</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"imageUrl"</span>,
+             qualifiedByName = <span class="st">"buildImageUrl"</span>)
+    <span class="cl">ProductResponse</span> <span class="fn">toResponse</span>(<span class="cl">Product</span> product);
+
+    <span class="cm">// ── Кастомный метод с @Named — форматируем цену</span>
+    <span class="an">@Named</span>(<span class="st">"formatPrice"</span>)                       <span class="cm">// имя для qualifiedByName</span>
+    <span class="kw">default</span> <span class="cl">String</span> <span class="fn">formatPrice</span>(<span class="cl">BigDecimal</span> price) {
+        <span class="kw">if</span> (price == <span class="kw">null</span>) <span class="kw">return</span> <span class="st">"0.00 ₽"</span>;
+        <span class="kw">return</span> price.<span class="fn">setScale</span>(<span class="nu">2</span>, <span class="cl">RoundingMode</span>.HALF_UP) + <span class="st">" ₽"</span>; <span class="cm">// "99.99 ₽"</span>
+    }
+
+    <span class="cm">// ── Кастомный метод — строим URL изображения</span>
+    <span class="an">@Named</span>(<span class="st">"buildImageUrl"</span>)
+    <span class="kw">default</span> <span class="cl">String</span> <span class="fn">buildImageUrl</span>(<span class="cl">Product</span> product) {
+        <span class="kw">if</span> (product.<span class="fn">getImagePath</span>() == <span class="kw">null</span>) <span class="kw">return null</span>;
+        <span class="kw">return</span> <span class="st">"/api/images/"</span> + product.<span class="fn">getId</span>() + <span class="st">"/"</span> + product.<span class="fn">getImagePath</span>();
+    }
+
+    <span class="cm">// ── @BeforeMapping — действие перед маппингом</span>
+    <span class="an">@BeforeMapping</span>
+    <span class="kw">default void</span> <span class="fn">beforeMapping</span>(<span class="cl">Product</span> product, <span class="an">@MappingTarget</span> <span class="cl">ProductResponse</span> response) {
+        <span class="cm">// Например: нормализация данных перед маппингом</span>
+        <span class="kw">if</span> (product.<span class="fn">getName</span>() != <span class="kw">null</span>) {
+            product.<span class="fn">setName</span>(product.<span class="fn">getName</span>().<span class="fn">trim</span>());
+        }
+    }
+
+    <span class="cm">// ── @AfterMapping — действие после маппинга</span>
+    <span class="an">@AfterMapping</span>
+    <span class="kw">default void</span> <span class="fn">afterMapping</span>(<span class="cl">Product</span> product, <span class="an">@MappingTarget</span> <span class="cl">ProductResponse</span> response) {
+        <span class="cm">// Например: добавить флаг скидки после маппинга</span>
+        response.<span class="fn">setOnSale</span>(product.<span class="fn">getDiscount</span>() != <span class="kw">null</span>
+            && product.<span class="fn">getDiscount</span>().<span class="fn">compareTo</span>(<span class="cl">BigDecimal</span>.ZERO) > <span class="nu">0</span>);
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">4. uses — переиспользование маппера</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Маппер для вложенного объекта</span>
+<span class="an">@Mapper</span>(componentModel = <span class="st">"spring"</span>)
+<span class="kw">public interface</span> <span class="cl">AddressMapper</span> {
+    <span class="cl">AddressResponse</span> <span class="fn">toResponse</span>(<span class="cl">Address</span> address);
+}
+
+<span class="cm">// ── Маппер использует AddressMapper для вложенного объекта</span>
+<span class="an">@Mapper</span>(
+    componentModel = <span class="st">"spring"</span>,
+    uses = { <span class="cl">AddressMapper</span>.<span class="kw">class</span> }               <span class="cm">// подключаем зависимый маппер</span>
+)
+<span class="kw">public interface</span> <span class="cl">UserMapper</span> {
+
+    <span class="cm">// MapStruct автоматически использует AddressMapper для поля address</span>
+    <span class="cl">UserResponse</span> <span class="fn">toResponse</span>(<span class="cl">User</span> user);            <span class="cm">// user.address → AddressResponse</span>
+}
+
+<span class="cm">// ── Маппер с несколькими зависимостями и пользовательскими Spring бинами</span>
+<span class="an">@Mapper</span>(
+    componentModel = <span class="st">"spring"</span>,
+    uses = {
+        <span class="cl">AddressMapper</span>.<span class="kw">class</span>,
+        <span class="cl">OrderItemMapper</span>.<span class="kw">class</span>
+    }
+)
+<span class="kw">public interface</span> <span class="cl">OrderMapper</span> {
+
+    <span class="cm">// ── Можно инжектировать Spring бины через @Autowired (не работает в record)</span>
+    <span class="an">@Autowired</span>
+    <span class="kw">default</span> <span class="cl">UserRepository</span> <span class="fn">userRepository</span>() { <span class="kw">return null</span>; }  <span class="cm">// если нужен доступ к БД</span>
+
+    <span class="an">@Mapping</span>(target = <span class="st">"customerName"</span>,
+             expression = <span class="st">"java(order.getCustomer().getFirstName() + ' ' + order.getCustomer().getLastName())"</span>)
+    <span class="an">@Mapping</span>(target = <span class="st">"address"</span>, source = <span class="st">"deliveryAddress"</span>)  <span class="cm">// переименование</span>
+    <span class="cl">OrderResponse</span> <span class="fn">toResponse</span>(<span class="cl">Order</span> order);                    <span class="cm">// автоматически items</span>
+}</pre>
+      </div>
+
+      <div class="section-subtitle">5. Маппинг с вложенными полями и enum</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Сложный маппер с разными случаями</span>
+<span class="an">@Mapper</span>(
+    componentModel = <span class="st">"spring"</span>,
+    nullValuePropertyMappingStrategy = <span class="cl">NullValuePropertyMappingStrategy</span>.IGNORE <span class="cm">// игнорировать null при обновлении</span>
+)
+<span class="kw">public interface</span> <span class="cl">EmployeeMapper</span> {
+
+    <span class="cm">// ── Вложенное поле: department.name → departmentName</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"departmentName"</span>, source = <span class="st">"department.name"</span>)   <span class="cm">// точка — вложенный объект</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"managerEmail"</span>,   source = <span class="st">"department.manager.email"</span>) <span class="cm">// глубокий путь</span>
+
+    <span class="cm">// ── Константа — всегда устанавливать значение</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"source"</span>, constant = <span class="st">"INTERNAL"</span>)              <span class="cm">// всегда "INTERNAL"</span>
+
+    <span class="cm">// ── Default value — если поле null</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"status"</span>, source = <span class="st">"status"</span>, defaultValue = <span class="st">"ACTIVE"</span>) <span class="cm">// если null → "ACTIVE"</span>
+
+    <span class="cm">// ── Формат даты</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"birthDate"</span>, source = <span class="st">"birthDate"</span>, dateFormat = <span class="st">"dd.MM.yyyy"</span>)
+    <span class="cm">// преобразует LocalDate → String "15.01.1990"</span>
+
+    <span class="cl">EmployeeResponse</span> <span class="fn">toResponse</span>(<span class="cl">Employee</span> employee);
+
+    <span class="cm">// ── Маппинг Enum → другой Enum</span>
+    <span class="an">@ValueMappings</span>({
+        <span class="an">@ValueMapping</span>(source = <span class="st">"FULL_TIME"</span>,  target = <span class="st">"FT"</span>),          <span class="cm">// EmploymentType.FULL_TIME → ContractType.FT</span>
+        <span class="an">@ValueMapping</span>(source = <span class="st">"PART_TIME"</span>,  target = <span class="st">"PT"</span>),
+        <span class="an">@ValueMapping</span>(source = <span class="cl">MappingConstants</span>.ANY_REMAINING, target = <span class="st">"OTHER"</span>) <span class="cm">// всё остальное</span>
+    })
+    <span class="cl">ContractType</span> <span class="fn">toContractType</span>(<span class="cl">EmploymentType</span> employmentType);
+
+    <span class="cm">// ── PATCH маппинг — игнорировать null поля (nullValuePropertyMappingStrategy = IGNORE)</span>
+    <span class="an">@Mapping</span>(target = <span class="st">"id"</span>,        ignore = <span class="kw">true</span>)
+    <span class="an">@Mapping</span>(target = <span class="st">"createdAt"</span>, ignore = <span class="kw">true</span>)
+    <span class="kw">void</span> <span class="fn">patch</span>(<span class="cl">PatchEmployeeRequest</span> request, <span class="an">@MappingTarget</span> <span class="cl">Employee</span> employee);
+    <span class="cm">// null поля в request НЕ перезапишут поля employee (благодаря IGNORE стратегии)</span>
+}</pre>
+      </div>
+
+      <div class="section-subtitle">6. Использование маппера в сервисе</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="an">@Slf4j</span>
+<span class="kw">public class</span> <span class="cl">UserService</span> {
+
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> userRepository;
+    <span class="kw">private final</span> <span class="cl">UserMapper</span>     userMapper;      <span class="cm">// Spring инжектирует UserMapperImpl</span>
+    <span class="kw">private final</span> <span class="cl">PasswordEncoder</span> passwordEncoder;
+
+    <span class="cm">// ── CREATE</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">create</span>(<span class="cl">CreateUserRequest</span> request) {
+        <span class="cl">User</span> user = userMapper.<span class="fn">toEntity</span>(request);  <span class="cm">// DTO → Entity (без password/role)</span>
+        user.<span class="fn">setPassword</span>(passwordEncoder.<span class="fn">encode</span>(request.<span class="fn">password</span>())); <span class="cm">// хэшируем пароль</span>
+        user.<span class="fn">setRole</span>(<span class="cl">Role</span>.ROLE_USER);              <span class="cm">// устанавливаем роль</span>
+        <span class="cl">User</span> saved = userRepository.<span class="fn">save</span>(user);
+        <span class="kw">return</span> userMapper.<span class="fn">toResponse</span>(saved);       <span class="cm">// Entity → Response DTO</span>
+    }
+
+    <span class="cm">// ── READ ALL</span>
+    <span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">UserResponse</span>&gt; <span class="fn">findAll</span>() {
+        <span class="kw">return</span> userMapper.<span class="fn">toResponseList</span>(userRepository.<span class="fn">findAll</span>()); <span class="cm">// List Entity → List DTO</span>
+    }
+
+    <span class="cm">// ── UPDATE через @MappingTarget</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">update</span>(<span class="cl">Long</span> id, <span class="cl">UpdateUserRequest</span> request) {
+        <span class="cl">User</span> user = userRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"User"</span>, id));
+
+        userMapper.<span class="fn">updateEntity</span>(request, user);   <span class="cm">// обновляем поля Entity из DTO</span>
+        <span class="kw">return</span> userMapper.<span class="fn">toResponse</span>(user);        <span class="cm">// dirty check сохранит изменения</span>
+    }
+
+    <span class="cm">// ── PATCH</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> <span class="cl">UserResponse</span> <span class="fn">patch</span>(<span class="cl">Long</span> id, <span class="cl">PatchUserRequest</span> request) {
+        <span class="cl">User</span> user = userRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">ResourceNotFoundException</span>(<span class="st">"User"</span>, id));
+
+        userMapper.<span class="fn">patch</span>(request, user);           <span class="cm">// null поля игнорируются!</span>
+        <span class="kw">return</span> userMapper.<span class="fn">toResponse</span>(user);
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- ═══ 10. ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое MapStruct и чем он лучше ModelMapper?</div>
+            <div class="qa-q-en">What is MapStruct and how is it better than ModelMapper?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">MapStruct — аннотационный процессор, генерирует обычный Java код (геттеры/сеттеры) на этапе компиляции. Никакой рефлексии в рантайме → скорость как ручной маппинг. Ошибки маппинга — на этапе компиляции (type-safe). ModelMapper использует рефлексию в рантайме — медленнее, ошибки только в рантайме, сложно отлаживать. Сгенерированный код MapStruct можно посмотреть в target/generated-sources.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="ms-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как обновить существующий Entity через MapStruct?</div>
+            <div class="qa-q-en">How do you update an existing entity using MapStruct?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Используем <code>@MappingTarget</code> на параметре метода. Метод с <code>void</code> возвратом принимает Request DTO и существующий Entity — MapStruct обновляет поля Entity из DTO. В сервисе: загружаем Entity из БД → вызываем <code>mapper.updateEntity(request, entity)</code> → JPA dirty checking сохраняет изменения при коммите транзакции. Для PATCH операций добавляем <code>nullValuePropertyMappingStrategy = IGNORE</code> чтобы null поля не перезаписывали существующие.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="ms-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Почему Lombok должен быть перед MapStruct в annotationProcessorPaths?</div>
+            <div class="qa-q-en">Why must Lombok come before MapStruct in annotationProcessorPaths?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Lombok генерирует геттеры и сеттеры, MapStruct использует их для маппинга. Оба работают как аннотационные процессоры на этапе компиляции. Если MapStruct запустится раньше Lombok — геттеров ещё нет, маппинг не скомпилируется. Порядок в <code>annotationProcessorPaths</code> определяет порядок запуска процессоров. Lombok → затем MapStruct → MapStruct видит геттеры/сеттеры от Lombok.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="ms-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как в MapStruct замаппить вложенный объект в плоское поле?</div>
+            <div class="qa-q-en">How do you map a nested object property to a flat field in MapStruct?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Через точечную нотацию в <code>source</code>: <code>@Mapping(source = "department.name", target = "departmentName")</code>. MapStruct сгенерирует код который последовательно вызовет <code>employee.getDepartment().getName()</code> с null-проверкой на каждом уровне. Для обратного маппинга (плоское → вложенное) нужен отдельный кастомный метод или <code>expression</code>.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="ms-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>
