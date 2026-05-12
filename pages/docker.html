@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docker | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#5bcefa"></span>📌 Конспект</a>
+    <a class="nav-link" href="#concepts"><span class="nav-dot" style="background:#4f8ef7"></span>Образы и контейнеры</a>
+    <a class="nav-link" href="#dockerfile"><span class="nav-dot" style="background:#22d3a0"></span>Dockerfile</a>
+    <a class="nav-link" href="#commands"><span class="nav-dot" style="background:#f5a623"></span>Команды CLI</a>
+    <a class="nav-link" href="#volumes"><span class="nav-dot" style="background:#b88bfa"></span>Volumes & Networks</a>
+    <a class="nav-link" href="#multistage"><span class="nav-dot" style="background:#5bcefa"></span>Multi-stage build</a>
+    <a class="nav-link" href="#spring-docker"><span class="nav-dot" style="background:#22d3a0"></span>Spring Boot + Docker</a>
+    <a class="nav-link" href="#practices"><span class="nav-dot" style="background:#f5a623"></span>Best Practices</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="docker-compose.html"><span class="nav-dot" style="background:#22d3a0"></span>Docker Compose</a>
+    <a class="nav-link" href="kubernetes.html"><span class="nav-dot" style="background:#4f8ef7"></span>Kubernetes</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">🐳 Docker</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#5bcefa;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#0a2a5a,#5bcefa)">🐳</div>
+        <div>
+          <h1>Docker</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-devops">DevOps</span>
+            <span class="chip chip-cyan">Container</span>
+            <span class="chip chip-blue">Dockerfile</span>
+            <span class="chip chip-green">Spring</span>
+          </div>
+        </div>
+      </div>
+      <p>Образы, контейнеры, Dockerfile, команды CLI, volumes, networks, multi-stage builds, оптимизация для Spring Boot — всё что нужно Java Backend разработчику для работы с Docker.</p>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#concepts">Образы/Контейнеры</a>
+        <a class="toc-link" href="#dockerfile">Dockerfile</a>
+        <a class="toc-link" href="#commands">CLI команды</a>
+        <a class="toc-link" href="#volumes">Volumes/Networks</a>
+        <a class="toc-link" href="#multistage">Multi-stage</a>
+        <a class="toc-link" href="#spring-docker">Spring + Docker</a>
+        <a class="toc-link" href="#practices">Best Practices</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-blue">
+        <div class="box-label">Ключевые концепции</div>
+        <strong>Image (образ)</strong> — неизменяемый шаблон файловой системы (слоёный, read-only).<br>
+        <strong>Container (контейнер)</strong> — запущенный экземпляр образа (image + writable layer).<br>
+        <strong>Dockerfile</strong> — инструкция для сборки образа.<br>
+        <strong>Registry</strong> — хранилище образов (Docker Hub, ECR, GCR).<br>
+        <strong>Volume</strong> — постоянное хранилище данных вне контейнера.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Концепция</th><th>Аналогия</th><th>Команда</th></tr>
+          <tr><td>Image</td><td>Класс Java</td><td><code>docker build / docker pull</code></td></tr>
+          <tr><td>Container</td><td>Экземпляр класса</td><td><code>docker run / docker start</code></td></tr>
+          <tr><td>Dockerfile</td><td>Исходный код класса</td><td>Текстовый файл</td></tr>
+          <tr><td>Registry</td><td>Maven Central</td><td><code>docker push / docker pull</code></td></tr>
+          <tr><td>Volume</td><td>Внешняя БД</td><td><code>docker volume create</code></td></tr>
+          <tr><td>Network</td><td>VPN между сервисами</td><td><code>docker network create</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. ОБРАЗЫ И КОНТЕЙНЕРЫ ═══ -->
+    <div class="section" id="concepts">
+      <div class="section-title"><span class="s-icon">📦</span> Образы и контейнеры</div>
+      <div class="prose">
+        <p>Docker образ состоит из <strong>слоёв (layers)</strong>. Каждая инструкция в Dockerfile создаёт новый слой. Слои кэшируются — если слой не изменился, Docker использует кэш. Это ускоряет пересборку.</p>
+      </div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Структура слоёв образа</span></div>
+        <pre style="font-size:0.78rem;line-height:1.9">
+  ┌─────────────────────────────┐
+  │   Writable Container Layer  │  ← контейнер пишет сюда (временно)
+  ├─────────────────────────────┤
+  │   COPY app.jar /app.jar     │  ← слой 4 (наш jar)
+  ├─────────────────────────────┤
+  │   RUN apt-get install ...   │  ← слой 3
+  ├─────────────────────────────┤
+  │   ENV JAVA_OPTS=""          │  ← слой 2
+  ├─────────────────────────────┤
+  │   FROM eclipse-temurin:21   │  ← слой 1 (базовый образ)
+  └─────────────────────────────┘
+  Слои кэшируются! Изменение jar пересобирает только слой 4.
+        </pre>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">💡 Жизненный цикл контейнера</div>
+        created → running → paused → stopped → removed<br>
+        <code>docker run</code> = pull + create + start
+      </div>
+    </div>
+
+    <!-- ═══ 3. DOCKERFILE ═══ -->
+    <div class="section" id="dockerfile">
+      <div class="section-title"><span class="s-icon">📄</span> Dockerfile — инструкции</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Инструкция</th><th>Описание</th><th>Пример</th></tr>
+          <tr><td><code>FROM</code></td><td>Базовый образ</td><td><code>FROM eclipse-temurin:21-jre</code></td></tr>
+          <tr><td><code>WORKDIR</code></td><td>Рабочая директория</td><td><code>WORKDIR /app</code></td></tr>
+          <tr><td><code>COPY</code></td><td>Копировать файлы с хоста</td><td><code>COPY target/app.jar app.jar</code></td></tr>
+          <tr><td><code>ADD</code></td><td>Как COPY + поддержка URL и tar</td><td><code>ADD https://... /app/</code></td></tr>
+          <tr><td><code>RUN</code></td><td>Выполнить команду при сборке</td><td><code>RUN apt-get install -y curl</code></td></tr>
+          <tr><td><code>CMD</code></td><td>Команда по умолчанию при запуске</td><td><code>CMD ["java", "-jar", "app.jar"]</code></td></tr>
+          <tr><td><code>ENTRYPOINT</code></td><td>Точка входа (CMD — аргументы к ней)</td><td><code>ENTRYPOINT ["java"]</code></td></tr>
+          <tr><td><code>ENV</code></td><td>Переменная окружения</td><td><code>ENV SPRING_PROFILES_ACTIVE=prod</code></td></tr>
+          <tr><td><code>ARG</code></td><td>Аргумент сборки (только при build)</td><td><code>ARG JAR_FILE=target/*.jar</code></td></tr>
+          <tr><td><code>EXPOSE</code></td><td>Документирует порт (не открывает!)</td><td><code>EXPOSE 8080</code></td></tr>
+          <tr><td><code>VOLUME</code></td><td>Точка монтирования volume</td><td><code>VOLUME /data</code></td></tr>
+          <tr><td><code>HEALTHCHECK</code></td><td>Проверка здоровья контейнера</td><td><code>HEALTHCHECK CMD curl -f http://localhost:8080/actuator/health</code></td></tr>
+          <tr><td><code>USER</code></td><td>Пользователь для запуска</td><td><code>USER appuser</code></td></tr>
+          <tr><td><code>LABEL</code></td><td>Метаданные образа</td><td><code>LABEL version="1.0"</code></td></tr>
+        </table>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ CMD vs ENTRYPOINT</div>
+        <strong>CMD</strong> — команда по умолчанию, легко переопределяется при <code>docker run image другая_команда</code>.<br>
+        <strong>ENTRYPOINT</strong> — основной исполняемый файл, аргументы из CMD добавляются к нему.<br>
+        Лучше использовать <strong>оба</strong>: <code>ENTRYPOINT ["java"]</code> + <code>CMD ["-jar", "app.jar"]</code>
+      </div>
+    </div>
+
+    <!-- ═══ 4. КОМАНДЫ CLI ═══ -->
+    <div class="section" id="commands">
+      <div class="section-title"><span class="s-icon">⌨️</span> Команды Docker CLI</div>
+
+      <div class="section-subtitle">Образы (Images)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Команда</th><th>Описание</th></tr>
+          <tr><td><code>docker build -t myapp:1.0 .</code></td><td>Собрать образ из Dockerfile в текущей директории</td></tr>
+          <tr><td><code>docker build --no-cache -t myapp .</code></td><td>Собрать без кэша</td></tr>
+          <tr><td><code>docker images</code></td><td>Список образов</td></tr>
+          <tr><td><code>docker pull eclipse-temurin:21</code></td><td>Скачать образ из Registry</td></tr>
+          <tr><td><code>docker push myrepo/myapp:1.0</code></td><td>Загрузить образ в Registry</td></tr>
+          <tr><td><code>docker rmi myapp:1.0</code></td><td>Удалить образ</td></tr>
+          <tr><td><code>docker tag myapp:1.0 myrepo/myapp:latest</code></td><td>Переименовать/тегировать образ</td></tr>
+          <tr><td><code>docker image prune</code></td><td>Удалить неиспользуемые образы</td></tr>
+          <tr><td><code>docker history myapp:1.0</code></td><td>Показать слои образа</td></tr>
+          <tr><td><code>docker inspect myapp:1.0</code></td><td>Детальная информация об образе</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Контейнеры (Containers)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Команда</th><th>Описание</th></tr>
+          <tr><td><code>docker run -p 8080:8080 myapp</code></td><td>Запустить контейнер с проброской порта</td></tr>
+          <tr><td><code>docker run -d --name myapp myapp:1.0</code></td><td>Запустить в фоне с именем</td></tr>
+          <tr><td><code>docker run -e SPRING_PROFILES_ACTIVE=prod myapp</code></td><td>Задать переменную окружения</td></tr>
+          <tr><td><code>docker run -v /host/data:/app/data myapp</code></td><td>Примонтировать директорию</td></tr>
+          <tr><td><code>docker run --rm myapp</code></td><td>Удалить контейнер после остановки</td></tr>
+          <tr><td><code>docker ps</code></td><td>Список запущенных контейнеров</td></tr>
+          <tr><td><code>docker ps -a</code></td><td>Все контейнеры (включая остановленные)</td></tr>
+          <tr><td><code>docker stop myapp</code></td><td>Остановить контейнер (SIGTERM)</td></tr>
+          <tr><td><code>docker kill myapp</code></td><td>Принудительно остановить (SIGKILL)</td></tr>
+          <tr><td><code>docker rm myapp</code></td><td>Удалить остановленный контейнер</td></tr>
+          <tr><td><code>docker logs -f myapp</code></td><td>Просмотр логов в реальном времени</td></tr>
+          <tr><td><code>docker exec -it myapp bash</code></td><td>Войти в контейнер интерактивно</td></tr>
+          <tr><td><code>docker cp myapp:/app/log.txt ./</code></td><td>Скопировать файл из контейнера</td></tr>
+          <tr><td><code>docker stats</code></td><td>Использование ресурсов контейнерами</td></tr>
+          <tr><td><code>docker container prune</code></td><td>Удалить остановленные контейнеры</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 5. VOLUMES & NETWORKS ═══ -->
+    <div class="section" id="volumes">
+      <div class="section-title"><span class="s-icon">💾</span> Volumes и Networks</div>
+
+      <div class="section-subtitle">Volumes — постоянное хранилище</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Тип</th><th>Синтаксис</th><th>Описание</th></tr>
+          <tr><td><strong>Named Volume</strong></td><td><code>-v mydata:/app/data</code></td><td>Docker управляет хранением. ✅ Рекомендован</td></tr>
+          <tr><td><strong>Bind Mount</strong></td><td><code>-v /host/path:/app/data</code></td><td>Монтируем директорию с хоста</td></tr>
+          <tr><td><strong>tmpfs</strong></td><td><code>--tmpfs /tmp</code></td><td>Только в памяти, не сохраняется</td></tr>
+        </table>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Команда</th><th>Описание</th></tr>
+          <tr><td><code>docker volume create mydata</code></td><td>Создать volume</td></tr>
+          <tr><td><code>docker volume ls</code></td><td>Список volumes</td></tr>
+          <tr><td><code>docker volume inspect mydata</code></td><td>Детали volume</td></tr>
+          <tr><td><code>docker volume rm mydata</code></td><td>Удалить volume</td></tr>
+          <tr><td><code>docker volume prune</code></td><td>Удалить неиспользуемые volumes</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Networks — сеть между контейнерами</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Тип сети</th><th>Описание</th><th>Когда</th></tr>
+          <tr><td><code>bridge</code> (default)</td><td>Изолированная сеть на хосте</td><td>Контейнеры на одном хосте</td></tr>
+          <tr><td><code>host</code></td><td>Использует сеть хоста напрямую</td><td>Максимальная производительность</td></tr>
+          <tr><td><code>none</code></td><td>Полная изоляция</td><td>Безопасные задачи без сети</td></tr>
+          <tr><td><code>overlay</code></td><td>Между несколькими Docker хостами</td><td>Docker Swarm / Kubernetes</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 6. MULTI-STAGE BUILD ═══ -->
+    <div class="section" id="multistage">
+      <div class="section-title"><span class="s-icon">🏗</span> Multi-stage Build</div>
+      <div class="prose">
+        <p>Multi-stage build позволяет использовать несколько <code>FROM</code> в одном Dockerfile. Финальный образ копирует только нужные артефакты из промежуточных стадий — получается маленький продакшен образ без инструментов сборки.</p>
+      </div>
+      <div class="box box-green">
+        <div class="box-label">✅ Результат</div>
+        Образ со стадией сборки Maven: ~500 МБ. Финальный образ только с JRE + jar: ~150 МБ. Меньше размер → быстрее деплой → меньше attack surface.
+      </div>
+    </div>
+
+    <!-- ═══ 7. SPRING BOOT + DOCKER ═══ -->
+    <div class="section" id="spring-docker">
+      <div class="section-title"><span class="s-icon">🌱</span> Spring Boot + Docker</div>
+      <div class="prose">
+        <p>Spring Boot создаёт fat JAR со всеми зависимостями. При правильной слоёвке Dockerfile зависимости кэшируются отдельно от кода приложения — пересборка намного быстрее.</p>
+      </div>
+      <div class="box box-blue">
+        <div class="box-label">💡 Layered JAR (Spring Boot 2.3+)</div>
+        Spring Boot поддерживает слоёные JAR-ы: <code>spring-boot-maven-plugin</code> раскладывает зависимости, ресурсы и код по отдельным слоям Docker. Зависимости меняются редко — их слой кэшируется. Код меняется часто — только он пересобирается.
+      </div>
+    </div>
+
+    <!-- ═══ 8. BEST PRACTICES ═══ -->
+    <div class="section" id="practices">
+      <div class="section-title"><span class="s-icon">✅</span> Best Practices</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Правильно</div>
+          <ul class="compare-list">
+            <li>Multi-stage build — маленький финальный образ</li>
+            <li>Использовать JRE а не JDK в продакшене</li>
+            <li>Запускать не под root: <code>USER appuser</code></li>
+            <li>Конкретные теги: <code>:21-jre</code>, не <code>:latest</code></li>
+            <li>Копировать зависимости отдельно от кода (кэш)</li>
+            <li>HEALTHCHECK для мониторинга</li>
+            <li>Секреты через ENV переменные, не в Dockerfile</li>
+            <li>.dockerignore — исключить target/, .git/, *.md</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Ошибки</div>
+          <ul class="compare-list">
+            <li>Хранить секреты (пароли) в Dockerfile</li>
+            <li>Использовать <code>:latest</code> тег в продакшене</li>
+            <li>Запускать контейнер под root</li>
+            <li>Копировать всё подряд (COPY . .) — включая target/</li>
+            <li>Слишком много слоёв RUN (лучше объединять через &&)</li>
+            <li>Не чистить кэш пакетного менеджера (apt-get clean)</li>
+            <li>Не использовать .dockerignore</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ КОД (встроен в секции выше + здесь главные примеры) ═══ -->
+    <div class="section" id="code-examples">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. Простой Dockerfile для Spring Boot</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Dockerfile</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm"># ── Базовый образ: только JRE (не JDK!) — меньше размер</span>
+<span class="kw">FROM</span> eclipse-temurin:<span class="nu">21</span>-jre-alpine             <span class="cm"># alpine = минимальный Linux (~5MB)</span>
+
+<span class="cm"># ── Метаданные образа</span>
+<span class="kw">LABEL</span> maintainer=<span class="st">"team@company.com"</span>
+<span class="kw">LABEL</span> version=<span class="st">"1.0.0"</span>
+<span class="kw">LABEL</span> description=<span class="st">"My Spring Boot Application"</span>
+
+<span class="cm"># ── Рабочая директория внутри контейнера</span>
+<span class="kw">WORKDIR</span> /app                                  <span class="cm"># все следующие команды выполняются здесь</span>
+
+<span class="cm"># ── Создаём непривилегированного пользователя (безопасность)</span>
+<span class="kw">RUN</span> addgroup -S appgroup && adduser -S appuser -G appgroup <span class="cm"># alpine синтаксис</span>
+
+<span class="cm"># ── Копируем JAR (отдельным слоем для кэширования)</span>
+<span class="kw">COPY</span> target/*.jar app.jar                    <span class="cm"># из target/ берём jar файл</span>
+
+<span class="cm"># ── Меняем владельца файлов</span>
+<span class="kw">RUN</span> chown -R appuser:appgroup /app
+
+<span class="cm"># ── Переключаемся на непривилегированного пользователя</span>
+<span class="kw">USER</span> appuser                                  <span class="cm"># не запускаем под root!</span>
+
+<span class="cm"># ── Документируем порт (информационно, не открывает реально)</span>
+<span class="kw">EXPOSE</span> <span class="nu">8080</span>
+
+<span class="cm"># ── Health check через Actuator</span>
+<span class="kw">HEALTHCHECK</span> --interval=30s --timeout=10s --retries=3 \
+    <span class="kw">CMD</span> wget -q --spider http://localhost:8080/actuator/health || exit 1
+
+<span class="cm"># ── Переменные окружения по умолчанию</span>
+<span class="kw">ENV</span> JAVA_OPTS=<span class="st">""</span>                             <span class="cm"># можно переопределить при запуске</span>
+<span class="kw">ENV</span> SPRING_PROFILES_ACTIVE=<span class="st">"prod"</span>
+
+<span class="cm"># ── Точка входа + параметры JVM</span>
+<span class="kw">ENTRYPOINT</span> [<span class="st">"sh"</span>, <span class="st">"-c"</span>, <span class="st">"java $JAVA_OPTS -jar /app/app.jar"</span>]</pre>
+      </div>
+
+      <div class="section-subtitle">2. Multi-stage Dockerfile (Maven + Spring Boot)</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Dockerfile</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm"># ════════════════════════════════
+   СТАДИЯ 1: Сборка (Build Stage)
+   ════════════════════════════════</span>
+<span class="kw">FROM</span> eclipse-temurin:<span class="nu">21</span>-jdk-alpine <span class="kw">AS</span> builder  <span class="cm"># AS builder — имя стадии</span>
+
+<span class="kw">WORKDIR</span> /build
+
+<span class="cm"># ── Сначала копируем только pom.xml — слой кэшируется</span>
+<span class="kw">COPY</span> pom.xml .
+<span class="kw">COPY</span> .mvn/ .mvn/                              <span class="cm"># Maven wrapper если есть</span>
+<span class="kw">COPY</span> mvnw .
+
+<span class="cm"># ── Скачиваем зависимости (кэшируется пока pom.xml не изменился)</span>
+<span class="kw">RUN</span> ./mvnw dependency:go-offline -q          <span class="cm"># -q = тихий режим</span>
+
+<span class="cm"># ── Теперь копируем исходный код</span>
+<span class="kw">COPY</span> src/ src/
+
+<span class="cm"># ── Собираем проект (пропускаем тесты для скорости)</span>
+<span class="kw">RUN</span> ./mvnw package -DskipTests -q            <span class="cm"># создаёт target/*.jar</span>
+
+<span class="cm"># ── Разбиваем JAR на слои (Spring Boot Layered JAR)</span>
+<span class="kw">RUN</span> java -Djarmode=layertools -jar target/*.jar extract <span class="cm"># создаёт: dependencies/, snapshot-dependencies/, spring-boot-loader/, application/</span>
+
+<span class="cm"># ════════════════════════════════
+   СТАДИЯ 2: Продакшен образ
+   ════════════════════════════════</span>
+<span class="kw">FROM</span> eclipse-temurin:<span class="nu">21</span>-jre-alpine           <span class="cm"># только JRE — намного меньше</span>
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="cm"># ── Безопасность: непривилегированный пользователь</span>
+<span class="kw">RUN</span> addgroup -S spring && adduser -S spring -G spring
+
+<span class="cm"># ── Копируем слои из стадии builder (порядок важен для кэша!)</span>
+<span class="kw">COPY</span> --from=builder --chown=spring:spring /build/dependencies/          ./  <span class="cm"># редко меняются</span>
+<span class="kw">COPY</span> --from=builder --chown=spring:spring /build/snapshot-dependencies/ ./  <span class="cm"># snapshot зависимости</span>
+<span class="kw">COPY</span> --from=builder --chown=spring:spring /build/spring-boot-loader/    ./  <span class="cm"># Spring загрузчик</span>
+<span class="kw">COPY</span> --from=builder --chown=spring:spring /build/application/           ./  <span class="cm"># наш код — часто меняется</span>
+
+<span class="kw">USER</span> spring                                  <span class="cm"># запускаем не под root</span>
+
+<span class="kw">EXPOSE</span> <span class="nu">8080</span>
+
+<span class="kw">HEALTHCHECK</span> --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    <span class="kw">CMD</span> wget -qO- http://localhost:8080/actuator/health | grep -q UP || exit 1
+
+<span class="cm"># ── Запускаем через Spring Boot LayeredJar загрузчик</span>
+<span class="kw">ENTRYPOINT</span> [<span class="st">"java"</span>, <span class="st">"org.springframework.boot.loader.launch.JarLauncher"</span>]</pre>
+      </div>
+
+      <div class="section-subtitle">3. .dockerignore — что исключить</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">.dockerignore</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm"># Исключаем всё что не нужно в образе</span>
+
+<span class="cm"># Maven сборочные артефакты (кроме target/*.jar)</span>
+target/                                       <span class="cm"># !!! исключаем, будем собирать внутри</span>
+<span class="cm"># Или если копируем jar с хоста — исключаем всё кроме jar:</span>
+<span class="cm"># !target/*.jar</span>
+
+<span class="cm"># Git</span>
+.git/
+.gitignore
+.github/
+
+<span class="cm"># IDE файлы</span>
+.idea/
+*.iml
+.vscode/
+*.classpath
+*.project
+
+<span class="cm"># Документация</span>
+*.md
+README.md
+docs/
+
+<span class="cm"># Тесты</span>
+src/test/
+**/*Test.java
+**/*Spec.java
+
+<span class="cm"># Docker файлы</span>
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+<span class="cm"># Логи и временные файлы</span>
+*.log
+*.tmp
+*.bak
+logs/</pre>
+      </div>
+
+      <div class="section-subtitle">4. Основные команды для работы с Spring Boot контейнером</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Bash</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm"># ── Сборка образа</span>
+docker build -t myapp:<span class="nu">1.0</span> .                  <span class="cm"># собрать с тегом</span>
+docker build -t myapp:latest --no-cache .     <span class="cm"># без кэша (чистая сборка)</span>
+docker build -f Dockerfile.prod -t myapp .    <span class="cm"># указать файл Dockerfile</span>
+
+<span class="cm"># ── Запуск Spring Boot контейнера</span>
+docker run -d \                               <span class="cm"># -d = detached (фоновый режим)</span>
+  --name myapp \                              <span class="cm"># имя контейнера</span>
+  -p 8080:8080 \                              <span class="cm"># хост_порт:контейнер_порт</span>
+  -e SPRING_PROFILES_ACTIVE=prod \           <span class="cm"># ENV переменная</span>
+  -e DATABASE_URL=jdbc:postgresql://db:5432/mydb \
+  -e DATABASE_PASSWORD=secret \
+  --memory=512m \                             <span class="cm"># ограничение памяти</span>
+  --cpus=1.0 \                               <span class="cm"># ограничение CPU</span>
+  --restart unless-stopped \                  <span class="cm"># перезапускать автоматически</span>
+  --network mynetwork \                       <span class="cm"># подключить к сети</span>
+  myapp:<span class="nu">1.0</span>
+
+<span class="cm"># ── Логи</span>
+docker logs myapp                             <span class="cm"># все логи</span>
+docker logs -f myapp                          <span class="cm"># следить в реальном времени (follow)</span>
+docker logs --tail 100 myapp                  <span class="cm"># последние 100 строк</span>
+docker logs --since 10m myapp                 <span class="cm"># за последние 10 минут</span>
+
+<span class="cm"># ── Отладка внутри контейнера</span>
+docker exec -it myapp sh                      <span class="cm"># войти в shell (alpine = sh, не bash)</span>
+docker exec -it myapp bash                    <span class="cm"># bash (если установлен)</span>
+docker exec myapp ps aux                      <span class="cm"># запущенные процессы</span>
+docker exec myapp cat /etc/os-release         <span class="cm"># версия OS в контейнере</span>
+
+<span class="cm"># ── Сеть</span>
+docker network create mynetwork              <span class="cm"># создать bridge сеть</span>
+docker network ls                            <span class="cm"># список сетей</span>
+docker network connect mynetwork myapp       <span class="cm"># подключить контейнер к сети</span>
+docker network inspect mynetwork             <span class="cm"># детали сети</span>
+
+<span class="cm"># ── Очистка (осторожно!)</span>
+docker system prune                          <span class="cm"># удалить остановленные контейнеры, неиспользуемые образы</span>
+docker system prune -a --volumes             <span class="cm"># + volumes (ОСТОРОЖНО: удалит данные!)</span>
+docker image prune -a                        <span class="cm"># удалить все неиспользуемые образы</span>
+
+<span class="cm"># ── Ресурсы</span>
+docker stats                                 <span class="cm"># CPU, память всех контейнеров</span>
+docker stats myapp                           <span class="cm"># только myapp</span>
+docker top myapp                             <span class="cm"># процессы в контейнере</span></pre>
+      </div>
+
+      <div class="section-subtitle">5. JVM настройки для Docker</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Dockerfile + Bash</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm"># ── С Java 11+ JVM автоматически определяет лимиты контейнера</span>
+<span class="cm"># Раньше нужно было: -XX:+UseContainerSupport (теперь включено по умолчанию)</span>
+
+<span class="cm"># ── Рекомендуемые JVM флаги для Docker</span>
+<span class="kw">ENV</span> JAVA_OPTS=<span class="st">"\
+  -XX:MaxRAMPercentage=75.0 \
+  -XX:InitialRAMPercentage=50.0 \
+  -XX:+UseG1GC \
+  -XX:+ExitOnOutOfMemoryError \
+  -Djava.security.egd=file:/dev/./urandom \
+  -Dspring.backgroundpreinitializer.ignore=true"</span>
+
+<span class="cm"># Объяснение флагов:</span>
+<span class="cm"># MaxRAMPercentage=75 — JVM использует 75% от лимита контейнера для heap</span>
+<span class="cm"># InitialRAMPercentage=50 — начальный heap 50% от лимита</span>
+<span class="cm"># UseG1GC — G1 сборщик мусора (хорош для heap > 4GB)</span>
+<span class="cm"># ExitOnOutOfMemoryError — завершить при OOM (Docker перезапустит)</span>
+<span class="cm"># urandom — ускоряет генерацию случайных чисел (важно для SSL)</span>
+
+<span class="cm"># ── Запуск с лимитами памяти</span>
+docker run -d \
+  --memory=1g \                              <span class="cm"># контейнер получит 1GB RAM</span>
+  -e JAVA_OPTS=<span class="st">"-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"</span> \
+  myapp:<span class="nu">1.0</span>
+<span class="cm"># JVM получит 768MB heap (75% от 1GB)</span>
+
+<span class="cm"># ── Проверка heap внутри контейнера</span>
+docker exec myapp java -XshowSettings:vm -version <span class="cm"># показать настройки JVM</span></pre>
+      </div>
+    </div>
+
+    <!-- ═══ ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">В чём разница между Docker образом и контейнером?</div>
+            <div class="qa-q-en">What is the difference between a Docker image and a container?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><strong>Image</strong> — неизменяемый (read-only) шаблон файловой системы, состоящий из слоёв. Как класс в Java. <strong>Container</strong> — запущенный экземпляр образа с дополнительным записываемым слоем. Как объект класса. Один образ → много контейнеров. Когда контейнер останавливается — его записываемый слой теряется (если нет Volume).</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="doc-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое multi-stage build и зачем он нужен?</div>
+            <div class="qa-q-en">What is a multi-stage Docker build and why is it used?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Multi-stage build использует несколько FROM инструкций. Первая стадия (builder) — с JDK и Maven собирает jar. Финальная стадия — только JRE, копирует jar из builder через COPY --from=builder. Результат: маленький продакшен образ (~150МБ) вместо образа с полным JDK и Maven (~500МБ). Меньше размер → быстрее деплой, меньше уязвимостей.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="doc-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Почему нельзя запускать контейнер под root?</div>
+            <div class="qa-q-en">Why shouldn't you run a container as root?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Если злоумышленник получит доступ к контейнеру запущенному под root, и у него есть уязвимость escape (выход из контейнера) — он получит root права на хостовой машине. Используй <code>USER appuser</code> в Dockerfile. Непривилегированный пользователь не может читать/писать системные файлы хоста.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="doc-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как работает кэширование слоёв Docker и как его использовать?</div>
+            <div class="qa-q-en">How does Docker layer caching work and how to leverage it?</div>
+          </div>
+          <span class="qa-badge hard">Hard</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Каждая инструкция Dockerfile создаёт слой. Docker кэширует слои — если инструкция и её входные файлы не изменились, берётся кэш. Изменение слоя инвалидирует все последующие слои. Оптимизация: сначала копировать то что меняется редко (pom.xml → скачать зависимости), потом то что меняется часто (src/). Так при изменении кода зависимости не перекачиваются.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="doc-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем COPY отличается от ADD в Dockerfile?</div>
+            <div class="qa-q-en">What is the difference between COPY and ADD in Dockerfile?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>COPY</code> — просто копирует файлы с хоста в образ. <code>ADD</code> умеет больше: скачать файл по URL, автоматически распаковать tar архив. Рекомендуется использовать <code>COPY</code> — поведение предсказуемо. <code>ADD</code> только когда нужна его дополнительная функциональность (распаковка tar). Скачивать файлы через ADD не рекомендуется — лучше <code>RUN wget</code> чтобы в одном слое скачать и очистить.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="doc-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>
