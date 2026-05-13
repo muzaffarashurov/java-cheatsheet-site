@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Аннотации Spring + Java | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#f5a623"></span>📌 Конспект</a>
+    <a class="nav-link" href="#core-spring"><span class="nav-dot" style="background:#22d3a0"></span>Ядро Spring</a>
+    <a class="nav-link" href="#web"><span class="nav-dot" style="background:#4f8ef7"></span>Web / MVC</a>
+    <a class="nav-link" href="#data"><span class="nav-dot" style="background:#f5a623"></span>Data / JPA</a>
+    <a class="nav-link" href="#security"><span class="nav-dot" style="background:#f06060"></span>Security</a>
+    <a class="nav-link" href="#lombok"><span class="nav-dot" style="background:#b88bfa"></span>Lombok</a>
+    <a class="nav-link" href="#java-core"><span class="nav-dot" style="background:#5bcefa"></span>Java Core</a>
+    <a class="nav-link" href="#testing"><span class="nav-dot" style="background:#22d3a0"></span>Testing</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="spring-boot.html"><span class="nav-dot" style="background:#22d3a0"></span>Spring Boot</a>
+    <a class="nav-link" href="validation.html"><span class="nav-dot" style="background:#4f8ef7"></span>Валидация</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">🏷 Аннотации Spring + Java</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#f5a623;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#3a2a00,#f5a623)">🏷</div>
+        <div>
+          <h1>Аннотации Spring + Java</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-green">Spring</span>
+            <span class="chip chip-blue">Java</span>
+            <span class="chip chip-purple">Lombok</span>
+            <span class="chip chip-warn">Annotations</span>
+          </div>
+        </div>
+      </div>
+      <p>Полный справочник аннотаций: ядро Spring, Web/MVC, Data/JPA, Security, Lombok, Java Core, Testing — все что нужно знать Java Backend разработчику.</p>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#core-spring">Ядро Spring</a>
+        <a class="toc-link" href="#web">Web/MVC</a>
+        <a class="toc-link" href="#data">Data/JPA</a>
+        <a class="toc-link" href="#security">Security</a>
+        <a class="toc-link" href="#lombok">Lombok</a>
+        <a class="toc-link" href="#java-core">Java Core</a>
+        <a class="toc-link" href="#testing">Testing</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. ЯДРО SPRING ═══ -->
+    <div class="section" id="core-spring">
+      <div class="section-title"><span class="s-icon">🌱</span> Ядро Spring / IoC / DI</div>
+
+      <div class="section-subtitle">Объявление бинов</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Где</th><th>Описание</th></tr>
+          <tr><td><code>@Component</code></td><td>Класс</td><td>Универсальный компонент Spring</td></tr>
+          <tr><td><code>@Service</code></td><td>Класс</td><td>Бизнес-логика (семантика)</td></tr>
+          <tr><td><code>@Repository</code></td><td>Класс</td><td>Доступ к данным + перевод исключений БД</td></tr>
+          <tr><td><code>@Controller</code></td><td>Класс</td><td>MVC контроллер (возвращает View)</td></tr>
+          <tr><td><code>@RestController</code></td><td>Класс</td><td>= @Controller + @ResponseBody</td></tr>
+          <tr><td><code>@Configuration</code></td><td>Класс</td><td>Класс конфигурации, содержит @Bean методы</td></tr>
+          <tr><td><code>@Bean</code></td><td>Метод в @Configuration</td><td>Зарегистрировать бин вручную</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Инжекция зависимостей</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Где</th><th>Описание</th></tr>
+          <tr><td><code>@Autowired</code></td><td>Конструктор, поле, setter</td><td>Инжекция зависимости (предпочитай конструктор)</td></tr>
+          <tr><td><code>@Qualifier("name")</code></td><td>Параметр/поле</td><td>Выбрать конкретную реализацию по имени</td></tr>
+          <tr><td><code>@Primary</code></td><td>Класс/@Bean метод</td><td>Эта реализация — по умолчанию при конфликте</td></tr>
+          <tr><td><code>@Value("${prop}")</code></td><td>Поле/параметр</td><td>Инжекция значения из application.yml</td></tr>
+          <tr><td><code>@Lazy</code></td><td>Класс/параметр</td><td>Создать бин при первом обращении, не при старте</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Scope и жизненный цикл</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@Scope("prototype")</code></td><td>Новый экземпляр при каждом запросе (default: singleton)</td></tr>
+          <tr><td><code>@Scope("request")</code></td><td>Один экземпляр на HTTP запрос</td></tr>
+          <tr><td><code>@Scope("session")</code></td><td>Один экземпляр на HTTP сессию</td></tr>
+          <tr><td><code>@PostConstruct</code></td><td>Вызвать после DI (инициализация)</td></tr>
+          <tr><td><code>@PreDestroy</code></td><td>Вызвать перед уничтожением бина</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Конфигурация и условия</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@SpringBootApplication</code></td><td>= @Configuration + @EnableAutoConfiguration + @ComponentScan</td></tr>
+          <tr><td><code>@EnableAutoConfiguration</code></td><td>Включить авто-конфигурацию по classpath</td></tr>
+          <tr><td><code>@ComponentScan</code></td><td>Сканировать пакет для поиска бинов</td></tr>
+          <tr><td><code>@PropertySource("file.properties")</code></td><td>Загрузить дополнительный файл свойств</td></tr>
+          <tr><td><code>@ConfigurationProperties("prefix")</code></td><td>Привязать группу свойств к объекту</td></tr>
+          <tr><td><code>@Profile("dev")</code></td><td>Бин активен только при данном профиле</td></tr>
+          <tr><td><code>@Conditional</code></td><td>Бин создаётся при выполнении условия</td></tr>
+          <tr><td><code>@ConditionalOnProperty</code></td><td>Бин если свойство задано</td></tr>
+          <tr><td><code>@ConditionalOnClass</code></td><td>Бин если класс есть на classpath</td></tr>
+          <tr><td><code>@ConditionalOnMissingBean</code></td><td>Бин если похожего ещё нет</td></tr>
+          <tr><td><code>@Import(OtherConfig.class)</code></td><td>Импортировать другой @Configuration класс</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Транзакции и кэш</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@Transactional</code></td><td>Метод/класс выполняется в транзакции</td></tr>
+          <tr><td><code>@Transactional(readOnly=true)</code></td><td>Оптимизация для SELECT операций</td></tr>
+          <tr><td><code>@EnableCaching</code></td><td>Включить кэширование (на @Configuration)</td></tr>
+          <tr><td><code>@Cacheable("name")</code></td><td>Кэшировать результат метода</td></tr>
+          <tr><td><code>@CachePut("name")</code></td><td>Выполнить и обновить кэш</td></tr>
+          <tr><td><code>@CacheEvict("name")</code></td><td>Удалить из кэша</td></tr>
+          <tr><td><code>@EnableScheduling</code></td><td>Включить планировщик задач</td></tr>
+          <tr><td><code>@Scheduled(cron="0 * * * * *")</code></td><td>Периодически выполнять метод</td></tr>
+          <tr><td><code>@EnableAsync</code></td><td>Включить асинхронное выполнение</td></tr>
+          <tr><td><code>@Async</code></td><td>Выполнить метод асинхронно</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. WEB / MVC ═══ -->
+    <div class="section" id="web">
+      <div class="section-title"><span class="s-icon">🌐</span> Web / Spring MVC</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@RequestMapping("/path")</code></td><td>Базовый маппинг URL (класс или метод)</td></tr>
+          <tr><td><code>@GetMapping("/path")</code></td><td>HTTP GET</td></tr>
+          <tr><td><code>@PostMapping("/path")</code></td><td>HTTP POST</td></tr>
+          <tr><td><code>@PutMapping("/path")</code></td><td>HTTP PUT</td></tr>
+          <tr><td><code>@PatchMapping("/path")</code></td><td>HTTP PATCH</td></tr>
+          <tr><td><code>@DeleteMapping("/path")</code></td><td>HTTP DELETE</td></tr>
+          <tr><td><code>@PathVariable</code></td><td>Переменная из URL пути: <code>/users/{id}</code></td></tr>
+          <tr><td><code>@RequestParam</code></td><td>Параметр строки запроса: <code>?page=0</code></td></tr>
+          <tr><td><code>@RequestBody</code></td><td>Десериализовать JSON тело запроса</td></tr>
+          <tr><td><code>@ResponseBody</code></td><td>Сериализовать ответ в JSON (включено в @RestController)</td></tr>
+          <tr><td><code>@ResponseStatus(HttpStatus.CREATED)</code></td><td>HTTP статус ответа</td></tr>
+          <tr><td><code>@RequestHeader("Authorization")</code></td><td>Значение HTTP заголовка</td></tr>
+          <tr><td><code>@CookieValue("token")</code></td><td>Значение cookie</td></tr>
+          <tr><td><code>@CrossOrigin</code></td><td>Разрешить CORS для контроллера/метода</td></tr>
+          <tr><td><code>@ControllerAdvice</code></td><td>Глобальный обработчик исключений, @ModelAttribute</td></tr>
+          <tr><td><code>@RestControllerAdvice</code></td><td>= @ControllerAdvice + @ResponseBody</td></tr>
+          <tr><td><code>@ExceptionHandler(Ex.class)</code></td><td>Обработать конкретный тип исключения</td></tr>
+          <tr><td><code>@AuthenticationPrincipal</code></td><td>Инжектировать текущего пользователя из Security</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 3. DATA / JPA ═══ -->
+    <div class="section" id="data">
+      <div class="section-title"><span class="s-icon">🗄</span> Spring Data / JPA / Hibernate</div>
+
+      <div class="section-subtitle">Entity и таблицы</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@Entity</code></td><td>Класс — JPA сущность, маппится на таблицу</td></tr>
+          <tr><td><code>@Table(name="users")</code></td><td>Имя таблицы (если отличается от класса)</td></tr>
+          <tr><td><code>@Id</code></td><td>Первичный ключ</td></tr>
+          <tr><td><code>@GeneratedValue(strategy=IDENTITY)</code></td><td>Авто-генерация PK (IDENTITY, SEQUENCE, AUTO)</td></tr>
+          <tr><td><code>@Column(name="first_name", nullable=false, unique=true)</code></td><td>Маппинг на колонку таблицы</td></tr>
+          <tr><td><code>@Enumerated(EnumType.STRING)</code></td><td>Хранить Enum как строку (не число)</td></tr>
+          <tr><td><code>@Transient</code></td><td>Поле не маппится на колонку</td></tr>
+          <tr><td><code>@Lob</code></td><td>Большое поле (TEXT, BLOB, CLOB)</td></tr>
+          <tr><td><code>@CreatedDate</code></td><td>Заполняется датой создания (Spring Data Auditing)</td></tr>
+          <tr><td><code>@LastModifiedDate</code></td><td>Заполняется датой обновления</td></tr>
+          <tr><td><code>@Version</code></td><td>Optimistic locking — версия для управления параллелизмом</td></tr>
+          <tr><td><code>@Embedded</code> / <code>@Embeddable</code></td><td>Встроенный объект в таблицу</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Связи между сущностями</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th><th>FetchType default</th></tr>
+          <tr><td><code>@OneToOne</code></td><td>Один к одному</td><td>EAGER</td></tr>
+          <tr><td><code>@OneToMany</code></td><td>Один ко многим (коллекция)</td><td>LAZY ✅</td></tr>
+          <tr><td><code>@ManyToOne</code></td><td>Многие к одному (FK в этой таблице)</td><td>EAGER</td></tr>
+          <tr><td><code>@ManyToMany</code></td><td>Многие ко многим (промежуточная таблица)</td><td>LAZY ✅</td></tr>
+          <tr><td><code>@JoinColumn(name="user_id")</code></td><td>Имя колонки внешнего ключа</td></tr>
+          <tr><td><code>@JoinTable</code></td><td>Промежуточная таблица для @ManyToMany</td></tr>
+          <tr><td><code>@MappedSuperclass</code></td><td>Базовый класс с общими полями, не @Entity</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Repository и Query</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@Query("SELECT ...")</code></td><td>JPQL или нативный SQL запрос</td></tr>
+          <tr><td><code>@Query(nativeQuery=true)</code></td><td>Нативный SQL вместо JPQL</td></tr>
+          <tr><td><code>@Param("name")</code></td><td>Именованный параметр в @Query</td></tr>
+          <tr><td><code>@Modifying</code></td><td>UPDATE/DELETE через @Query</td></tr>
+          <tr><td><code>@EntityGraph</code></td><td>Загрузить связи без N+1 (eager loading по запросу)</td></tr>
+          <tr><td><code>@Lock(LockModeType.PESSIMISTIC_WRITE)</code></td><td>Пессимистичная блокировка строки</td></tr>
+          <tr><td><code>@EnableJpaRepositories</code></td><td>Включить JPA репозитории (обычно автоматически)</td></tr>
+          <tr><td><code>@EnableJpaAuditing</code></td><td>Включить автозаполнение @CreatedDate и др.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 4. SECURITY ═══ -->
+    <div class="section" id="security">
+      <div class="section-title"><span class="s-icon">🔐</span> Spring Security</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@EnableWebSecurity</code></td><td>Включить Spring Security (на @Configuration)</td></tr>
+          <tr><td><code>@EnableMethodSecurity</code></td><td>Включить @PreAuthorize и др. на методах</td></tr>
+          <tr><td><code>@PreAuthorize("hasRole('ADMIN')")</code></td><td>Проверка прав ДО выполнения метода</td></tr>
+          <tr><td><code>@PostAuthorize("returnObject.owner == authentication.name")</code></td><td>Проверка ПОСЛЕ (над результатом)</td></tr>
+          <tr><td><code>@Secured("ROLE_ADMIN")</code></td><td>Простая проверка роли (устаревший стиль)</td></tr>
+          <tr><td><code>@RolesAllowed("ADMIN")</code></td><td>JSR-250 аналог @Secured</td></tr>
+          <tr><td><code>@AuthenticationPrincipal</code></td><td>Инжектировать объект пользователя из SecurityContext</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 5. LOMBOK ═══ -->
+    <div class="section" id="lombok">
+      <div class="section-title"><span class="s-icon">🔨</span> Lombok</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Генерирует</th><th>Когда</th></tr>
+          <tr><td><code>@Getter</code></td><td>Геттеры для всех/выбранных полей</td><td>Доступ к полям</td></tr>
+          <tr><td><code>@Setter</code></td><td>Сеттеры</td><td>Изменяемые поля</td></tr>
+          <tr><td><code>@ToString</code></td><td>toString() — все поля</td><td>Логирование, отладка</td></tr>
+          <tr><td><code>@EqualsAndHashCode</code></td><td>equals() и hashCode()</td><td>Сравнение, коллекции</td></tr>
+          <tr><td><code>@NoArgsConstructor</code></td><td>Конструктор без параметров</td><td>JPA Entity, Jackson</td></tr>
+          <tr><td><code>@AllArgsConstructor</code></td><td>Конструктор со всеми полями</td><td>Builder паттерн</td></tr>
+          <tr><td><code>@RequiredArgsConstructor</code></td><td>Конструктор только для final полей</td><td>✅ DI в Spring</td></tr>
+          <tr><td><code>@Data</code></td><td>= @Getter + @Setter + @ToString + @EqualsAndHashCode + @RequiredArgsConstructor</td><td>Mutable DTO, Entity</td></tr>
+          <tr><td><code>@Value</code></td><td>= @Data + все поля final + private</td><td>Immutable объекты</td></tr>
+          <tr><td><code>@Builder</code></td><td>Builder паттерн: <code>User.builder().name("Ivan").build()</code></td><td>Создание объектов</td></tr>
+          <tr><td><code>@SuperBuilder</code></td><td>Builder с поддержкой наследования</td><td>Иерархии классов</td></tr>
+          <tr><td><code>@Slf4j</code></td><td>Поле <code>log = LoggerFactory.getLogger(ClassName.class)</code></td><td>✅ Логирование везде</td></tr>
+          <tr><td><code>@Log4j2</code></td><td>Аналог @Slf4j для Log4j2</td><td>При использовании Log4j2</td></tr>
+          <tr><td><code>@NonNull</code></td><td>Null-check в конструкторе/методе</td><td>Обязательные параметры</td></tr>
+          <tr><td><code>@Cleanup</code></td><td>Автоматический вызов close()</td><td>Ресурсы</td></tr>
+          <tr><td><code>@SneakyThrows</code></td><td>Кидать checked исключение без объявления</td><td>Редко, с осторожностью</td></tr>
+          <tr><td><code>@With</code></td><td>Метод <code>withField(newValue)</code> — копия с изменённым полем</td><td>Immutable объекты</td></tr>
+          <tr><td><code>@Singular</code></td><td>Добавление одного элемента в коллекцию через Builder</td><td>С @Builder</td></tr>
+        </table>
+      </div>
+      <div class="box box-warn">
+        <div class="box-label">⚠️ @Data для JPA Entity — осторожно</div>
+        <code>@Data</code> генерирует <code>equals()</code> и <code>hashCode()</code> по всем полям включая связи — это вызывает N+1 запросы при equals. Для Entity используй <code>@Getter @Setter @NoArgsConstructor @ToString(exclude="orders")</code> + ручной equals по id.
+      </div>
+    </div>
+
+    <!-- ═══ 6. JAVA CORE ═══ -->
+    <div class="section" id="java-core">
+      <div class="section-title"><span class="s-icon">☕</span> Java Core аннотации</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Пакет</th><th>Описание</th></tr>
+          <tr><td><code>@Override</code></td><td>java.lang</td><td>Проверить что метод переопределяет родительский</td></tr>
+          <tr><td><code>@Deprecated</code></td><td>java.lang</td><td>Метод/класс устарел — предупреждение компилятора</td></tr>
+          <tr><td><code>@SuppressWarnings("unchecked")</code></td><td>java.lang</td><td>Подавить предупреждения компилятора</td></tr>
+          <tr><td><code>@FunctionalInterface</code></td><td>java.lang</td><td>Интерфейс с ровно одним абстрактным методом</td></tr>
+          <tr><td><code>@SafeVarargs</code></td><td>java.lang</td><td>Безопасное использование varargs с дженериками</td></tr>
+          <tr><td><code>@Retention</code></td><td>java.lang.annotation</td><td>Время жизни аннотации (SOURCE, CLASS, RUNTIME)</td></tr>
+          <tr><td><code>@Target</code></td><td>java.lang.annotation</td><td>К чему применима аннотация (TYPE, METHOD, FIELD...)</td></tr>
+          <tr><td><code>@Documented</code></td><td>java.lang.annotation</td><td>Включать в Javadoc</td></tr>
+          <tr><td><code>@Inherited</code></td><td>java.lang.annotation</td><td>Наследуется подклассами</td></tr>
+          <tr><td><code>@Repeatable</code></td><td>java.lang.annotation</td><td>Можно применить несколько раз</td></tr>
+          <tr><td><code>@NonNull</code></td><td>Various (JSR-305)</td><td>Метка: параметр/результат не может быть null</td></tr>
+          <tr><td><code>@Nullable</code></td><td>Various (JSR-305)</td><td>Метка: может быть null</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Jackson (JSON сериализация)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@JsonProperty("name")</code></td><td>Имя поля в JSON (если отличается от поля класса)</td></tr>
+          <tr><td><code>@JsonIgnore</code></td><td>Не включать поле в JSON</td></tr>
+          <tr><td><code>@JsonIgnoreProperties({"field1","field2"})</code></td><td>Игнорировать поля при десериализации</td></tr>
+          <tr><td><code>@JsonFormat(pattern="yyyy-MM-dd")</code></td><td>Формат даты/числа</td></tr>
+          <tr><td><code>@JsonInclude(Include.NON_NULL)</code></td><td>Не включать null поля в JSON</td></tr>
+          <tr><td><code>@JsonAlias({"name","fullName"})</code></td><td>Альтернативные имена при десериализации</td></tr>
+          <tr><td><code>@JsonCreator</code></td><td>Конструктор/фабричный метод для десериализации</td></tr>
+          <tr><td><code>@JsonValue</code></td><td>Сериализовать через этот метод</td></tr>
+          <tr><td><code>@JsonView(Views.Public.class)</code></td><td>Разные представления объекта</td></tr>
+          <tr><td><code>@JsonManagedReference / @JsonBackReference</code></td><td>Двунаправленные связи без бесконечной рекурсии</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 7. TESTING ═══ -->
+    <div class="section" id="testing">
+      <div class="section-title"><span class="s-icon">🧪</span> Testing (JUnit 5 + Mockito + Spring)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Аннотация</th><th>Описание</th></tr>
+          <tr><td><code>@Test</code></td><td>Метод — тест JUnit 5</td></tr>
+          <tr><td><code>@ParameterizedTest</code></td><td>Параметризованный тест</td></tr>
+          <tr><td><code>@ValueSource(ints={1,2,3})</code></td><td>Источник значений для @ParameterizedTest</td></tr>
+          <tr><td><code>@CsvSource({"1,Ivan","2,Anna"})</code></td><td>CSV данные для @ParameterizedTest</td></tr>
+          <tr><td><code>@MethodSource("methodName")</code></td><td>Метод как источник данных</td></tr>
+          <tr><td><code>@BeforeEach</code></td><td>Выполнить перед каждым тестом</td></tr>
+          <tr><td><code>@AfterEach</code></td><td>Выполнить после каждого теста</td></tr>
+          <tr><td><code>@BeforeAll</code></td><td>Один раз перед всеми тестами класса (static)</td></tr>
+          <tr><td><code>@AfterAll</code></td><td>Один раз после всех тестов класса (static)</td></tr>
+          <tr><td><code>@DisplayName("Описание")</code></td><td>Имя теста в отчёте</td></tr>
+          <tr><td><code>@Disabled("причина")</code></td><td>Отключить тест</td></tr>
+          <tr><td><code>@Nested</code></td><td>Вложенный класс тестов</td></tr>
+          <tr><td><code>@Tag("integration")</code></td><td>Тег для фильтрации тестов</td></tr>
+          <tr><td><code>@Timeout(value=5, unit=SECONDS)</code></td><td>Тест должен завершиться за 5 секунд</td></tr>
+          <tr><td><code>@ExtendWith(MockitoExtension.class)</code></td><td>Подключить Mockito к JUnit 5</td></tr>
+          <tr><td><code>@Mock</code></td><td>Создать мок объект (Mockito)</td></tr>
+          <tr><td><code>@InjectMocks</code></td><td>Инжектировать моки в тестируемый объект</td></tr>
+          <tr><td><code>@Spy</code></td><td>Частичный мок — реальные методы + возможность stubbing</td></tr>
+          <tr><td><code>@Captor</code></td><td>Захватчик аргументов (ArgumentCaptor)</td></tr>
+          <tr><td><code>@SpringBootTest</code></td><td>Загрузить полный контекст Spring</td></tr>
+          <tr><td><code>@WebMvcTest(Controller.class)</code></td><td>Только Web слой (без БД)</td></tr>
+          <tr><td><code>@DataJpaTest</code></td><td>Только JPA слой (с H2)</td></tr>
+          <tr><td><code>@MockBean</code></td><td>Spring Mock бин (заменяет реальный)</td></tr>
+          <tr><td><code>@SpyBean</code></td><td>Spring Spy бин</td></tr>
+          <tr><td><code>@AutoConfigureMockMvc</code></td><td>Автоконфигурация MockMvc</td></tr>
+          <tr><td><code>@Sql("data.sql")</code></td><td>Выполнить SQL скрипт перед тестом</td></tr>
+          <tr><td><code>@Rollback(true)</code></td><td>Откат транзакции после теста (default в @DataJpaTest)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">В чём разница между @Component, @Service, @Repository и @Controller?</div>
+            <div class="qa-q-en">What is the difference between @Component, @Service, @Repository, and @Controller?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Все четыре — специализации <code>@Component</code> и регистрируют бин в Spring контейнере. Различия: <code>@Repository</code> дополнительно переводит исключения БД в Spring DataAccessException. <code>@Service</code> и <code>@Controller</code> — чисто семантические, говорят о роли класса. Используй по назначению — это помогает читаемости и позволяет AOP таргетировать слои.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="ann-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что делает @Transactional и когда он не работает?</div>
+            <div class="qa-q-en">What does @Transactional do and when does it not work?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">@Transactional создаёт AOP прокси: открывает транзакцию до вызова метода, коммитит при успехе, откатывает при RuntimeException. Не работает когда: 1) вызов из того же класса (self-invocation — прокси минуется), 2) метод private (Spring AOP не может создать прокси), 3) не Spring бин (обычный new Object()), 4) checked исключение без rollbackFor = Exception.class.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="ann-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Зачем нужен @RequiredArgsConstructor от Lombok?</div>
+            <div class="qa-q-en">What is @RequiredArgsConstructor from Lombok used for?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>@RequiredArgsConstructor</code> генерирует конструктор для всех полей помеченных <code>final</code> или <code>@NonNull</code>. В Spring это позволяет использовать constructor injection без явного написания конструктора. Вместе с <code>private final UserRepository repo;</code> Lombok автоматически создаёт <code>public UserService(UserRepository repo) { this.repo = repo; }</code> — стандартный DI через конструктор без бойлерплейта.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="ann-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем @SpringBootTest отличается от @WebMvcTest?</div>
+            <div class="qa-q-en">What is the difference between @SpringBootTest and @WebMvcTest?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>@SpringBootTest</code> загружает полный ApplicationContext — все слои, БД, реальные бины. Медленнее, нужен для интеграционных тестов. <code>@WebMvcTest(UserController.class)</code> загружает только Web слой (контроллеры, фильтры, конфигурации MVC) — без репозиториев и сервисов. Быстрее, для unit-тестов контроллеров. Сервисы мокируются через <code>@MockBean</code>.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="ann-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое @FetchType.LAZY и почему это важно?</div>
+            <div class="qa-q-en">What is FetchType.LAZY and why does it matter?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">LAZY — связанные сущности загружаются только при первом обращении. EAGER — загружаются сразу вместе с основной сущностью. По умолчанию: @OneToMany и @ManyToMany — LAZY, @ManyToOne и @OneToOne — EAGER. Важно: LAZY лучше по производительности (не грузим лишнее), но обращение к LAZY коллекции вне транзакции вызовет LazyInitializationException. Решения: JOIN FETCH в JPQL, @EntityGraph, или использовать DTO проекции.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="ann-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>
