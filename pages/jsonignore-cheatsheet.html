@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@JsonIgnore & Jackson Annotations | Java Mega Cheatsheet</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../app.js" defer></script>
+</head>
+<body>
+    <div class="page-layout">
+        <!-- Sidebar -->
+        <aside class="page-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">J</div>
+                    <span>Java Cheatsheet</span>
+                </a>
+                <input type="text" class="sidebar-search" id="sideSearch" placeholder="Поиск в навигации...">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">На этой странице</div>
+                <ul>
+                    <li><a href="#summary" class="nav-link"><span class="nav-dot" style="background:var(--primary)"></span>📌 Конспект</a></li>
+                    <li><a href="#basics" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🚫 Основы @JsonIgnore</a></li>
+                    <li><a href="#advanced" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔍 Продвинутые сценарии</a></li>
+                    <li><a href="#cyclic" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔄 Циклические зависимости</a></li>
+                    <li><a href="#related" class="nav-link"><span class="nav-dot" style="background:var(--warn)"></span>📦 Связанные аннотации</a></li>
+                    <li><a href="#practices" class="nav-link"><span class="nav-dot" style="background:var(--error)"></span>✅ Best / ⚠️ Anti</a></li>
+                    <li><a href="#interview" class="nav-link"><span class="nav-dot" style="background:var(--purple)"></span>❓ Интервью</a></li>
+                </ul>
+                <div class="nav-section" style="margin-top:24px">Другие темы</div>
+                <ul>
+                    <li><a href="../index.html" class="nav-link"><span class="nav-dot" style="background:var(--cyan)"></span>🏠 Все темы</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="page-main">
+            <header class="page-header">
+                <a href="../index.html" class="page-back">← Главная</a>
+                <span class="page-header-title">@JsonIgnore & Jackson</span>
+                <div class="page-search-wrap">
+                    <input type="text" id="pageSearch" class="page-search" placeholder="Поиск по странице...">
+                    <button id="searchClear" class="search-clear">✕</button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-header">
+                        <div class="hero-icon" style="background:rgba(240,96,96,0.12);color:var(--error)">🚫</div>
+                        <div>
+                            <h1>@JsonIgnore & Управление JSON-сериализацией</h1>
+                            <p>Полное руководство по исключению полей из JSON, управлению видимостью, борьбе с циклическими зависимостями и современным альтернативам в Spring Boot + Jackson.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                        <span class="chip chip-red">Jackson 2.x</span>
+                        <span class="chip chip-blue">Spring Boot 3</span>
+                        <span class="chip chip-warn">DTO vs Entity</span>
+                        <span class="chip chip-purple">Best Practices</span>
+                    </div>
+                </div>
+
+                <!-- TOC -->
+                <div class="toc">
+                    <div class="toc-title">Содержание</div>
+                    <div class="toc-list">
+                        <a href="#summary" class="toc-link">📌 Конспект</a>
+                        <a href="#basics" class="toc-link">🚫 Основы</a>
+                        <a href="#advanced" class="toc-link">🔍 Продвинутое</a>
+                        <a href="#cyclic" class="toc-link">🔄 Циклы</a>
+                        <a href="#related" class="toc-link">📦 Аннотации</a>
+                        <a href="#practices" class="toc-link">Best/Bad</a>
+                        <a href="#interview" class="toc-link">❓ Вопросы</a>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="section" id="summary">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">📌</span> Краткий конспект</h2>
+                    <div class="box box-blue" style="margin-bottom:16px">
+                        <div class="box-label">Главное правило</div>
+                        <code>@JsonIgnore</code> полностью исключает поле из <b>сериализации</b> (Java → JSON) и <b>десериализации</b> (JSON → Java). Jackson обрабатывает <b>свойства</b>, а не поля напрямую: аннотация на поле игнорирует и getter, и setter.
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Задача</th><th>Решение</th><th>Когда использовать</th></tr></thead>
+                            <tbody>
+                                <tr><td>Скрыть поле полностью</td><td><code>@JsonIgnore</code></td><td>Пароли, внутренние ID, служебные флаги</td></tr>
+                                <tr><td>Только запись (скрыть в ответе)</td><td><code>@JsonProperty(access = WRITE_ONLY)</code></td><td>Пароли при регистрации</td></tr>
+                                <tr><td>Только чтение (игнорировать ввод)</td><td><code>@JsonProperty(access = READ_ONLY)</code></td><td>createdAt, version, вычисляемые поля</td></tr>
+                                <tr><td>Скрыть null/пустые поля</td><td><code>@JsonInclude(NON_NULL)</code></td><td>Опциональные DTO-поля</td></tr>
+                                <tr><td>Условная сериализация</td><td><code>@JsonView</code></td><td>Разные роли (Admin vs User)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Basics -->
+                <div class="section" id="basics">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🚫</span> Основы @JsonIgnore</h2>
+                    
+                    <div class="section-subtitle">Простое использование на поле</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">UserDTO.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Data</span>
+<span class="kw">public class</span> <span class="cl">UserDTO</span> {
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+    
+    <span class="cm">/*
+     * @JsonIgnore полностью исключает поле из JSON.
+     * Jackson не вызовет getPassword() при сериализации
+     * и не вызовет setPassword() при десериализации.
+     */</span>
+    <span class="an">@JsonIgnore</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">password</span>;
+}</code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Важно: Поле vs Геттер/Сеттер</div>
+                    <div class="prose">
+                        <p>Jackson работает с <b>свойствами</b> (property), а не с полями напрямую. Если аннотация стоит на поле — она применяется и к getter, и к setter. Если нужно игнорировать <b>только сериализацию</b> или <b>только десериализацию</b>, ставь аннотацию на метод.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Разница размещения</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">public class</span> <span class="cl">Example</span> {
+    <span class="cm">// 1. На поле → игнорируется И сериализация, И десериализация</span>
+    <span class="an">@JsonIgnore</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">fieldIgnore</span>;
+
+    <span class="cm">// 2. На getter → игнорируется ТОЛЬКО сериализация (Java → JSON)</span>
+    <span class="an">@JsonIgnore</span>
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getReadOnly</span>() { ... }
+    <span class="cm">// При десериализации Jackson всё ещё вызовет setReadOnly()</span>
+
+    <span class="cm">// 3. На setter → игнорируется ТОЛЬКО десериализация (JSON → Java)</span>
+    <span class="kw">public</span> <span class="kw">void</span> <span class="fn">setWriteOnly</span>(<span class="ty">String</span> <span class="fn">val</span>) { ... }
+    <span class="an">@JsonIgnore</span>
+    <span class="cm">// При сериализации поле попадёт в JSON, но принять из JSON нельзя</span>
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Advanced -->
+                <div class="section" id="advanced">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">🔍</span> Продвинутые сценарии</h2>
+                    
+                    <div class="section-subtitle">READ_ONLY / WRITE_ONLY (Современная альтернатива)</div>
+                    <div class="prose">
+                        <p>Вместо `@JsonIgnore` часто лучше использовать `@JsonProperty(access = ...)` для более точного контроля.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">User.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Data</span>
+<span class="kw">public class</span> <span class="cl">User</span> {
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+
+    <span class="cm">/*
+     * WRITE_ONLY: поле есть в запросе (JSON → Java), но НЕТ в ответе (Java → JSON)
+     * Идеально для паролей: клиент отправляет пароль, но сервер никогда не возвращает его обратно.
+     */</span>
+    <span class="an">@JsonProperty</span>(<span class="fn">access</span> = <span class="cl">JsonProperty</span>.<span class="cl">Access</span>.<span class="cl">WRITE_ONLY</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">password</span>;
+
+    <span class="cm">/*
+     * READ_ONLY: поле есть в ответе, но игнорируется при запросе
+     * Идеально для createdAt, version, fullName (вычисляемое поле)
+     */</span>
+    <span class="an">@JsonProperty</span>(<span class="fn">access</span> = <span class="cl">JsonProperty</span>.<span class="cl">Access</span>.<span class="cl">READ_ONLY</span>)
+    <span class="kw">private</span> <span class="cl">LocalDateTime</span> <span class="fn">createdAt</span>;
+}</code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Динамическое игнорирование (@JsonInclude)</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">DTO с опциональными полями</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">/*
+ * @JsonInclude управляет сериализацией на уровне КЛАССА или ПОЛЯ.
+ * Варианты:
+ * ALWAYS (default) — всегда сериализовать
+ * NON_NULL         — пропускать, если поле == null
+ * NON_EMPTY        — пропускать, если null или пустая строка/коллекция
+ * NON_DEFAULT      — пропускать, если равно значению по умолчанию (0, false, null)
+ */</span>
+<span class="an">@JsonInclude</span>(<span class="cl">JsonInclude</span>.<span class="cl">Include</span>.<span class="cl">NON_NULL</span>)
+<span class="kw">public class</span> <span class="cl">UserUpdateDTO</span> {
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+    
+    <span class="cm">// Перекрываем классовую настройку для конкретного поля</span>
+    <span class="an">@JsonInclude</span>(<span class="cl">JsonInclude</span>.<span class="cl">Include</span>.<span class="cl">ALWAYS</span>)
+    <span class="kw">private</span> <span class="ty">Boolean</span> <span class="fn">active</span>;  <span class="cm">// false всё равно попадёт в JSON</span>
+    
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">bio</span>;      <span class="cm">// Если null → не попадёт в JSON</span>
+}</code></pre>
+                    </div>
+
+                    <div class="section-subtitle">Условная сериализация (@JsonView)</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Разные роли → разный JSON</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// 1. Определяем "представления" (Views)</span>
+<span class="kw">public class</span> <span class="cl">Views</span> {
+    <span class="kw">public static class</span> <span class="cl">Public</span> {}
+    <span class="kw">public static class</span> <span class="cl">Internal</span> <span class="kw">extends</span> <span class="cl">Public</span> {}  <span class="cm">// Internal включает Public</span>
+}
+
+<span class="cm">// 2. Размечаем DTO</span>
+<span class="kw">public class</span> <span class="cl">UserDTO</span> {
+    <span class="an">@JsonView</span>(<span class="cl">Views</span>.<span class="cl">Public</span>.<span class="kw">class</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+
+    <span class="an">@JsonView</span>(<span class="cl">Views</span>.<span class="cl">Internal</span>.<span class="kw">class</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">email</span>;  <span class="cm">// Только для админов</span>
+
+    <span class="an">@JsonIgnore</span>  <span class="cm">// Никогда не попадёт в JSON</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">password</span>;
+}
+
+<span class="cm">// 3. В контроллере выбираем View</span>
+<span class="an">@JsonView</span>(<span class="cl">Views</span>.<span class="cl">Public</span>.<span class="kw">class</span>)  <span class="cm">// Для публичного API</span>
+<span class="an">@GetMapping</span>(<span class="st">"/users"</span>)
+<span class="kw">public</span> <span class="ty">List</span>&lt;<span class="cl">UserDTO</span>&gt; <span class="fn">getPublicUsers</span>() { ... }
+
+<span class="an">@JsonView</span>(<span class="cl">Views</span>.<span class="cl">Internal</span>.<span class="kw">class</span>)  <span class="cm">// Для админки</span>
+<span class="an">@GetMapping</span>(<span class="st">"/admin/users"</span>)
+<span class="kw">public</span> <span class="ty">List</span>&lt;<span class="cl">UserDTO</span>&gt; <span class="fn">getAllUsers</span>() { ... }</code></pre>
+                    </div>
+                </div>
+
+                <!-- Cyclic Dependencies -->
+                <div class="section" id="cyclic">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🔄</span> Циклические зависимости JPA + Jackson</h2>
+                    
+                    <div class="prose">
+                        <p><b>Проблема:</b> `Department` имеет `List<Employee>`, а `Employee` имеет `Department`. При сериализации Jackson зацикливается: Dept → Emp → Dept → Emp → StackOverflowError.</p>
+                        <p><b>Решение 1 (Лучшее):</b> Не сериализовать Entity! Используй DTO/Mapper.</p>
+                        <p><b>Решение 2 (Быстрое):</b> Разорвать цикл аннотациями Jackson.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Разрыв цикла через аннотации</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Сторона-владелец (хранит FK в БД)</span>
+<span class="an">@Entity</span>
+<span class="kw">public class</span> <span class="cl">Employee</span> {
+    <span class="an">@Id</span> <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+    
+    <span class="cm">/*
+     * @JsonBackReference: поле НЕ сериализуется в JSON.
+     * Используется ТОЛЬКО при десериализации для восстановления связи.
+     */</span>
+    <span class="an">@ManyToOne</span>
+    <span class="an">@JsonBackReference</span>
+    <span class="kw">private</span> <span class="cl">Department</span> <span class="fn">department</span>;
+}
+
+<span class="cm">// Обратная сторона</span>
+<span class="an">@Entity</span>
+<span class="kw">public class</span> <span class="cl">Department</span> {
+    <span class="an">@Id</span> <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+    
+    <span class="cm">/*
+     * @JsonManagedReference: поле сериализуется в JSON.
+     * Jackson понимает, что это "родительская" часть связи.
+     */</span>
+    <span class="an">@OneToMany</span>(<span class="fn">mappedBy</span> = <span class="st">"department"</span>)
+    <span class="an">@JsonManagedReference</span>
+    <span class="kw">private</span> <span class="cl">List</span>&lt;<span class="cl">Employee</span>&gt; <span class="fn">employees</span>;
+}
+
+<span class="cm">// 💡 Результат JSON при GET /departments/1:</span>
+<span class="cm">// {"id": 1, "name": "IT", "employees": [{"id": 10, "name": "Ivan"}]}</span>
+<span class="cm">// (Employee.department будет null в JSON, чтобы не было цикла)</span></code></pre>
+                    </div>
+                    <div class="box box-warn" style="margin-top:16px">
+                        <div class="box-label">⚠️ Почему DTO лучше?</div>
+                        Аннотации `@JsonManagedReference`/`@JsonBackReference` работают, но смешивают логику сериализации с Entity. Это нарушает Separation of Concerns. В реальных проектах создавай `DepartmentResponse` и `EmployeeResponse`, где связи контролируются явно через Mapper.
+                    </div>
+                </div>
+
+                <!-- Related Annotations -->
+                <div class="section" id="related">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">📦</span> Связанные аннотации Jackson</h2>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Аннотация</th><th>Уровень</th><th>Что делает</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>@JsonIgnore</code></td><td>Поле/Метод</td><td>Полное исключение из JSON (read + write)</td></tr>
+                                <tr><td><code>@JsonIgnoreProperties</code></td><td>Класс</td><td>Игнорирует список полей: <code>{"password", "salt"}</code></td></tr>
+                                <tr><td><code>@JsonProperty</code></td><td>Поле/Метод</td><td>Переименовывает поле в JSON или задаёт <code>access</code></td></tr>
+                                <tr><td><code>@JsonInclude</code></td><td>Класс/Поле</td><td>Управляет включением null/пустых значений</td></tr>
+                                <tr><td><code>@JsonView</code></td><td>Поле/Контроллер</td><td>Условная сериализация по ролям/контексту</td></tr>
+                                <tr><td><code>@JsonFormat</code></td><td>Поле</td><td>Формат даты/числа: <code>pattern = "dd.MM.yyyy"</code></td></tr>
+                                <tr><td><code>@JsonAlias</code></td><td>Поле</td><td>Альтернативные имена при десериализации (для legacy API)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Best Practices -->
+                <div class="section" id="practices">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">✅</span> Best & ⚠️ Anti Practices</h2>
+                    <div class="compare-grid">
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--accent)">✅ Best Practices</div>
+                            <ul class="compare-list">
+                                <li>Используй DTO для API вместо Entity с `@JsonIgnore`</li>
+                                <li>Для паролей применяй `@JsonProperty(access = WRITE_ONLY)`</li>
+                                <li>Для audit-полей (createdAt, updatedAt) используй `READ_ONLY`</li>
+                                <li>Разрывай циклы на уровне Mapper, а не аннотациями в Entity</li>
+                                <li>Используй `@JsonInclude(NON_NULL)` на уровне DTO, а не на каждом поле</li>
+                                <li>Для сложных сценариев ролей используй `@JsonView` или разные DTO</li>
+                                <li>Всегда тестируй JSON-контракт через `MockMvc` или интеграционные тесты</li>
+                            </ul>
+                        </div>
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--error)">⚠️ Anti Patterns</div>
+                            <ul class="compare-list">
+                                <li>❌ Сериализовать JPA-Entity напрямую в контроллере</li>
+                                <li>❌ Использовать `@JsonIgnore` на `@Id` (ломает десериализацию PUT/PATCH)</li>
+                                <li>❌ Забывать про `@JsonIgnore` на геттере при использовании Lombok `@Data`</li>
+                                <li>❌ Игнорировать поля валидации через `@JsonIgnore` (валидация сработает ДО сериализации!)</li>
+                                <li>❌ Использовать `@JsonManagedReference`/`@JsonBackReference` в новых проектах вместо DTO</li>
+                                <li>❌ Возвращать `Map<String, Object>` вместо типизированного DTO</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Q&A -->
+                <div class="section" id="interview">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">❓</span> Вопросы для собеседования</h2>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">В чём разница между @JsonIgnore и @JsonInclude(Include.NON_NULL)?</div>
+                                <div class="qa-q-en">Difference between @JsonIgnore and @JsonInclude(NON_NULL)?</div>
+                            </div>
+                            <span class="qa-badge easy">Easy</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><code>@JsonIgnore</code> полностью убирает поле из JSON независимо от его значения. <code>@JsonInclude(NON_NULL)</code> убирает поле <b>только если оно равно null</b>. Если поле содержит пустую строку `""` или `0`, оно всё равно попадёт в ответ. `@JsonIgnore` — жёсткое правило, `@JsonInclude` — условное.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="json-1">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Как игнорировать поле только при сериализации, но принимать при десериализации?</div>
+                                <div class="qa-q-en">How to ignore only during serialization but allow deserialization?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">Два способа: 1) Поставить <code>@JsonIgnore</code> на <b>getter</b> (игнорируется вывод), но не на setter. 2) Современный подход: <code>@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)</code>. Второй способ предпочтительнее, так как явно декларирует намерение и работает предсказуемо с Lombok и валидацией.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="json-2">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Почему возникает StackOverflowError при возврате Entity с двусторонней связью?</div>
+                                <div class="qa-q-en">Why StackOverflowError with bidirectional Entity relations?</div>
+                            </div>
+                            <span class="qa-badge hard">Hard</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">Jackson рекурсивно обходит граф объектов. Если `A` ссылается на `B`, а `B` на `A`, сериализатор попадает в бесконечный цикл: A → B → A → B... Решения: 1) Использовать DTO (рекомендуется), 2) `@JsonManagedReference`/`@JsonBackReference`, 3) `@JsonIgnore` на одной из сторон, 4) `@JsonIdentityInfo` (сериализация по ID с последующими ссылками). В Spring Boot 3+ лучше всего проектировать API вокруг DTO.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="json-3">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Влияет ли @JsonIgnore на валидацию (@Valid)?</div>
+                                <div class="qa-q-en">Does @JsonIgnore affect @Valid validation?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><b>Нет.</b> Валидация (`@Valid`) происходит <b>до</b> сериализации/десериализации Jackson. Даже если поле помечено `@JsonIgnore`, если клиент передаст его в JSON, Jackson сначала распарсит его в объект, запустится валидация, и только потом поле будет проигнорировано при формировании ответа. Чтобы полностью заблокировать ввод, используй `@JsonProperty(access = READ_ONLY)` или удали setter.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="json-4">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <button id="scrollTop" title="Наверх">↑</button>
+</body>
+</html>

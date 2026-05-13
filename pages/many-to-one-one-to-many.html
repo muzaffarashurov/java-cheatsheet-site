@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ManyToOne & @OneToMany | Java Mega Cheatsheet</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../app.js" defer></script>
+</head>
+<body>
+    <div class="page-layout">
+        <!-- Sidebar -->
+        <aside class="page-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">J</div>
+                    <span>Java Cheatsheet</span>
+                </a>
+                <input type="text" class="sidebar-search" id="sideSearch" placeholder="Поиск в навигации...">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">На этой странице</div>
+                <ul>
+                    <li><a href="#summary" class="nav-link"><span class="nav-dot" style="background:var(--primary)"></span>📌 Конспект</a></li>
+                    <li><a href="#entities" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>📦 Реальные сущности</a></li>
+                    <li><a href="#naming" class="nav-link"><span class="nav-dot" style="background:var(--warn)"></span>🏷️ Правила именования</a></li>
+                    <li><a href="#sync" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔄 Синхронизация</a></li>
+                    <li><a href="#practices" class="nav-link"><span class="nav-dot" style="background:var(--error)"></span>✅ Best / ⚠️ Anti</a></li>
+                    <li><a href="#interview" class="nav-link"><span class="nav-dot" style="background:var(--purple)"></span>❓ Интервью</a></li>
+                </ul>
+                <div class="nav-section" style="margin-top:24px">Другие темы</div>
+                <ul>
+                    <li><a href="../index.html" class="nav-link"><span class="nav-dot" style="background:var(--cyan)"></span>🏠 Все темы</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="page-main">
+            <header class="page-header">
+                <a href="../index.html" class="page-back">← Главная</a>
+                <span class="page-header-title">@ManyToOne & @OneToMany</span>
+                <div class="page-search-wrap">
+                    <input type="text" id="pageSearch" class="page-search" placeholder="Поиск по странице...">
+                    <button id="searchClear" class="search-clear">✕</button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-header">
+                        <div class="hero-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🔗</div>
+                        <div>
+                            <h1>@ManyToOne & @OneToMany — Практическое руководство</h1>
+                            <p>Разбираем связи на реальном примере интернет-магазина: Category, Product, Cart, CartItem, Order, OrderItem. Подробные комментарии: какие поля писать, какие аннотации ставить, как называть столбцы и избегать N+1.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                        <span class="chip chip-blue">JPA 3.1</span>
+                        <span class="chip chip-green">E-Commerce</span>
+                        <span class="chip chip-warn">Связи 1:N</span>
+                        <span class="chip chip-purple">Best Practices</span>
+                    </div>
+                </div>
+
+                <!-- TOC -->
+                <div class="toc">
+                    <div class="toc-title">Содержание</div>
+                    <div class="toc-list">
+                        <a href="#summary" class="toc-link">📌 Конспект</a>
+                        <a href="#entities" class="toc-link">📦 Сущности</a>
+                        <a href="#naming" class="toc-link">🏷️ Именование</a>
+                        <a href="#sync" class="toc-link">🔄 Синхронизация</a>
+                        <a href="#practices" class="toc-link">Best/Bad</a>
+                        <a href="#interview" class="toc-link">❓ Вопросы</a>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="section" id="summary">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">📌</span> Краткий конспект</h2>
+                    <div class="box box-blue" style="margin-bottom:16px">
+                        <div class="box-label">Главное правило</div>
+                        В бидирекциональной связи <b>@ManyToOne всегда владеет FK</b> (owning side). <b>@OneToMany</b> — это зеркало (inverse side), которое управляется через <code>mappedBy</code>. Hibernate генерирует INSERT/UPDATE <b>только</b> на основе owning side!
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Аннотация</th><th>Где ставится?</th><th>Что делает в БД?</th><th>Default Fetch</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>@ManyToOne</code></td><td>На стороне "многих" (Product, CartItem)</td><td>Создаёт столбец FK (напр. <code>category_id</code>)</td><td><code>EAGER</code> (⚠️ меняй на LAZY!)</td></tr>
+                                <tr><td><code>@OneToMany</code></td><td>На стороне "одного" (Category, Cart)</td><td>Ничего не создаёт (только читает данные)</td><td><code>LAZY</code> (✅ правильно)</td></tr>
+                                <tr><td><code>@JoinColumn</code></td><td>Рядом с @ManyToOne</td><td>Настраивает имя FK, nullable, unique</td><td>—</td></tr>
+                                <tr><td><code>mappedBy</code></td><td>Рядом с @OneToMany</td><td>Указывает имя поля во владельце связи</td><td>—</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Entities -->
+                <div class="section" id="entities">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">📦</span> Реальные сущности (E-Commerce)</h2>
+                    
+                    <div class="section-subtitle">1. Category (1) ↔ (N) Product</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Category.java (Inverse Side)</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"categories"</span>)
+<span class="kw">public class</span> <span class="cl">Category</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="cm">// name: уникальное имя категории. length=100 ограничивает размер VARCHAR в БД</span>
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">unique</span> = <span class="kw">true</span>, <span class="fn">length</span> = <span class="nu">100</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">name</span>;
+
+    <span class="cm">/*
+     * @OneToMany — ОБРАТНАЯ сторона связи (inverse side).
+     * mappedBy = "category" ← ОБЯЗАТЕЛЬНО! Указывает на поле category в классе Product.
+     * Без mappedBy Hibernate создаст ДВЕ связи (лишнюю таблицу или лишний FK).
+     * 
+     * cascade = {} ← НЕ ставь CascadeType.ALL здесь! Удаление категории не должно удалять товары.
+     * fetch = LAZY ← Стандарт для коллекций. Загружает товары только при обращении.
+     */</span>
+    <span class="an">@OneToMany</span>(<span class="fn">mappedBy</span> = <span class="st">"category"</span>, 
+              <span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="kw">private</span> <span class="cl">List</span>&lt;<span class="cl">Product</span>&gt; <span class="fn">products</span> = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+}</code></pre>
+                    </div>
+
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">Product.java (Owning Side)</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"products"</span>)
+<span class="kw">public class</span> <span class="cl">Product</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">length</span> = <span class="nu">255</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">name</span>;
+
+    <span class="cm">// precision=10, scale=2 → DECIMAL(10,2) в БД. Безопасно для денег!</span>
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">precision</span> = <span class="nu">10</span>, <span class="fn">scale</span> = <span class="nu">2</span>)
+    <span class="kw">private</span> <span class="cl">BigDecimal</span> <span class="fn">price</span>;
+
+    <span class="cm">/*
+     * @ManyToOne — ВЛАДЕЛЕЦ связи (owning side).
+     * Именно здесь Hibernate создаст столбец category_id в таблице products.
+     * 
+     * fetch = LAZY ← Всегда меняй EAGER на LAZY для @ManyToOne в реальных проектах!
+     * EAGER грузит категорию всегда → N+1 проблема при списках товаров.
+     */</span>
+    <span class="an">@ManyToOne</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"category_id"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cl">Category</span> <span class="fn">category</span>;
+}</code></pre>
+                    </div>
+
+                    <div class="section-subtitle">2. Cart (1) ↔ (N) CartItem ↔ (N) Product</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Cart.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"carts"</span>)
+<span class="kw">public class</span> <span class="cl">Cart</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="cm">/*
+     * cascade = ALL + orphanRemoval = true ← КОРЗИНА полностью владеет ITEMS.
+     * Если удалить CartItem из списка → он удалится из БД автоматически.
+     * Если удалить Cart → все его Items удалятся каскадом.
+     */</span>
+    <span class="an">@OneToMany</span>(<span class="fn">mappedBy</span> = <span class="st">"cart"</span>, 
+              <span class="fn">cascade</span> = <span class="cl">CascadeType</span>.<span class="cl">ALL</span>, 
+              <span class="fn">orphanRemoval</span> = <span class="kw">true</span>)
+    <span class="kw">private</span> <span class="cl">List</span>&lt;<span class="cl">CartItem</span>&gt; <span class="fn">items</span> = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+}</code></pre>
+                    </div>
+
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">CartItem.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"cart_items"</span>)
+<span class="kw">public class</span> <span class="cl">CartItem</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="ty">Integer</span> <span class="fn">quantity</span> = <span class="nu">1</span>;
+
+    <span class="cm">// Связь с корзиной (владелец)</span>
+    <span class="an">@ManyToOne</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"cart_id"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cl">Cart</span> <span class="fn">cart</span>;
+
+    <span class="cm">// Связь с товаром (владелец)</span>
+    <span class="an">@ManyToOne</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"product_id"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cl">Product</span> <span class="fn">product</span>;
+}</code></pre>
+                    </div>
+
+                    <div class="section-subtitle">3. Order (1) ↔ (N) OrderItem</div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Order.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"orders"</span>)
+<span class="kw">public class</span> <span class="cl">Order</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cl">LocalDateTime</span> <span class="fn">createdAt</span> = <span class="cl">LocalDateTime</span>.<span class="fn">now</span>();
+
+    <span class="an">@Enumerated</span>(<span class="cl">EnumType</span>.<span class="cl">STRING</span>)
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">length</span> = <span class="nu">20</span>)
+    <span class="kw">private</span> <span class="cl">OrderStatus</span> <span class="fn">status</span> = <span class="cl">OrderStatus</span>.<span class="cl">PENDING</span>;
+
+    <span class="cm">// Заказ владеет своими позициями.Cascade ALL уместен, т.к. OrderItem не существует без Order</span>
+    <span class="an">@OneToMany</span>(<span class="fn">mappedBy</span> = <span class="st">"order"</span>, <span class="fn">cascade</span> = <span class="cl">CascadeType</span>.<span class="cl">ALL</span>, <span class="fn">orphanRemoval</span> = <span class="kw">true</span>)
+    <span class="kw">private</span> <span class="cl">List</span>&lt;<span class="cl">OrderItem</span>&gt; <span class="fn">items</span> = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+}</code></pre>
+                    </div>
+
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">OrderItem.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"order_items"</span>)
+<span class="kw">public class</span> <span class="cl">OrderItem</span> {
+    <span class="an">@Id</span> <span class="an">@GeneratedValue</span>(<span class="fn">strategy</span> = <span class="cl">GenerationType</span>.<span class="cl">IDENTITY</span>)
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="ty">Integer</span> <span class="fn">quantity</span>;
+
+    <span class="cm">// ⚠️ ВАЖНО: Копируем цену и название на момент покупки!
+    // Товар может подорожать позже, но история заказа должна остаться неизменной.</span>
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">precision</span> = <span class="nu">10</span>, <span class="fn">scale</span> = <span class="nu">2</span>)
+    <span class="kw">private</span> <span class="cl">BigDecimal</span> <span class="fn">snapshotPrice</span>;
+
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">length</span> = <span class="nu">255</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">snapshotProductName</span>;
+
+    <span class="an">@ManyToOne</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"order_id"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cl">Order</span> <span class="fn">order</span>;
+
+    <span class="cm">// product_id может быть nullable, если товар был удалён из каталога, но заказ остался</span>
+    <span class="an">@ManyToOne</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">LAZY</span>)
+    <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"product_id"</span>)
+    <span class="kw">private</span> <span class="cl">Product</span> <span class="fn">product</span>;
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Naming & Configuration Rules -->
+                <div class="section" id="naming">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">🏷️</span> Правила именования и настройки</h2>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Что настраиваем</th><th>Как писать правильно</th><th>Пример</th></tr></thead>
+                            <tbody>
+                                <tr><td><b>Имя таблицы</b></td><td>Множественное число, snake_case</td><td><code>@Table(name = "cart_items")</code></td></tr>
+                                <tr><td><b>Имя FK-столбца</b></td><td><code>имя_связанной_сущности_id</code></td><td><code>@JoinColumn(name = "product_id")</code></td></tr>
+                                <tr><td><b>Поле связи в Java</b></td><td>Имя сущности в единственном числе</td><td><code>private Product product;</code></td></tr>
+                                <tr><td><b>Коллекция</b></td><td>Множественное число или items</td><td><code>private List&lt;CartItem&gt; items;</code></td></tr>
+                                <tr><td><b>mappedBy</b></td><td>Точное имя поля во владельце</td><td><code>mappedBy = "product"</code></td></tr>
+                                <tr><td><b>cascade</b></td><td>Только для композиций (Cart→Items)</td><td><code>cascade = CascadeType.ALL</code></td></tr>
+                                <tr><td><b>fetch</b></td><td>Всегда LAZY для коллекций и @ManyToOne</td><td><code>fetch = FetchType.LAZY</code></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box box-warn" style="margin-top:16px">
+                        <div class="box-label">💡 Про сущность Item</div>
+                        В реальных проектах <code>CartItem</code> и <code>OrderItem</code> часто наследуются от базового класса <code>Item</code> (через <code>@MappedSuperclass</code>), чтобы не дублировать поля <code>quantity</code> и <code>snapshotPrice</code>. Но для простоты и избежания проблем с полиморфными запросами в JPA, лучше держать их отдельными сущностями, как показано выше.
+                    </div>
+                </div>
+
+                <!-- Synchronization -->
+                <div class="section" id="sync">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🔄</span> Синхронизация двусторонней связи</h2>
+                    <div class="prose">
+                        <p>Если ты добавишь товар в категорию только со стороны <code>Category</code>, Hibernate <b>не обновит FK в БД</b>, потому что слушает только владельца (<code>Product.category</code>). Нужно обновлять обе стороны или использовать helper-методы.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">Helper-методы в Product.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">// Добавляем в Product.java для безопасной работы</span>
+<span class="kw">public void</span> <span class="fn">setCategory</span>(<span class="cl">Category</span> <span class="fn">category</span>) {
+    <span class="cm">// 1. Отвязываем от старой категории</span>
+    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fn">category</span> != <span class="kw">null</span>) {
+        <span class="kw">this</span>.<span class="fn">category</span>.<span class="fn">getProducts</span>().<span class="fn">remove</span>(<span class="kw">this</span>);
+    }
+    <span class="cm">// 2. Привязываем к новой</span>
+    <span class="kw">this</span>.<span class="fn">category</span> = <span class="fn">category</span>;
+    <span class="kw">if</span> (<span class="fn">category</span> != <span class="kw">null</span>) {
+        <span class="fn">category</span>.<span class="fn">getProducts</span>().<span class="fn">add</span>(<span class="kw">this</span>);
+    }
+}
+
+<span class="cm">// Использование в сервисе:</span>
+<span class="fn">product</span>.<span class="fn">setCategory</span>(<span class="fn">electronicsCategory</span>);  <span class="cm">// Обновит и product.category, и category.products</span>
+<span class="fn">productRepository</span>.<span class="fn">save</span>(<span class="fn">product</span>);           <span class="cm">// Hibernate сгенерирует UPDATE products SET category_id=?</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Best Practices -->
+                <div class="section" id="practices">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">✅</span> Best & ⚠️ Anti Practices</h2>
+                    <div class="compare-grid">
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--accent)">✅ Best Practices</div>
+                            <ul class="compare-list">
+                                <li>Всегда ставь <code>fetch = LAZY</code> на <code>@ManyToOne</code> и <code>@OneToMany</code></li>
+                                <li>Используй <code>cascade = ALL</code> + <code>orphanRemoval = true</code> только для композиций (Cart→Items, Order→Items)</li>
+                                <li>Никогда не каскадируй удаление на агрегаты (Category→Products, Product→OrderItems)</li>
+                                <li>Добавляй helper-методы (<code>setCategory()</code>, <code>addItem()</code>) для синхронизации</li>
+                                <li>Копируй цену/название в OrderItem (snapshot), а не ссылайся на Product</li>
+                                <li>Возвращай DTO, а не Entity, чтобы избежать LazyInitializationException</li>
+                                <li>Используй <code>@EntityGraph</code> или <code>JOIN FETCH</code> для решения N+1</li>
+                            </ul>
+                        </div>
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--error)">⚠️ Anti Patterns</div>
+                            <ul class="compare-list">
+                                <li>❌ Оставлять <code>EAGER</code> на коллекциях (приведёт к OutOfMemory и N+1)</li>
+                                <li>❌ Забывать <code>mappedBy</code> (Hibernate создаст лишнюю таблицу/столбец)</li>
+                                <li>❌ Ставить <code>cascade = REMOVE</code> на @ManyToOne (удаление товара удалит категорию!)</li>
+                                <li>❌ Менять только inverse side (данные в БД не обновятся)</li>
+                                <li>❌ Хранить актуальную цену товара в OrderItem (история заказа "поплывёт")</li>
+                                <li>❌ Сериализовать Entity в JSON без DTO (бесконечная рекурсия Jackson)</li>
+                                <li>❌ Игнорировать <code>nullable = false</code> на FK, если связь обязательна</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Q&A -->
+                <div class="section" id="interview">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">❓</span> Вопросы для собеседования</h2>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Почему @ManyToOne — это owning side, а @OneToMany — inverse?</div>
+                                <div class="qa-q-en">Why is @ManyToOne owning and @OneToMany inverse?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">В реляционной БД внешний ключ (FK) физически хранится в таблице "многих" (например, <code>products.category_id</code>). JPA следует этой логике: сторона, которая хранит FK в БД, является владельцем связи. <code>@OneToMany</code> не хранит FK, а только читает данные через JOIN, поэтому она объявляется через <code>mappedBy</code> как зеркало. Hibernate генерирует SQL-операции только на основе состояния owning side.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jpa-rel-1">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">В чём разница между cascade = ALL и orphanRemoval = true?</div>
+                                <div class="qa-q-en">Difference between cascade ALL and orphanRemoval?</div>
+                            </div>
+                            <span class="qa-badge hard">Hard</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><code>cascade = ALL</code> распространяет операции (persist, merge, remove) на связанные сущности при явном вызове на родителе. <code>orphanRemoval = true</code> отслеживает изменения в коллекции: если элемент удаляется из списка (<code>cart.getItems().remove(item)</code>), Hibernate автоматически выполнит DELETE для этого элемента, даже если родитель не удаляется. <code>orphanRemoval</code> подразумевает <code>cascade = ALL</code> и используется только для строгих композиций "жизнь-смерть" (Cart→Items).</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jpa-rel-2">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Что такое N+1 проблема и как её избежать с @OneToMany?</div>
+                                <div class="qa-q-en">What is N+1 problem and how to avoid it with @OneToMany?</div>
+                            </div>
+                            <span class="qa-badge hard">Hard</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">При загрузке списка категорий (1 запрос) и ленивой инициализации их товаров Hibernate выполняет N дополнительных запросов (по одному на категорию). Решения: 1) <code>@EntityGraph(attributePaths = {"products"})</code> в Spring Data, 2) JPQL с <code>JOIN FETCH c.products</code>, 3) <code>@BatchSize(size = 20)</code> для групповой загрузки, 4) Возвращать DTO через конструкторный JPQL вместо Entity. Никогда не используй <code>EAGER</code> как "лечение" N+1.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jpa-rel-3">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <button id="scrollTop" title="Наверх">↑</button>
+</body>
+</html>
