@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kubernetes | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#4f8ef7"></span>📌 Конспект</a>
+    <a class="nav-link" href="#concepts"><span class="nav-dot" style="background:#22d3a0"></span>Концепции</a>
+    <a class="nav-link" href="#objects"><span class="nav-dot" style="background:#f5a623"></span>Объекты K8s</a>
+    <a class="nav-link" href="#kubectl"><span class="nav-dot" style="background:#b88bfa"></span>kubectl команды</a>
+    <a class="nav-link" href="#manifests"><span class="nav-dot" style="background:#5bcefa"></span>YAML манифесты</a>
+    <a class="nav-link" href="#spring-k8s"><span class="nav-dot" style="background:#22d3a0"></span>Spring Boot + K8s</a>
+    <a class="nav-link" href="#practices"><span class="nav-dot" style="background:#f5a623"></span>Best Practices</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="docker.html"><span class="nav-dot" style="background:#5bcefa"></span>Docker</a>
+    <a class="nav-link" href="docker-compose.html"><span class="nav-dot" style="background:#b88bfa"></span>Docker Compose</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">☸ Kubernetes</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#4f8ef7;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#0a1a5a,#4f8ef7)">☸</div>
+        <div>
+          <h1>Kubernetes (K8s)</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-devops">DevOps</span>
+            <span class="chip chip-blue">K8s</span>
+            <span class="chip chip-green">Spring</span>
+            <span class="chip chip-warn">kubectl</span>
+          </div>
+        </div>
+      </div>
+      <p>Pod, Deployment, Service, Ingress, ConfigMap, Secret, HPA, Namespace, kubectl команды — всё что нужно Java Backend разработчику для работы с Kubernetes.</p>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#concepts">Концепции</a>
+        <a class="toc-link" href="#objects">Объекты</a>
+        <a class="toc-link" href="#kubectl">kubectl</a>
+        <a class="toc-link" href="#manifests">YAML манифесты</a>
+        <a class="toc-link" href="#spring-k8s">Spring + K8s</a>
+        <a class="toc-link" href="#practices">Best Practices</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-blue">
+        <div class="box-label">Что такое Kubernetes</div>
+        Kubernetes — система оркестрации контейнеров. Автоматически управляет: развёртыванием, масштабированием, самовосстановлением, балансировкой нагрузки. Запускает Docker контейнеры на кластере серверов (nodes).
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Объект</th><th>Назначение</th><th>Аналогия</th></tr>
+          <tr><td><strong>Pod</strong></td><td>Минимальная единица — один или несколько контейнеров</td><td>Процесс</td></tr>
+          <tr><td><strong>Deployment</strong></td><td>Управляет Pod'ами — rolling update, replicas</td><td>Менеджер процессов</td></tr>
+          <tr><td><strong>Service</strong></td><td>Стабильный сетевой адрес для Pod'ов</td><td>Load Balancer</td></tr>
+          <tr><td><strong>Ingress</strong></td><td>HTTP маршрутизация снаружи → Service</td><td>Nginx reverse proxy</td></tr>
+          <tr><td><strong>ConfigMap</strong></td><td>Конфигурация (не секреты)</td><td>application.yml</td></tr>
+          <tr><td><strong>Secret</strong></td><td>Секреты (пароли, токены) — base64</td><td>.env файл</td></tr>
+          <tr><td><strong>Namespace</strong></td><td>Виртуальный кластер для изоляции</td><td>Пакет Java</td></tr>
+          <tr><td><strong>HPA</strong></td><td>Horizontal Pod Autoscaler — авто-масштабирование</td><td>Auto-scaling</td></tr>
+          <tr><td><strong>PVC</strong></td><td>Persistent Volume Claim — запрос на хранилище</td><td>Docker volume</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. КОНЦЕПЦИИ ═══ -->
+    <div class="section" id="concepts">
+      <div class="section-title"><span class="s-icon">🧩</span> Архитектура Kubernetes</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Схема кластера</span></div>
+        <pre style="font-size:0.77rem;line-height:1.9">
+  <span class="cm">── CONTROL PLANE (Master) ──────────────────────────────────</span>
+  │  <span class="kw">API Server</span>    — центральная точка управления (kubectl → API)
+  │  <span class="cl">etcd</span>          — хранилище состояния кластера
+  │  <span class="an">Scheduler</span>     — назначает Pod'ы на Node'ы
+  │  <span class="ty">Controller Manager</span> — следит за желаемым состоянием
+
+  <span class="cm">── WORKER NODES ────────────────────────────────────────────</span>
+  │
+  ├── Node 1
+  │   ├── <span class="kw">kubelet</span>      — агент на ноде, запускает Pod'ы
+  │   ├── <span class="cl">kube-proxy</span>   — сетевые правила (iptables)
+  │   └── Pods:
+  │       ├── [app-pod-1]   { container: myapp:1.0 }
+  │       └── [app-pod-2]   { container: myapp:1.0 }
+  │
+  └── Node 2
+      └── Pods:
+          └── [app-pod-3]   { container: myapp:1.0 }
+
+  <span class="cm">── ОБЪЕКТЫ ──────────────────────────────────────────────────</span>
+  Deployment → ReplicaSet → Pod × 3
+  Service → Pod × 3  (load balancing)
+  Ingress → Service  (HTTP routing)
+        </pre>
+      </div>
+    </div>
+
+    <!-- ═══ 3. ОБЪЕКТЫ K8S ═══ -->
+    <div class="section" id="objects">
+      <div class="section-title"><span class="s-icon">📦</span> Ключевые объекты</div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Pod — минимальная единица развёртывания</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Pod содержит один или несколько контейнеров, разделяющих сеть и хранилище. Pods — эфемерны: при перезапуске IP меняется. Не создавай Pod напрямую — используй Deployment.</p>
+            <p><strong>Жизненный цикл Pod:</strong> Pending → Running → Succeeded/Failed/Unknown</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Deployment — управление репликами и обновлениями</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Deployment описывает желаемое состояние: сколько реплик, какой образ, стратегия обновления. K8s автоматически поддерживает это состояние.</p>
+            <p><strong>Стратегии обновления:</strong><br>
+            <code>RollingUpdate</code> (default) — постепенная замена Pod'ов, нет downtime.<br>
+            <code>Recreate</code> — убить все, запустить новые. Есть downtime.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">Service — стабильный сетевой адрес</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="table-wrap">
+            <table>
+              <tr><th>Тип</th><th>Доступ</th><th>Когда</th></tr>
+              <tr><td><code>ClusterIP</code> (default)</td><td>Только внутри кластера</td><td>Связь между микросервисами</td></tr>
+              <tr><td><code>NodePort</code></td><td>Через порт Node'а</td><td>Dev/Testing, прямой доступ</td></tr>
+              <tr><td><code>LoadBalancer</code></td><td>Внешний LB (cloud)</td><td>Production в AWS/GCP/Azure</td></tr>
+              <tr><td><code>ExternalName</code></td><td>CNAME на внешний адрес</td><td>Внешние сервисы</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">ConfigMap и Secret — конфигурация</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p><strong>ConfigMap</strong> — несекретная конфигурация. Монтируется как файл или ENV переменные. Изменение без перезапуска Pod'а (если через volume).</p>
+            <p><strong>Secret</strong> — секретные данные в base64. Типы: Opaque (произвольные), TLS, Docker registry. В продакшене используй HashiCorp Vault или AWS Secrets Manager — встроенный Secret хранится в etcd и не достаточно защищён.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">HPA — Horizontal Pod Autoscaler</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>HPA автоматически масштабирует число Pod'ов на основе метрик: CPU, memory, кастомных метрик. Требует Metrics Server в кластере.</p>
+            <p>При высокой нагрузке (CPU > 70%) → добавляет Pod'ы. При низкой → удаляет. Минимум/максимум реплик — настраивается.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 4. KUBECTL ═══ -->
+    <div class="section" id="kubectl">
+      <div class="section-title"><span class="s-icon">⌨️</span> kubectl — основные команды</div>
+
+      <div class="section-subtitle">Базовые операции</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Команда</th><th>Описание</th></tr>
+          <tr><td><code>kubectl get pods</code></td><td>Список Pod'ов в текущем namespace</td></tr>
+          <tr><td><code>kubectl get pods -n myapp</code></td><td>Pod'ы в namespace myapp</td></tr>
+          <tr><td><code>kubectl get pods -A</code></td><td>Pod'ы во всех namespace</td></tr>
+          <tr><td><code>kubectl get deployments</code></td><td>Список Deployment'ов</td></tr>
+          <tr><td><code>kubectl get services</code></td><td>Список Service'ов</td></tr>
+          <tr><td><code>kubectl get all</code></td><td>Всё: pods, deployments, services</td></tr>
+          <tr><td><code>kubectl describe pod myapp-xxx</code></td><td>Детальная информация о Pod'е</td></tr>
+          <tr><td><code>kubectl logs myapp-xxx</code></td><td>Логи Pod'а</td></tr>
+          <tr><td><code>kubectl logs -f myapp-xxx</code></td><td>Логи в реальном времени</td></tr>
+          <tr><td><code>kubectl logs myapp-xxx -c container</code></td><td>Логи конкретного контейнера</td></tr>
+          <tr><td><code>kubectl exec -it myapp-xxx -- bash</code></td><td>Войти в контейнер</td></tr>
+          <tr><td><code>kubectl port-forward myapp-xxx 8080:8080</code></td><td>Пробросить порт Pod'а на localhost</td></tr>
+          <tr><td><code>kubectl top pods</code></td><td>Использование CPU/RAM Pod'ами</td></tr>
+          <tr><td><code>kubectl top nodes</code></td><td>Использование Node'ами</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Применение и обновление</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Команда</th><th>Описание</th></tr>
+          <tr><td><code>kubectl apply -f deployment.yml</code></td><td>Создать или обновить ресурс из файла</td></tr>
+          <tr><td><code>kubectl apply -f ./k8s/</code></td><td>Применить все YAML файлы из директории</td></tr>
+          <tr><td><code>kubectl delete -f deployment.yml</code></td><td>Удалить ресурс из файла</td></tr>
+          <tr><td><code>kubectl delete pod myapp-xxx</code></td><td>Удалить Pod (будет пересоздан Deployment'ом)</td></tr>
+          <tr><td><code>kubectl rollout status deployment/myapp</code></td><td>Статус rolling update</td></tr>
+          <tr><td><code>kubectl rollout history deployment/myapp</code></td><td>История развёртываний</td></tr>
+          <tr><td><code>kubectl rollout undo deployment/myapp</code></td><td>Откатиться к предыдущей версии</td></tr>
+          <tr><td><code>kubectl scale deployment myapp --replicas=5</code></td><td>Изменить число реплик</td></tr>
+          <tr><td><code>kubectl set image deployment/myapp app=myapp:2.0</code></td><td>Обновить образ (rolling update)</td></tr>
+          <tr><td><code>kubectl get events --sort-by=.lastTimestamp</code></td><td>События кластера (отладка)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 5. YAML МАНИФЕСТЫ ═══ -->
+    <div class="section" id="manifests">
+      <div class="section-title"><span class="s-icon">📄</span> YAML манифесты</div>
+
+      <div class="section-subtitle">1. Deployment для Spring Boot приложения</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">YAML — deployment.yml</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="kw">apiVersion</span>: apps/v1                            <span class="cm"># версия API</span>
+<span class="kw">kind</span>: Deployment                                <span class="cm"># тип объекта</span>
+<span class="kw">metadata</span>:
+  <span class="cl">name</span>: myapp                                   <span class="cm"># имя Deployment'а</span>
+  <span class="cl">namespace</span>: production                         <span class="cm"># namespace</span>
+  <span class="cl">labels</span>:
+    <span class="an">app</span>: myapp
+    <span class="an">version</span>: "1.0"
+<span class="kw">spec</span>:
+  <span class="cl">replicas</span>: <span class="nu">3</span>                                   <span class="cm"># 3 Pod'а</span>
+  <span class="cl">selector</span>:
+    <span class="an">matchLabels</span>:
+      <span class="an">app</span>: myapp                                <span class="cm"># Pod'ы с label app=myapp</span>
+  <span class="cl">strategy</span>:
+    <span class="an">type</span>: RollingUpdate                         <span class="cm"># обновлять постепенно</span>
+    <span class="an">rollingUpdate</span>:
+      <span class="ty">maxSurge</span>: <span class="nu">1</span>                              <span class="cm"># максимум +1 Pod при обновлении</span>
+      <span class="ty">maxUnavailable</span>: <span class="nu">0</span>                        <span class="cm"># ни один Pod не должен быть недоступен</span>
+  <span class="cl">template</span>:                                     <span class="cm"># шаблон Pod'а</span>
+    <span class="an">metadata</span>:
+      <span class="ty">labels</span>:
+        <span class="ty">app</span>: myapp
+    <span class="an">spec</span>:
+      <span class="ty">containers</span>:
+        - <span class="cl">name</span>: myapp
+          <span class="cl">image</span>: myregistry/myapp:<span class="nu">1.0</span>          <span class="cm"># образ приложения</span>
+          <span class="cl">imagePullPolicy</span>: Always               <span class="cm"># всегда тянуть образ</span>
+          <span class="cl">ports</span>:
+            - <span class="an">containerPort</span>: <span class="nu">8080</span>             <span class="cm"># порт приложения</span>
+
+          <span class="cm"># ── Переменные окружения из ConfigMap и Secret</span>
+          <span class="cl">env</span>:
+            - <span class="an">name</span>: SPRING_PROFILES_ACTIVE
+              <span class="an">value</span>: <span class="st">"prod"</span>                    <span class="cm"># прямое значение</span>
+            - <span class="an">name</span>: DB_PASSWORD
+              <span class="an">valueFrom</span>:
+                <span class="ty">secretKeyRef</span>:               <span class="cm"># из Secret'а</span>
+                  <span class="ty">name</span>: myapp-secrets
+                  <span class="ty">key</span>: db-password
+            - <span class="an">name</span>: APP_NAME
+              <span class="an">valueFrom</span>:
+                <span class="ty">configMapKeyRef</span>:            <span class="cm"># из ConfigMap'а</span>
+                  <span class="ty">name</span>: myapp-config
+                  <span class="ty">key</span>: app.name
+
+          <span class="cm"># ── Ограничения ресурсов</span>
+          <span class="cl">resources</span>:
+            <span class="an">requests</span>:                         <span class="cm"># минимум для планировщика</span>
+              <span class="ty">memory</span>: <span class="st">"256Mi"</span>
+              <span class="ty">cpu</span>: <span class="st">"250m"</span>                   <span class="cm"># 250 millicores = 0.25 CPU</span>
+            <span class="an">limits</span>:                           <span class="cm"># максимум — контейнер не превысит</span>
+              <span class="ty">memory</span>: <span class="st">"512Mi"</span>
+              <span class="ty">cpu</span>: <span class="st">"500m"</span>
+
+          <span class="cm"># ── Health checks</span>
+          <span class="cl">livenessProbe</span>:                      <span class="cm"># перезапустить если приложение зависло</span>
+            <span class="an">httpGet</span>:
+              <span class="ty">path</span>: /actuator/health/liveness
+              <span class="ty">port</span>: <span class="nu">8080</span>
+            <span class="an">initialDelaySeconds</span>: <span class="nu">60</span>          <span class="cm"># ждать 60с после старта</span>
+            <span class="an">periodSeconds</span>: <span class="nu">10</span>               <span class="cm"># проверять каждые 10с</span>
+            <span class="an">failureThreshold</span>: <span class="nu">3</span>              <span class="cm"># 3 провала → перезапуск</span>
+          <span class="cl">readinessProbe</span>:                     <span class="cm"># не слать трафик если не готов</span>
+            <span class="an">httpGet</span>:
+              <span class="ty">path</span>: /actuator/health/readiness
+              <span class="ty">port</span>: <span class="nu">8080</span>
+            <span class="an">initialDelaySeconds</span>: <span class="nu">30</span>
+            <span class="an">periodSeconds</span>: <span class="nu">5</span>
+          <span class="cl">startupProbe</span>:                       <span class="cm"># даём время на медленный старт</span>
+            <span class="an">httpGet</span>:
+              <span class="ty">path</span>: /actuator/health
+              <span class="ty">port</span>: <span class="nu">8080</span>
+            <span class="an">failureThreshold</span>: <span class="nu">30</span>             <span class="cm"># 30 × 10s = 5 минут на старт</span>
+            <span class="an">periodSeconds</span>: <span class="nu">10</span></pre>
+      </div>
+
+      <div class="section-subtitle">2. Service, ConfigMap, Secret</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">YAML — service.yml + config.yml</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm"># ── Service — балансировка трафика на Pod'ы</span>
+<span class="kw">apiVersion</span>: v1
+<span class="kw">kind</span>: Service
+<span class="kw">metadata</span>:
+  <span class="cl">name</span>: myapp-service
+  <span class="cl">namespace</span>: production
+<span class="kw">spec</span>:
+  <span class="cl">selector</span>:
+    <span class="an">app</span>: myapp                              <span class="cm"># выбирает Pod'ы с label app=myapp</span>
+  <span class="cl">ports</span>:
+    - <span class="an">protocol</span>: TCP
+      <span class="an">port</span>: <span class="nu">80</span>                              <span class="cm"># порт Service'а</span>
+      <span class="an">targetPort</span>: <span class="nu">8080</span>                     <span class="cm"># порт Pod'а</span>
+  <span class="cl">type</span>: ClusterIP                          <span class="cm"># доступен только внутри кластера</span>
+---
+<span class="cm"># ── ConfigMap — несекретная конфигурация</span>
+<span class="kw">apiVersion</span>: v1
+<span class="kw">kind</span>: ConfigMap
+<span class="kw">metadata</span>:
+  <span class="cl">name</span>: myapp-config
+  <span class="cl">namespace</span>: production
+<span class="kw">data</span>:
+  <span class="an">app.name</span>: <span class="st">"My Application"</span>             <span class="cm"># ключ: значение</span>
+  <span class="an">app.version</span>: <span class="st">"1.0.0"</span>
+  <span class="an">log.level</span>: <span class="st">"INFO"</span>
+  <span class="an">application.yml</span>: |                       <span class="cm"># файл конфигурации как значение</span>
+    spring:
+      datasource:
+        url: jdbc:postgresql://postgres-service:5432/mydb
+---
+<span class="cm"># ── Secret — секретные данные (base64)</span>
+<span class="kw">apiVersion</span>: v1
+<span class="kw">kind</span>: Secret
+<span class="kw">metadata</span>:
+  <span class="cl">name</span>: myapp-secrets
+  <span class="cl">namespace</span>: production
+<span class="kw">type</span>: Opaque
+<span class="kw">data</span>:                                     <span class="cm"># значения в base64!</span>
+  <span class="an">db-password</span>: cGFzc3dvcmQxMjM=           <span class="cm"># echo -n "password123" | base64</span>
+  <span class="an">jwt-secret</span>: bXlTZWNyZXRLZXk=
+<span class="cm"># stringData: — альтернатива (plaintext, K8s сам закодирует)</span>
+<span class="cm"># stringData:</span>
+<span class="cm">#   db-password: "password123"</span></pre>
+      </div>
+
+      <div class="section-subtitle">3. Ingress и HPA</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">YAML — ingress.yml + hpa.yml</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm"># ── Ingress — HTTP маршрутизация снаружи в кластер</span>
+<span class="kw">apiVersion</span>: networking.k8s.io/v1
+<span class="kw">kind</span>: Ingress
+<span class="kw">metadata</span>:
+  <span class="cl">name</span>: myapp-ingress
+  <span class="cl">namespace</span>: production
+  <span class="cl">annotations</span>:
+    <span class="an">nginx.ingress.kubernetes.io/rewrite-target</span>: /
+    <span class="an">nginx.ingress.kubernetes.io/ssl-redirect</span>: <span class="st">"true"</span>
+<span class="kw">spec</span>:
+  <span class="cl">ingressClassName</span>: nginx
+  <span class="cl">tls</span>:                                    <span class="cm"># HTTPS</span>
+    - <span class="an">hosts</span>:
+        - api.myapp.com
+      <span class="an">secretName</span>: myapp-tls-secret        <span class="cm"># TLS сертификат в Secret</span>
+  <span class="cl">rules</span>:
+    - <span class="an">host</span>: api.myapp.com                 <span class="cm"># домен</span>
+      <span class="an">http</span>:
+        <span class="ty">paths</span>:
+          - <span class="cl">path</span>: /api/v1                 <span class="cm"># путь → сервис</span>
+            <span class="cl">pathType</span>: Prefix
+            <span class="cl">backend</span>:
+              <span class="an">service</span>:
+                <span class="ty">name</span>: myapp-service      <span class="cm"># куда направить</span>
+                <span class="ty">port</span>:
+                  <span class="ty">number</span>: <span class="nu">80</span>
+---
+<span class="cm"># ── HPA — авто-масштабирование по CPU</span>
+<span class="kw">apiVersion</span>: autoscaling/v2
+<span class="kw">kind</span>: HorizontalPodAutoscaler
+<span class="kw">metadata</span>:
+  <span class="cl">name</span>: myapp-hpa
+  <span class="cl">namespace</span>: production
+<span class="kw">spec</span>:
+  <span class="cl">scaleTargetRef</span>:
+    <span class="an">apiVersion</span>: apps/v1
+    <span class="an">kind</span>: Deployment
+    <span class="an">name</span>: myapp                           <span class="cm"># масштабировать этот Deployment</span>
+  <span class="cl">minReplicas</span>: <span class="nu">2</span>                          <span class="cm"># минимум 2 Pod'а</span>
+  <span class="cl">maxReplicas</span>: <span class="nu">10</span>                         <span class="cm"># максимум 10</span>
+  <span class="cl">metrics</span>:
+    - <span class="an">type</span>: Resource
+      <span class="an">resource</span>:
+        <span class="ty">name</span>: cpu
+        <span class="ty">target</span>:
+          <span class="ty">type</span>: Utilization
+          <span class="ty">averageUtilization</span>: <span class="nu">70</span>          <span class="cm"># при CPU > 70% добавить Pod'ы</span>
+    - <span class="an">type</span>: Resource
+      <span class="an">resource</span>:
+        <span class="ty">name</span>: memory
+        <span class="ty">target</span>:
+          <span class="ty">type</span>: Utilization
+          <span class="ty">averageUtilization</span>: <span class="nu">80</span>          <span class="cm"># при Memory > 80% добавить Pod'ы</span></pre>
+      </div>
+    </div>
+
+    <!-- ═══ 6. SPRING BOOT + K8S ═══ -->
+    <div class="section" id="spring-k8s">
+      <div class="section-title"><span class="s-icon">🌱</span> Spring Boot + Kubernetes</div>
+
+      <div class="section-subtitle">application.yml для K8s</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">YAML — application-prod.yml</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm"># Конфигурация Spring Boot для запуска в K8s</span>
+spring:
+  application:
+    name: myapp
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}           <span class="cm"># из ENV (ConfigMap/Secret)</span>
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${DB_PASSWORD}               <span class="cm"># из Secret</span>
+
+<span class="cm"># ── Actuator — нужен для probes K8s</span>
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: <span class="kw">true</span>                     <span class="cm"># включить /health/liveness и /health/readiness</span>
+      show-details: always
+  health:
+    livenessState:
+      enabled: <span class="kw">true</span>
+    readinessState:
+      enabled: <span class="kw">true</span>
+
+<span class="cm"># ── Graceful shutdown — дождаться завершения запросов</span>
+server:
+  shutdown: graceful
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s        <span class="cm"># 30 секунд на завершение</span></pre>
+      </div>
+
+      <div class="box box-green">
+        <div class="box-label">💡 Liveness vs Readiness Probe</div>
+        <strong>Liveness</strong>: жив ли Pod? Если нет → перезапустить. Путь: <code>/actuator/health/liveness</code><br>
+        <strong>Readiness</strong>: готов ли принимать трафик? Если нет → убрать из балансировки. Путь: <code>/actuator/health/readiness</code><br>
+        <strong>Startup</strong>: для медленно стартующих приложений — даёт время до начала liveness проверок.
+      </div>
+    </div>
+
+    <!-- ═══ 7. BEST PRACTICES ═══ -->
+    <div class="section" id="practices">
+      <div class="section-title"><span class="s-icon">✅</span> Best Practices</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Правильно</div>
+          <ul class="compare-list">
+            <li>Всегда задавать resources.requests и limits</li>
+            <li>Настроить liveness и readiness probes</li>
+            <li>Graceful shutdown (server.shutdown=graceful)</li>
+            <li>Секреты через Secret, не ConfigMap</li>
+            <li>Использовать Namespace для изоляции</li>
+            <li>minReplicas >= 2 (нет single point of failure)</li>
+            <li>RollingUpdate стратегия с maxUnavailable=0</li>
+            <li>Конкретные теги образов, не :latest</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Ошибки</div>
+          <ul class="compare-list">
+            <li>Не задавать limits — Pod съест всю память Node'а</li>
+            <li>Использовать :latest тег — непредсказуемые обновления</li>
+            <li>Хранить секреты в plaintext в ConfigMap</li>
+            <li>Запускать под root (SecurityContext)</li>
+            <li>1 реплика в продакшене — downtime при обновлении</li>
+            <li>Не настраивать probes — K8s не знает когда приложение готово</li>
+            <li>Огромные лимиты — неэффективное использование кластера</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем Pod отличается от Deployment?</div>
+            <div class="qa-q-en">What is the difference between a Pod and a Deployment?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Pod — минимальная единица, один или несколько контейнеров. Эфемерный — при сбое не восстанавливается. Deployment — контроллер который управляет Pod'ами: поддерживает нужное число реплик, делает rolling update, откатывает при ошибке. В продакшене всегда создают Deployment, не Pod напрямую.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="k8s-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Зачем нужны liveness и readiness probes?</div>
+            <div class="qa-q-en">What are liveness and readiness probes in Kubernetes?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><strong>Liveness probe</strong> — проверяет что приложение живо. Если probe провалится → K8s перезапустит Pod. Защищает от deadlock'ов и зависших процессов.<br><strong>Readiness probe</strong> — проверяет что приложение готово принимать трафик. Если не готово → K8s убирает Pod из балансировки Service. Во время rolling update — новый Pod получает трафик только когда readiness probe успешна.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="k8s-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем ConfigMap отличается от Secret?</div>
+            <div class="qa-q-en">What is the difference between ConfigMap and Secret?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">ConfigMap — несекретная конфигурация: URLs, имена, настройки. Хранится в plaintext. Secret — секретные данные: пароли, токены, сертификаты. Хранится в base64 (не шифрование!). Secret не попадает в логи, монтируется через tmpfs. В продакшене секреты лучше хранить в HashiCorp Vault или AWS Secrets Manager и инжектировать в K8s Secret динамически.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="k8s-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Как работает rolling update в Kubernetes?</div>
+            <div class="qa-q-en">How does a rolling update work in Kubernetes?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Rolling update постепенно заменяет старые Pod'ы новыми без downtime. При <code>maxUnavailable=0</code>: сначала создаётся новый Pod (+1), ждёт readiness probe, затем удаляется старый (-1). Процесс повторяется для каждой реплики. Если новый Pod не прошёл probe — обновление останавливается, можно откатить через <code>kubectl rollout undo</code>.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="k8s-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Зачем задавать resources.requests и limits?</div>
+            <div class="qa-q-en">Why should you set resource requests and limits in Kubernetes?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><strong>Requests</strong> — минимум ресурсов. Scheduler использует для размещения Pod'а на подходящей Node. <strong>Limits</strong> — максимум. Контейнер не может превысить. Без limits — Pod может съесть всю память Node'а → OOMKill других Pod'ов → нестабильность кластера. Без requests — Scheduler не может правильно спланировать размещение. Правило: requests = 50% limits для Java (JVM резервирует память заранее).</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="k8s-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>
