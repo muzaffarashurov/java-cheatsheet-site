@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTTP & REST | Java Mega Cheatsheet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<div class="page-layout">
+
+<aside class="page-sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="../index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">J</div>
+      Java Mega Cheatsheet
+    </a>
+    <input class="sidebar-search" id="sideSearch" placeholder="🔍 Поиск...">
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">На этой странице</div>
+    <a class="nav-link" href="#summary"><span class="nav-dot" style="background:#5bcefa"></span>📌 Конспект</a>
+    <a class="nav-link" href="#http-basics"><span class="nav-dot" style="background:#4f8ef7"></span>HTTP основы</a>
+    <a class="nav-link" href="#methods"><span class="nav-dot" style="background:#22d3a0"></span>HTTP методы</a>
+    <a class="nav-link" href="#status-codes"><span class="nav-dot" style="background:#f5a623"></span>Статус коды</a>
+    <a class="nav-link" href="#headers"><span class="nav-dot" style="background:#b88bfa"></span>Заголовки</a>
+    <a class="nav-link" href="#rest-principles"><span class="nav-dot" style="background:#5bcefa"></span>REST принципы</a>
+    <a class="nav-link" href="#webclient"><span class="nav-dot" style="background:#22d3a0"></span>WebClient / RestTemplate</a>
+    <a class="nav-link" href="#practices"><span class="nav-dot" style="background:#f5a623"></span>Best Practices</a>
+    <a class="nav-link" href="#code"><span class="nav-dot" style="background:#f5a623"></span>💻 Код</a>
+    <a class="nav-link" href="#interview"><span class="nav-dot" style="background:#b88bfa"></span>❓ Интервью</a>
+    <div class="nav-section">Другие темы</div>
+    <a class="nav-link" href="restcontroller.html"><span class="nav-dot" style="background:#4f8ef7"></span>@RestController</a>
+    <a class="nav-link" href="spring-security-jwt.html"><span class="nav-dot" style="background:#f06060"></span>Security + JWT</a>
+    <a class="nav-link" href="../index.html"><span class="nav-dot" style="background:#4f8ef7"></span>🏠 Все темы</a>
+  </nav>
+</aside>
+
+<div class="page-main">
+  <header class="page-header">
+    <a href="../index.html" class="page-back">← Главная</a>
+    <div class="page-header-title">🌐 HTTP & REST API</div>
+    <div class="page-search-wrap">
+      <input class="page-search" id="pageSearch" placeholder="🔍 Поиск на странице...">
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <button id="menuBtn" class="btn-sm" style="display:none">☰</button>
+  </header>
+  <div style="height:2px;background:var(--border);position:sticky;top:56px;z-index:99">
+    <div id="readProgress" style="height:100%;background:#5bcefa;width:0%;transition:width 0.1s"></div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="page-hero">
+      <div class="page-hero-header">
+        <div class="hero-icon" style="background:linear-gradient(135deg,#0a2a5a,#5bcefa)">🌐</div>
+        <div>
+          <h1>HTTP & REST API</h1>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span class="chip chip-cyan">HTTP</span>
+            <span class="chip chip-blue">REST</span>
+            <span class="chip chip-green">Spring</span>
+            <span class="chip chip-backend">Backend</span>
+          </div>
+        </div>
+      </div>
+      <p>HTTP протокол, методы, статус коды, заголовки, REST принципы, HATEOAS, WebClient, RestTemplate, OpenFeign — полный разбор для Java Backend разработчика.</p>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">Содержание</div>
+      <div class="toc-list">
+        <a class="toc-link" href="#summary">📌 Конспект</a>
+        <a class="toc-link" href="#http-basics">HTTP</a>
+        <a class="toc-link" href="#methods">Методы</a>
+        <a class="toc-link" href="#status-codes">Статус коды</a>
+        <a class="toc-link" href="#headers">Заголовки</a>
+        <a class="toc-link" href="#rest-principles">REST</a>
+        <a class="toc-link" href="#webclient">WebClient</a>
+        <a class="toc-link" href="#practices">Best Practices</a>
+        <a class="toc-link" href="#code">💻 Код</a>
+        <a class="toc-link" href="#interview">❓ Интервью</a>
+      </div>
+    </div>
+
+    <!-- ═══ 1. КОНСПЕКТ ═══ -->
+    <div class="section" id="summary">
+      <div class="section-title"><span class="s-icon">📌</span> Краткий конспект</div>
+      <div class="box box-blue">
+        <div class="box-label">HTTP — основа веба</div>
+        HTTP (HyperText Transfer Protocol) — протокол запрос/ответ. Клиент отправляет Request (метод + URL + заголовки + тело), сервер возвращает Response (статус + заголовки + тело). Stateless — каждый запрос независим.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Компонент запроса</th><th>Пример</th><th>Описание</th></tr>
+          <tr><td>Method</td><td><code>GET</code></td><td>Действие над ресурсом</td></tr>
+          <tr><td>URL</td><td><code>https://api.example.com/users/42</code></td><td>Адрес ресурса</td></tr>
+          <tr><td>Headers</td><td><code>Authorization: Bearer eyJ...</code></td><td>Метаданные запроса</td></tr>
+          <tr><td>Body</td><td><code>{"name":"Ivan"}</code></td><td>Тело (POST/PUT/PATCH)</td></tr>
+          <tr><td>Query Params</td><td><code>?page=0&size=20</code></td><td>Параметры в URL</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 2. HTTP BASICS ═══ -->
+    <div class="section" id="http-basics">
+      <div class="section-title"><span class="s-icon">📡</span> HTTP основы</div>
+
+      <div class="section-subtitle">Структура HTTP запроса</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">HTTP Request</span></div>
+        <pre><span class="cm">## Запрос (Request)</span>
+<span class="kw">POST</span> /api/v1/users HTTP/1.1              <span class="cm">← Метод + URL + версия</span>
+<span class="cl">Host</span>: api.example.com                    <span class="cm">← Заголовок Host (обязателен)</span>
+<span class="cl">Content-Type</span>: application/json          <span class="cm">← Тип тела запроса</span>
+<span class="cl">Accept</span>: application/json                <span class="cm">← Ожидаемый тип ответа</span>
+<span class="cl">Authorization</span>: Bearer eyJhbGciOiJ...   <span class="cm">← JWT токен</span>
+<span class="cl">Content-Length</span>: 52                      <span class="cm">← Длина тела в байтах</span>
+                                         <span class="cm">← Пустая строка разделяет заголовки и тело</span>
+{"name": "Ivan", "email": "ivan@mail.ru"}  <span class="cm">← Тело запроса</span>
+
+<span class="cm">## Ответ (Response)</span>
+HTTP/1.1 <span class="kw">201</span> Created                     <span class="cm">← Версия + статус код + текст</span>
+<span class="cl">Content-Type</span>: application/json
+<span class="cl">Location</span>: /api/v1/users/42              <span class="cm">← URL созданного ресурса</span>
+<span class="cl">X-Request-Id</span>: 550e8400-e29b             <span class="cm">← Кастомный заголовок</span>
+
+{"id": 42, "name": "Ivan", "email": "ivan@mail.ru"}  <span class="cm">← Тело ответа</span></pre>
+      </div>
+
+      <div class="section-subtitle">HTTP версии</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Версия</th><th>Главное</th><th>Когда</th></tr>
+          <tr><td><strong>HTTP/1.0</strong></td><td>Одно соединение на запрос</td><td>Устарел</td></tr>
+          <tr><td><strong>HTTP/1.1</strong></td><td>Keep-Alive, Pipelining, Chunked</td><td>Всё ещё широко используется</td></tr>
+          <tr><td><strong>HTTP/2</strong></td><td>Мультиплексирование, Header Compression, Server Push</td><td>✅ Современный стандарт</td></tr>
+          <tr><td><strong>HTTP/3</strong></td><td>QUIC вместо TCP, быстрее при потерях</td><td>Активно внедряется</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 3. HTTP МЕТОДЫ ═══ -->
+    <div class="section" id="methods">
+      <div class="section-title"><span class="s-icon">📋</span> HTTP методы — полная таблица</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Метод</th><th>Идемпотентен</th><th>Безопасен</th><th>Тело</th><th>Назначение</th><th>Ответ</th></tr>
+          <tr><td><code>GET</code></td><td>✅</td><td>✅</td><td>❌</td><td>Получить ресурс</td><td>200 + данные</td></tr>
+          <tr><td><code>POST</code></td><td>❌</td><td>❌</td><td>✅</td><td>Создать ресурс</td><td>201 + Location</td></tr>
+          <tr><td><code>PUT</code></td><td>✅</td><td>❌</td><td>✅</td><td>Полная замена ресурса</td><td>200 + данные</td></tr>
+          <tr><td><code>PATCH</code></td><td>❌*</td><td>❌</td><td>✅</td><td>Частичное обновление</td><td>200 + данные</td></tr>
+          <tr><td><code>DELETE</code></td><td>✅</td><td>❌</td><td>❌</td><td>Удалить ресурс</td><td>204 No Content</td></tr>
+          <tr><td><code>HEAD</code></td><td>✅</td><td>✅</td><td>❌</td><td>Как GET, но без тела</td><td>200 (без тела)</td></tr>
+          <tr><td><code>OPTIONS</code></td><td>✅</td><td>✅</td><td>❌</td><td>Список методов (CORS preflight)</td><td>200 + Allow</td></tr>
+          <tr><td><code>TRACE</code></td><td>✅</td><td>✅</td><td>❌</td><td>Диагностика (отключён в Spring)</td><td>200 + echo</td></tr>
+        </table>
+      </div>
+      <div class="prose" style="font-size:0.78rem;color:var(--text-muted)">* PATCH может быть идемпотентным, зависит от реализации</div>
+
+      <div class="box box-blue">
+        <div class="box-label">💡 Безопасный vs Идемпотентный</div>
+        <strong>Безопасный</strong> — не изменяет состояние сервера (GET, HEAD, OPTIONS).<br>
+        <strong>Идемпотентный</strong> — повторный вызов с теми же данными даёт тот же результат (GET, PUT, DELETE). POST не идемпотентен — каждый вызов создаёт новую запись.
+      </div>
+    </div>
+
+    <!-- ═══ 4. СТАТУС КОДЫ ═══ -->
+    <div class="section" id="status-codes">
+      <div class="section-title"><span class="s-icon">🚦</span> HTTP Статус коды</div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">2xx — Успех</div>
+          <ul class="compare-list">
+            <li><code>200 OK</code> — GET, PUT, PATCH успешно</li>
+            <li><code>201 Created</code> — POST, ресурс создан</li>
+            <li><code>202 Accepted</code> — запрос принят, обработка асинхронна</li>
+            <li><code>204 No Content</code> — DELETE успешно, нет тела</li>
+            <li><code>206 Partial Content</code> — частичная загрузка файла</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--warn)">3xx — Перенаправление</div>
+          <ul class="compare-list">
+            <li><code>301 Moved Permanently</code> — ресурс перемещён навсегда</li>
+            <li><code>302 Found</code> — временное перенаправление</li>
+            <li><code>304 Not Modified</code> — кэш актуален (ETag/If-None-Match)</li>
+            <li><code>307 Temporary Redirect</code> — сохраняет метод запроса</li>
+            <li><code>308 Permanent Redirect</code> — сохраняет метод</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">4xx — Ошибка клиента</div>
+          <ul class="compare-list">
+            <li><code>400 Bad Request</code> — невалидные данные</li>
+            <li><code>401 Unauthorized</code> — не аутентифицирован</li>
+            <li><code>403 Forbidden</code> — нет прав</li>
+            <li><code>404 Not Found</code> — ресурс не найден</li>
+            <li><code>405 Method Not Allowed</code> — метод не поддержан</li>
+            <li><code>409 Conflict</code> — конфликт (дубль)</li>
+            <li><code>410 Gone</code> — ресурс удалён навсегда</li>
+            <li><code>422 Unprocessable Entity</code> — семантическая ошибка</li>
+            <li><code>429 Too Many Requests</code> — rate limiting</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--purple)">5xx — Ошибка сервера</div>
+          <ul class="compare-list">
+            <li><code>500 Internal Server Error</code> — непредвиденная ошибка</li>
+            <li><code>501 Not Implemented</code> — метод не реализован</li>
+            <li><code>502 Bad Gateway</code> — ошибка upstream</li>
+            <li><code>503 Service Unavailable</code> — сервис недоступен</li>
+            <li><code>504 Gateway Timeout</code> — таймаут от upstream</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 5. ЗАГОЛОВКИ ═══ -->
+    <div class="section" id="headers">
+      <div class="section-title"><span class="s-icon">📨</span> HTTP Заголовки</div>
+
+      <div class="section-subtitle">Заголовки запроса (Request Headers)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Заголовок</th><th>Описание</th><th>Пример</th></tr>
+          <tr><td><code>Authorization</code></td><td>Токен авторизации</td><td><code>Bearer eyJhbGci...</code></td></tr>
+          <tr><td><code>Content-Type</code></td><td>Тип тела запроса</td><td><code>application/json</code></td></tr>
+          <tr><td><code>Accept</code></td><td>Ожидаемый тип ответа</td><td><code>application/json</code></td></tr>
+          <tr><td><code>Accept-Language</code></td><td>Предпочтительный язык</td><td><code>ru-RU, en-US;q=0.9</code></td></tr>
+          <tr><td><code>Accept-Encoding</code></td><td>Поддерживаемые кодировки</td><td><code>gzip, deflate, br</code></td></tr>
+          <tr><td><code>Cache-Control</code></td><td>Директивы кэширования</td><td><code>no-cache, max-age=3600</code></td></tr>
+          <tr><td><code>If-None-Match</code></td><td>ETag для условного запроса</td><td><code>"33a64df551425fcc55e4d42a148795d9f25f89d4"</code></td></tr>
+          <tr><td><code>If-Modified-Since</code></td><td>Получить только если изменился</td><td><code>Wed, 21 Oct 2024 07:28:00 GMT</code></td></tr>
+          <tr><td><code>X-Request-Id</code></td><td>ID запроса для трассировки</td><td><code>550e8400-e29b-41d4-a716</code></td></tr>
+          <tr><td><code>X-Forwarded-For</code></td><td>Реальный IP через proxy</td><td><code>192.168.1.1</code></td></tr>
+          <tr><td><code>User-Agent</code></td><td>Информация о клиенте</td><td><code>Mozilla/5.0 ...</code></td></tr>
+          <tr><td><code>Origin</code></td><td>Источник для CORS</td><td><code>https://frontend.example.com</code></td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">Заголовки ответа (Response Headers)</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Заголовок</th><th>Описание</th><th>Пример</th></tr>
+          <tr><td><code>Content-Type</code></td><td>Тип тела ответа</td><td><code>application/json; charset=UTF-8</code></td></tr>
+          <tr><td><code>Location</code></td><td>URL созданного/перемещённого ресурса</td><td><code>/api/v1/users/42</code></td></tr>
+          <tr><td><code>ETag</code></td><td>Версия ресурса (для кэша)</td><td><code>"33a64df5514..."</code></td></tr>
+          <tr><td><code>Cache-Control</code></td><td>Правила кэширования</td><td><code>public, max-age=3600</code></td></tr>
+          <tr><td><code>WWW-Authenticate</code></td><td>Метод авторизации (при 401)</td><td><code>Bearer realm="api"</code></td></tr>
+          <tr><td><code>Retry-After</code></td><td>Когда повторить (при 429/503)</td><td><code>60</code> (секунды)</td></tr>
+          <tr><td><code>Access-Control-Allow-Origin</code></td><td>CORS — разрешённые Origins</td><td><code>https://frontend.example.com</code></td></tr>
+          <tr><td><code>Access-Control-Allow-Methods</code></td><td>CORS — разрешённые методы</td><td><code>GET, POST, PUT, DELETE</code></td></tr>
+          <tr><td><code>X-RateLimit-Limit</code></td><td>Лимит запросов</td><td><code>100</code></td></tr>
+          <tr><td><code>X-RateLimit-Remaining</code></td><td>Оставшиеся запросы</td><td><code>42</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 6. REST ПРИНЦИПЫ ═══ -->
+    <div class="section" id="rest-principles">
+      <div class="section-title"><span class="s-icon">🏛</span> REST принципы (Richardson Maturity Model)</div>
+
+      <div class="table-wrap">
+        <table>
+          <tr><th>Уровень</th><th>Название</th><th>Описание</th></tr>
+          <tr><td>Level 0</td><td>Swamp of POX</td><td>Один URL, все операции через POST</td></tr>
+          <tr><td>Level 1</td><td>Resources</td><td>Отдельные URL для каждого ресурса</td></tr>
+          <tr><td>Level 2</td><td>HTTP Verbs</td><td>✅ GET/POST/PUT/DELETE правильно — большинство API</td></tr>
+          <tr><td>Level 3</td><td>Hypermedia (HATEOAS)</td><td>Ответы содержат ссылки на связанные ресурсы</td></tr>
+        </table>
+      </div>
+
+      <div class="section-subtitle">6 принципов REST (Fielding)</div>
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">1. Stateless — без состояния на сервере</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Каждый запрос содержит всё необходимое для обработки — сервер не хранит состояние клиента между запросами. Позволяет масштабировать горизонтально: любой инстанс может обработать любой запрос. JWT реализует это — токен содержит всю информацию о пользователе.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">2. Uniform Interface — единообразный интерфейс</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Ресурсы идентифицируются через URI. Манипуляция через представления (JSON/XML). Самоописывающие сообщения (Content-Type). HATEOAS — гипермедиа как движок состояния.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header">
+          <span class="acc-title">3. Client-Server — разделение клиента и сервера</span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="prose">
+            <p>Клиент и сервер независимы — могут развиваться отдельно. Клиент не знает о хранении данных на сервере. Сервер не знает об UI клиента.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-subtitle">REST URL Design — правила именования</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>✅ Правильно</th><th>❌ Неправильно</th><th>Правило</th></tr>
+          <tr><td><code>/api/v1/users</code></td><td><code>/api/v1/getUsers</code></td><td>Существительные, не глаголы</td></tr>
+          <tr><td><code>/api/v1/users/42</code></td><td><code>/api/v1/user/42</code></td><td>Множественное число</td></tr>
+          <tr><td><code>/api/v1/users/42/orders</code></td><td><code>/api/v1/getUserOrders?userId=42</code></td><td>Вложенность для связей</td></tr>
+          <tr><td><code>/api/v1/users?role=ADMIN</code></td><td><code>/api/v1/admin-users</code></td><td>Фильтры через query params</td></tr>
+          <tr><td><code>POST /api/v1/users</code></td><td><code>POST /api/v1/createUser</code></td><td>Метод = действие</td></tr>
+          <tr><td><code>kebab-case</code></td><td><code>camelCase, snake_case</code></td><td>URL в нижнем регистре через дефис</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 7. WEBCLIENT / RESTTEMPLATE ═══ -->
+    <div class="section" id="webclient">
+      <div class="section-title"><span class="s-icon">📡</span> WebClient и RestTemplate</div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Инструмент</th><th>Тип</th><th>Когда</th></tr>
+          <tr><td><code>WebClient</code></td><td>Реактивный, non-blocking</td><td>✅ Рекомендован для новых проектов</td></tr>
+          <tr><td><code>RestTemplate</code></td><td>Синхронный, blocking</td><td>Legacy код, простые задачи</td></tr>
+          <tr><td><code>OpenFeign</code></td><td>Декларативный HTTP клиент</td><td>Микросервисы, Spring Cloud</td></tr>
+          <tr><td><code>HttpClient</code> (Java 11+)</td><td>Async/sync</td><td>Без Spring зависимости</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ 8. BEST PRACTICES ═══ -->
+    <div class="section" id="practices">
+      <div class="section-title"><span class="s-icon">✅</span> Best Practices</div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--accent)">✅ Правильно</div>
+          <ul class="compare-list">
+            <li>Версионирование API: <code>/api/v1/</code></li>
+            <li>Существительные в URL, глаголы — HTTP методы</li>
+            <li>POST → 201 + Location header</li>
+            <li>DELETE → 204 No Content</li>
+            <li>Единый формат ошибок (ErrorResponse)</li>
+            <li>Пагинация через query params: <code>?page=0&size=20</code></li>
+            <li>HTTPS всегда в продакшене</li>
+            <li>Rate limiting + Retry-After заголовок</li>
+            <li>ETag для кэширования</li>
+            <li>X-Request-Id для трассировки</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-title" style="color:var(--error)">🚫 Ошибки</div>
+          <ul class="compare-list">
+            <li>Глаголы в URL: <code>/getUser</code>, <code>/createOrder</code></li>
+            <li>200 OK при ошибке — скрытые ошибки</li>
+            <li>Разный формат ошибок в разных эндпоинтах</li>
+            <li>Нет версионирования — breaking changes</li>
+            <li>GET запрос изменяет состояние сервера</li>
+            <li>Чувствительные данные в URL (пароль, токен)</li>
+            <li>Возвращать стектрейс клиенту при ошибке</li>
+            <li>Игнорировать Accept заголовок клиента</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 9. КОД ═══ -->
+    <div class="section" id="code">
+      <div class="section-title"><span class="s-icon">💻</span> Примеры кода</div>
+
+      <div class="section-subtitle">1. WebClient — реактивный HTTP клиент</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Конфигурация WebClient бина</span>
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> <span class="cl">WebClientConfig</span> {
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">WebClient</span> <span class="fn">webClient</span>() {
+        <span class="kw">return</span> <span class="cl">WebClient</span>.<span class="fn">builder</span>()
+            .<span class="fn">baseUrl</span>(<span class="st">"https://api.external-service.com"</span>)  <span class="cm">// базовый URL</span>
+            .<span class="fn">defaultHeader</span>(<span class="st">"Content-Type"</span>, <span class="st">"application/json"</span>)
+            .<span class="fn">defaultHeader</span>(<span class="st">"Accept"</span>, <span class="st">"application/json"</span>)
+            .<span class="fn">clientConnector</span>(<span class="kw">new</span> <span class="cl">ReactorClientHttpConnector</span>(
+                <span class="cl">HttpClient</span>.<span class="fn">create</span>()
+                    .<span class="fn">responseTimeout</span>(<span class="cl">Duration</span>.<span class="fn">ofSeconds</span>(<span class="nu">5</span>))   <span class="cm">// таймаут ответа</span>
+                    .<span class="fn">option</span>(<span class="cl">ChannelOption</span>.CONNECT_TIMEOUT_MILLIS, <span class="nu">3000</span>))) <span class="cm">// таймаут соединения</span>
+            .<span class="fn">filter</span>(<span class="cl">ExchangeFilterFunctions</span>               <span class="cm">// retry при ошибке</span>
+                .<span class="fn">limitResponseSize</span>(<span class="nu">1024</span> * <span class="nu">1024</span>))           <span class="cm">// макс 1MB ответ</span>
+            .<span class="fn">build</span>();
+    }
+}
+
+<span class="cm">// ── Использование WebClient в сервисе</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="an">@Slf4j</span>
+<span class="kw">public class</span> <span class="cl">ExternalApiService</span> {
+
+    <span class="kw">private final</span> <span class="cl">WebClient</span> webClient;
+
+    <span class="cm">// ── GET запрос — получить объект</span>
+    <span class="kw">public</span> <span class="cl">UserDto</span> <span class="fn">getUser</span>(<span class="cl">Long</span> userId) {
+        <span class="kw">return</span> webClient.<span class="fn">get</span>()
+            .<span class="fn">uri</span>(<span class="st">"/users/{id}"</span>, userId)                 <span class="cm">// подставляем параметр</span>
+            .<span class="fn">retrieve</span>()                                  <span class="cm">// выполнить и получить ответ</span>
+            .<span class="fn">onStatus</span>(<span class="cl">HttpStatus</span>::<span class="fn">is4xxClientError</span>,   <span class="cm">// обработать 4xx</span>
+                res -> res.<span class="fn">bodyToMono</span>(<span class="cl">String</span>.<span class="kw">class</span>)
+                    .<span class="fn">map</span>(body -> <span class="kw">new</span> <span class="cl">RuntimeException</span>(<span class="st">"Client error: "</span> + body)))
+            .<span class="fn">onStatus</span>(<span class="cl">HttpStatus</span>::<span class="fn">is5xxServerError</span>,   <span class="cm">// обработать 5xx</span>
+                res -> <span class="cl">Mono</span>.<span class="fn">error</span>(<span class="kw">new</span> <span class="cl">RuntimeException</span>(<span class="st">"Server error"</span>)))
+            .<span class="fn">bodyToMono</span>(<span class="cl">UserDto</span>.<span class="kw">class</span>)               <span class="cm">// десериализуем в объект</span>
+            .<span class="fn">block</span>();                                  <span class="cm">// блокируем (sync вызов)</span>
+    }
+
+    <span class="cm">// ── POST запрос — создать ресурс</span>
+    <span class="kw">public</span> <span class="cl">UserDto</span> <span class="fn">createUser</span>(<span class="cl">CreateUserRequest</span> request) {
+        <span class="kw">return</span> webClient.<span class="fn">post</span>()
+            .<span class="fn">uri</span>(<span class="st">"/users"</span>)
+            .<span class="fn">header</span>(<span class="st">"X-Request-Id"</span>, <span class="cl">UUID</span>.<span class="fn">randomUUID</span>().<span class="fn">toString</span>()) <span class="cm">// трассировка</span>
+            .<span class="fn">bodyValue</span>(request)                          <span class="cm">// тело запроса</span>
+            .<span class="fn">retrieve</span>()
+            .<span class="fn">bodyToMono</span>(<span class="cl">UserDto</span>.<span class="kw">class</span>)
+            .<span class="fn">block</span>();
+    }
+
+    <span class="cm">// ── GET список с query параметрами</span>
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">UserDto</span>&gt; <span class="fn">getUsers</span>(<span class="kw">int</span> page, <span class="kw">int</span> size, <span class="cl">String</span> role) {
+        <span class="kw">return</span> webClient.<span class="fn">get</span>()
+            .<span class="fn">uri</span>(uriBuilder -> uriBuilder          <span class="cm">// строим URI с параметрами</span>
+                .<span class="fn">path</span>(<span class="st">"/users"</span>)
+                .<span class="fn">queryParam</span>(<span class="st">"page"</span>, page)
+                .<span class="fn">queryParam</span>(<span class="st">"size"</span>, size)
+                .<span class="fn">queryParamIfPresent</span>(<span class="st">"role"</span>, <span class="cl">Optional</span>.<span class="fn">ofNullable</span>(role)) <span class="cm">// только если не null</span>
+                .<span class="fn">build</span>())
+            .<span class="fn">retrieve</span>()
+            .<span class="fn">bodyToFlux</span>(<span class="cl">UserDto</span>.<span class="kw">class</span>)             <span class="cm">// поток элементов</span>
+            .<span class="fn">collectList</span>()                          <span class="cm">// собираем в List</span>
+            .<span class="fn">block</span>();
+    }
+
+    <span class="cm">// ── PUT запрос — обновление</span>
+    <span class="kw">public</span> <span class="cl">UserDto</span> <span class="fn">updateUser</span>(<span class="cl">Long</span> userId, <span class="cl">UpdateUserRequest</span> request) {
+        <span class="kw">return</span> webClient.<span class="fn">put</span>()
+            .<span class="fn">uri</span>(<span class="st">"/users/{id}"</span>, userId)
+            .<span class="fn">bodyValue</span>(request)
+            .<span class="fn">retrieve</span>()
+            .<span class="fn">bodyToMono</span>(<span class="cl">UserDto</span>.<span class="kw">class</span>)
+            .<span class="fn">block</span>();
+    }
+
+    <span class="cm">// ── DELETE запрос</span>
+    <span class="kw">public void</span> <span class="fn">deleteUser</span>(<span class="cl">Long</span> userId) {
+        webClient.<span class="fn">delete</span>()
+            .<span class="fn">uri</span>(<span class="st">"/users/{id}"</span>, userId)
+            .<span class="fn">retrieve</span>()
+            .<span class="fn">toBodilessEntity</span>()                     <span class="cm">// ответ без тела</span>
+            .<span class="fn">block</span>();
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">2. RestTemplate — синхронный клиент (legacy)</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">LegacyApiService</span> {
+
+    <span class="kw">private final</span> <span class="cl">RestTemplate</span> restTemplate;
+
+    <span class="cm">// ── GET — получить объект</span>
+    <span class="kw">public</span> <span class="cl">UserDto</span> <span class="fn">getUser</span>(<span class="cl">Long</span> id) {
+        <span class="kw">return</span> restTemplate.<span class="fn">getForObject</span>(
+            <span class="st">"/users/{id}"</span>,                            <span class="cm">// URL шаблон</span>
+            <span class="cl">UserDto</span>.<span class="kw">class</span>,                            <span class="cm">// тип ответа</span>
+            id                                        <span class="cm">// подстановка в шаблон</span>
+        );
+    }
+
+    <span class="cm">// ── GET с полным ответом (статус, заголовки, тело)</span>
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">UserDto</span>&gt; <span class="fn">getUserEntity</span>(<span class="cl">Long</span> id) {
+        <span class="kw">return</span> restTemplate.<span class="fn">getForEntity</span>(<span class="st">"/users/{id}"</span>, <span class="cl">UserDto</span>.<span class="kw">class</span>, id);
+    }
+
+    <span class="cm">// ── GET список через ParameterizedTypeReference</span>
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">UserDto</span>&gt; <span class="fn">getAllUsers</span>() {
+        <span class="kw">return</span> restTemplate.<span class="fn">exchange</span>(
+            <span class="st">"/users"</span>,
+            <span class="cl">HttpMethod</span>.GET,
+            <span class="kw">null</span>,
+            <span class="kw">new</span> <span class="cl">ParameterizedTypeReference</span>&lt;<span class="cl">List</span>&lt;<span class="cl">UserDto</span>&gt;&gt;() {} <span class="cm">// generic тип</span>
+        ).<span class="fn">getBody</span>();
+    }
+
+    <span class="cm">// ── POST — создать</span>
+    <span class="kw">public</span> <span class="cl">UserDto</span> <span class="fn">createUser</span>(<span class="cl">CreateUserRequest</span> request) {
+        <span class="cl">HttpHeaders</span> headers = <span class="kw">new</span> <span class="cl">HttpHeaders</span>();
+        headers.<span class="fn">setContentType</span>(<span class="cl">MediaType</span>.APPLICATION_JSON);
+        headers.<span class="fn">set</span>(<span class="st">"Authorization"</span>, <span class="st">"Bearer "</span> + token);
+
+        <span class="cl">HttpEntity</span>&lt;<span class="cl">CreateUserRequest</span>&gt; entity =
+            <span class="kw">new</span> <span class="cl">HttpEntity</span>&lt;&gt;(request, headers);    <span class="cm">// тело + заголовки</span>
+
+        <span class="kw">return</span> restTemplate.<span class="fn">postForObject</span>(<span class="st">"/users"</span>, entity, <span class="cl">UserDto</span>.<span class="kw">class</span>);
+    }
+
+    <span class="cm">// ── exchange — универсальный метод</span>
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">UserDto</span>&gt; <span class="fn">patchUser</span>(<span class="cl">Long</span> id, <span class="cl">PatchUserRequest</span> request) {
+        <span class="kw">return</span> restTemplate.<span class="fn">exchange</span>(
+            <span class="st">"/users/{id}"</span>,
+            <span class="cl">HttpMethod</span>.PATCH,
+            <span class="kw">new</span> <span class="cl">HttpEntity</span>&lt;&gt;(request),
+            <span class="cl">UserDto</span>.<span class="kw">class</span>,
+            id
+        );
+    }
+}</pre>
+      </div>
+
+      <div class="section-subtitle">3. OpenFeign — декларативный HTTP клиент</div>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Копировать</button></div>
+        <pre><span class="cm">// ── Зависимость: spring-cloud-starter-openfeign</span>
+
+<span class="cm">// ── Включить Feign клиенты</span>
+<span class="an">@SpringBootApplication</span>
+<span class="an">@EnableFeignClients</span>                               <span class="cm">// сканирует @FeignClient</span>
+<span class="kw">public class</span> <span class="cl">Application</span> { ... }
+
+<span class="cm">// ── Декларативный клиент — только интерфейс!</span>
+<span class="an">@FeignClient</span>(
+    name = <span class="st">"user-service"</span>,                      <span class="cm">// имя сервиса</span>
+    url = <span class="st">"${services.user.url:http://user-service}"</span>, <span class="cm">// базовый URL</span>
+    fallback = <span class="cl">UserClientFallback</span>.<span class="kw">class</span>          <span class="cm">// fallback при ошибке</span>
+)
+<span class="kw">public interface</span> <span class="cl">UserClient</span> {
+
+    <span class="an">@GetMapping</span>(<span class="st">"/api/v1/users/{id}"</span>)
+    <span class="cl">UserDto</span> <span class="fn">getUser</span>(<span class="an">@PathVariable</span> <span class="cl">Long</span> id);
+
+    <span class="an">@GetMapping</span>(<span class="st">"/api/v1/users"</span>)
+    <span class="cl">List</span>&lt;<span class="cl">UserDto</span>&gt; <span class="fn">getUsers</span>(
+        <span class="an">@RequestParam</span> <span class="kw">int</span> page,
+        <span class="an">@RequestParam</span> <span class="kw">int</span> size
+    );
+
+    <span class="an">@PostMapping</span>(<span class="st">"/api/v1/users"</span>)
+    <span class="cl">UserDto</span> <span class="fn">createUser</span>(<span class="an">@RequestBody</span> <span class="cl">CreateUserRequest</span> request);
+
+    <span class="an">@DeleteMapping</span>(<span class="st">"/api/v1/users/{id}"</span>)
+    <span class="kw">void</span> <span class="fn">deleteUser</span>(<span class="an">@PathVariable</span> <span class="cl">Long</span> id);
+}
+
+<span class="cm">// ── Fallback — что вернуть при недоступности сервиса</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">UserClientFallback</span> <span class="kw">implements</span> <span class="cl">UserClient</span> {
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">UserDto</span> <span class="fn">getUser</span>(<span class="cl">Long</span> id) {
+        <span class="kw">return</span> <span class="kw">null</span>;                              <span class="cm">// или кэшированное значение</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">UserDto</span>&gt; <span class="fn">getUsers</span>(<span class="kw">int</span> page, <span class="kw">int</span> size) {
+        <span class="kw">return</span> <span class="cl">Collections</span>.<span class="fn">emptyList</span>();           <span class="cm">// пустой список</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">UserDto</span> <span class="fn">createUser</span>(<span class="cl">CreateUserRequest</span> request) {
+        <span class="kw">throw new</span> <span class="cl">ServiceUnavailableException</span>(<span class="st">"User service недоступен"</span>);
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">deleteUser</span>(<span class="cl">Long</span> id) { <span class="cm">/* ничего не делаем */</span> }
+}
+
+<span class="cm">// ── Использование как обычный @Autowired бин</span>
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">OrderService</span> {
+    <span class="kw">private final</span> <span class="cl">UserClient</span> userClient;   <span class="cm">// Spring инжектирует реализацию Feign</span>
+
+    <span class="kw">public</span> <span class="cl">OrderResponse</span> <span class="fn">createOrder</span>(<span class="cl">Long</span> userId, <span class="cl">CreateOrderRequest</span> request) {
+        <span class="cl">UserDto</span> user = userClient.<span class="fn">getUser</span>(userId); <span class="cm">// HTTP запрос к user-service</span>
+        <span class="cm">// ... бизнес логика</span>
+    }
+}</pre>
+      </div>
+    </div>
+
+    <!-- ═══ ИНТЕРВЬЮ ═══ -->
+    <div class="section" id="interview">
+      <div class="section-title"><span class="s-icon">❓</span> Вопросы для собеседования</div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое REST и каковы его принципы?</div>
+            <div class="qa-q-en">What is REST and what are its principles?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">REST (Representational State Transfer) — архитектурный стиль для распределённых систем. Принципы: 1) Stateless — нет состояния на сервере; 2) Client-Server — независимость; 3) Cacheable — ответы можно кэшировать; 4) Uniform Interface — единообразный интерфейс; 5) Layered System — уровни (proxy, LB); 6) Code on Demand (опционально). В REST ресурсы идентифицируются URI, управляются HTTP методами.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="http-q1">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем 401 Unauthorized отличается от 403 Forbidden?</div>
+            <div class="qa-q-en">What is the difference between 401 and 403?</div>
+          </div>
+          <span class="qa-badge easy">Easy</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>401 Unauthorized</code> — клиент не аутентифицирован (нет токена или токен недействителен). Ответ включает заголовок <code>WWW-Authenticate</code>. Нужно войти в систему.<br><code>403 Forbidden</code> — клиент аутентифицирован, но у него нет прав на этот ресурс. Авторизация провалилась. Повторная аутентификация не поможет.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="http-q2">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое CORS и как он работает?</div>
+            <div class="qa-q-en">What is CORS and how does it work?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">CORS (Cross-Origin Resource Sharing) — механизм браузера, запрещающий JS запросы к другому origin (домен/порт/протокол) без разрешения сервера. Для «сложных» запросов (не-GET с заголовками) браузер сначала делает preflight OPTIONS запрос. Сервер отвечает заголовками <code>Access-Control-Allow-Origin</code>, <code>Access-Control-Allow-Methods</code>. В Spring настраивается через <code>corsConfigurationSource()</code> в SecurityFilterChain или через <code>@CrossOrigin</code>.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="http-q3">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Чем WebClient отличается от RestTemplate?</div>
+            <div class="qa-q-en">What is the difference between WebClient and RestTemplate?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text"><code>RestTemplate</code> — синхронный, блокирует поток до получения ответа. Простой API. Помечен как deprecated в новых версиях Spring. <code>WebClient</code> — реактивный, non-blocking, работает с Mono/Flux. Поддерживает streaming. Рекомендован для новых проектов. Можно использовать синхронно через <code>.block()</code>. Лучше производительность при большом числе одновременных запросов.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="http-q4">☆ В избранное</button></div>
+        </div>
+      </div>
+
+      <div class="qa-block">
+        <div class="qa-header">
+          <div>
+            <div class="qa-q">Что такое идемпотентность и зачем она важна?</div>
+            <div class="qa-q-en">What is idempotency and why does it matter?</div>
+          </div>
+          <span class="qa-badge medium">Medium</span><span class="qa-arrow">▼</span>
+        </div>
+        <div class="qa-body">
+          <div class="qa-row"><div class="qa-label ans">✅ Ответ</div>
+            <div class="qa-text">Идемпотентный метод даёт одинаковый результат при повторных вызовах. GET, PUT, DELETE — идемпотентны. POST — нет. Важность: при сетевой ошибке клиент не знает дошёл ли запрос. Безопасно повторить только идемпотентные методы — DELETE дважды вернёт 404, но система в том же состоянии. POST дважды создаст две записи — проблема. Решение для POST: Idempotency-Key заголовок (уникальный ключ операции) — сервер дедуплицирует.</div>
+          </div>
+          <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="http-q5">☆ В избранное</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<button id="scrollTop" title="Наверх">↑</button>
+<script src="../app.js"></script>
+<script>
+  document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('menuBtn').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>
