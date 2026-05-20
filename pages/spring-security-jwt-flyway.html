@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Security JWT + Flyway | Java Mega Cheatsheet</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../app.js" defer></script>
+</head>
+<body>
+    <div class="page-layout">
+        <!-- Sidebar -->
+        <aside class="page-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">J</div>
+                    <span>Java Cheatsheet</span>
+                </a>
+                <input type="text" class="sidebar-search" id="sideSearch" placeholder="Поиск в навигации...">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">На этой странице</div>
+                <ul>
+                    <li><a href="#summary" class="nav-link"><span class="nav-dot" style="background:var(--primary)"></span>📌 Краткий конспект</a></li>
+                    <li><a href="#pom" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>📦 Шаг 1: Зависимости</a></li>
+                    <li><a href="#config" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>⚙️ Шаг 2: application.yml</a></li>
+                    <li><a href="#flyway" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🗄️ Шаг 3: Flyway Миграции</a></li>
+                    <li><a href="#entities" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>👤 Шаг 4: Entity (User/Role)</a></li>
+                    <li><a href="#repository" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>📊 Шаг 5: Repository</a></li>
+                    <li><a href="#dto" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔄 Шаг 6: DTO</a></li>
+                    <li><a href="#jwt-service" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🔐 Шаг 7: JwtService</a></li>
+                    <li><a href="#user-details" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>👤 Шаг 8: UserDetails</a></li>
+                    <li><a href="#auth-service" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>⚙️ Шаг 9: AuthService</a></li>
+                    <li><a href="#filter" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🛡️ Шаг 10: JwtFilter</a></li>
+                    <li><a href="#security-config" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🛡️ Шаг 11: SecurityConfig</a></li>
+                    <li><a href="#controller" class="nav-link"><span class="nav-dot" style="background:var(--accent)"></span>🌐 Шаг 12: AuthController</a></li>
+                    <li><a href="#practices" class="nav-link"><span class="nav-dot" style="background:var(--warn)"></span>✅ Best / ⚠️ Anti</a></li>
+                    <li><a href="#interview" class="nav-link"><span class="nav-dot" style="background:var(--purple)"></span>❓ Интервью</a></li>
+                </ul>
+                <div class="nav-section" style="margin-top:24px">Другие темы</div>
+                <ul>
+                    <li><a href="../index.html" class="nav-link"><span class="nav-dot" style="background:var(--cyan)"></span>🏠 Все темы</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="page-main">
+            <header class="page-header">
+                <a href="../index.html" class="page-back">← Главная</a>
+                <span class="page-header-title">Spring Security JWT + Flyway</span>
+                <div class="page-search-wrap">
+                    <input type="text" id="pageSearch" class="page-search" placeholder="Поиск по странице...">
+                    <button id="searchClear" class="search-clear">✕</button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Hero -->
+                <div class="page-hero">
+                    <div class="page-hero-header">
+                        <div class="hero-icon" style="background:rgba(240,96,96,0.12);color:var(--error)">🔐</div>
+                        <div>
+                            <h1>Spring Security JWT + Flyway — Ready-Made Template</h1>
+                            <p>Универсальный модуль аутентификации с JWT и версионированием БД через Flyway. Копируй пакет `security/` в любой проект — работает из коробки. Поддержка PostgreSQL, ролей и миграций.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                        <span class="chip chip-green">Spring Security 6</span>
+                        <span class="chip chip-blue">Java 17</span>
+                        <span class="chip chip-warn">JWT + Flyway</span>
+                        <span class="chip chip-purple">PostgreSQL</span>
+                    </div>
+                </div>
+
+                <!-- TOC -->
+                <div class="toc">
+                    <div class="toc-title">Содержание</div>
+                    <div class="toc-list">
+                        <a href="#summary" class="toc-link">📌 Конспект</a>
+                        <a href="#pom" class="toc-link">pom.xml</a>
+                        <a href="#config" class="toc-link">application.yml</a>
+                        <a href="#flyway" class="toc-link">Flyway</a>
+                        <a href="#entities" class="toc-link">Entity</a>
+                        <a href="#repository" class="toc-link">Repository</a>
+                        <a href="#dto" class="toc-link">DTO</a>
+                        <a href="#jwt-service" class="toc-link">JwtService</a>
+                        <a href="#user-details" class="toc-link">UserDetails</a>
+                        <a href="#auth-service" class="toc-link">AuthService</a>
+                        <a href="#filter" class="toc-link">JwtFilter</a>
+                        <a href="#security-config" class="toc-link">SecurityConfig</a>
+                        <a href="#controller" class="toc-link">AuthController</a>
+                        <a href="#practices" class="toc-link">Best/Bad</a>
+                        <a href="#interview" class="toc-link">❓ Вопросы</a>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="section" id="summary">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">📌</span> Краткий конспект</h2>
+                    <div class="box box-blue" style="margin-bottom:16px">
+                        <div class="box-label">JWT Flow — как работает аутентификация</div>
+                        Клиент → <b>POST /api/auth/login</b> (username/password) → <b>AuthService</b> → <b>AuthenticationManager</b> → <b>JwtService</b> → <b>Token</b> → Клиент хранит токен → Следующие запросы с <code>Authorization: Bearer &lt;token&gt;</code> → <b>JwtAuthenticationFilter</b> проверяет токен → доступ к защищённым ресурсам
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Компонент</th><th>Задача</th><th>Ключевые аннотации</th><th>Возвращает</th></tr></thead>
+                            <tbody>
+                                <tr><td><b>Flyway</b></td><td>Версионирование БД</td><td><code>.sql</code> файлы в <code>db/migration</code></td><td>Созданные таблицы</td></tr>
+                                <tr><td><b>AuthController</b></td><td>Приём /login, /register</td><td><code>@RestController</code>, <code>@RequestMapping</code></td><td><code>JwtResponse</code> / <code>String</code></td></tr>
+                                <tr><td><b>AuthService</b></td><td>Бизнес-логика аутентификации</td><td><code>@Service</code>, <code>@Transactional</code></td><td><code>JwtResponse</code> / <code>void</code></td></tr>
+                                <tr><td><b>JwtService</b></td><td>Генерация/валидация JWT</td><td><code>@Service</code>, <code>@Slf4j</code></td><td><code>String</code> / <code>boolean</code></td></tr>
+                                <tr><td><b>SecurityConfig</b></td><td>Настройка SecurityFilterChain</td><td><code>@Configuration</code>, <code>@EnableWebSecurity</code></td><td><code>SecurityFilterChain</code></td></tr>
+                                <tr><td><b>JwtFilter</b></td><td>Перехват запросов, проверка токена</td><td><code>@Component</code>, <code>OncePerRequestFilter</code></td><td><code>void</code> (фильтр)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Step 1: pom.xml -->
+                <div class="section" id="pom">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(245,166,35,0.12);color:var(--warn)">📦</span> Шаг 1: Зависимости (pom.xml)</h2>
+                    <div class="prose">
+                        <p>Добавь эти зависимости в <code>&lt;dependencies&gt;</code>. Maven автоматически скачает все библиотеки. Обрати внимание на Flyway и PostgreSQL.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header">
+                            <span class="code-lang">pom.xml</span>
+                            <button class="copy-btn">⎘ Копировать</button>
+                        </div>
+                        <pre><code><span class="cm">&lt;!-- SPRING SECURITY — основа аутентификации и авторизации --&gt;</span>
+<span class="pk">&lt;dependency&gt;</span>
+    <span class="pk">&lt;groupId&gt;</span><span class="cl">org.springframework.boot</span><span class="pk">&lt;/groupId&gt;</span>
+    <span class="pk">&lt;artifactId&gt;</span><span class="cl">spring-boot-starter-security</span><span class="pk">&lt;/artifactId&gt;</span>
+<span class="pk">&lt;/dependency&gt;</span>
+
+<span class="cm">&lt;!-- JJWT API — интерфейс для работы с JWT (генерация, парсинг) --&gt;</span>
+<span class="pk">&lt;dependency&gt;</span>
+    <span class="pk">&lt;groupId&gt;</span><span class="cl">io.jsonwebtoken</span><span class="pk">&lt;/groupId&gt;</span>
+    <span class="pk">&lt;artifactId&gt;</span><span class="cl">jjwt-api</span><span class="pk">&lt;/artifactId&gt;</span>
+    <span class="pk">&lt;version&gt;</span><span class="nu">0.12.6</span><span class="pk">&lt;/version&gt;</span>
+<span class="pk">&lt;/dependency&gt;</span>
+
+<span class="cm">&lt;!-- JJWT Implementation — реальная реализация (нужна при запуске) --&gt;</span>
+<span class="pk">&lt;dependency&gt;</span>
+    <span class="pk">&lt;groupId&gt;</span><span class="cl">io.jsonwebtoken</span><span class="pk">&lt;/groupId&gt;</span>
+    <span class="pk">&lt;artifactId&gt;</span><span class="cl">jjwt-impl</span><span class="pk">&lt;/artifactId&gt;</span>
+    <span class="pk">&lt;version&gt;</span><span class="nu">0.12.6</span><span class="pk">&lt;/version&gt;</span>
+    <span class="pk">&lt;scope&gt;</span><span class="kw">runtime</span><span class="pk">&lt;/scope&gt;</span>
+<span class="pk">&lt;/dependency&gt;</span>
+
+<span class="cm">&lt;!-- JJWT Jackson — сериализация payload в JSON --&gt;</span>
+<span class="pk">&lt;dependency&gt;</span>
+    <span class="pk">&lt;groupId&gt;</span><span class="cl">io.jsonwebtoken</span><span class="pk">&lt;/groupId&gt;</span>
+    <span class="pk">&lt;artifactId&gt;</span><span class="cl">jjwt-jackson</span><span class="pk">&lt;/artifactId&gt;</span>
+    <span class="pk">&lt;version&gt;</span><span class="nu">0.12.6</span><span class="pk">&lt;/version&gt;</span>
+    <span class="pk">&lt;scope&gt;</span><span class="kw">runtime</span><span class="pk">&lt;/scope&gt;</span>
+<span class="pk">&lt;/dependency&gt;</span>
+
+<span class="cm">&lt;!-- VALIDATION — аннотации @NotBlank, @Email для DTO --&gt;</span>
+<span class="pk">&lt;dependency&gt;</span>
+    <span class="pk">&lt;groupId&gt;</span><span class="cl">org.springframework.boot</span><span class="pk">&lt;/groupId&gt;</span>
+    <span class="pk">&lt;artifactId&gt;</span><span class="cl">spring-boot-starter-validation</span><span class="pk">&lt;/artifactId&gt;</span>
+<span class="pk">&lt;/dependency&gt;</span>
+
+<span class="cm">&lt;!-- FLYWAY — версионирование базы данных (миграции SQL) --&gt;</span>
+<span class="pk">&lt;dependency&gt;</span>
+    <span class="pk">&lt;groupId&gt;</span><span class="cl">org.flywaydb</span><span class="pk">&lt;/groupId&gt;</span>
+    <span class="pk">&lt;artifactId&gt;</span><span class="cl">flyway-core</span><span class="pk">&lt;/artifactId&gt;</span>
+<span class="pk">&lt;/dependency&gt;</span>
+
+<span class="cm">&lt;!-- FLYWAY POSTGRESQL — диалект Flyway для PostgreSQL --&gt;</span>
+<span class="pk">&lt;dependency&gt;</span>
+    <span class="pk">&lt;groupId&gt;</span><span class="cl">org.flywaydb</span><span class="pk">&lt;/groupId&gt;</span>
+    <span class="pk">&lt;artifactId&gt;</span><span class="cl">flyway-database-postgresql</span><span class="pk">&lt;/artifactId&gt;</span>
+<span class="pk">&lt;/dependency&gt;</span>
+
+<span class="cm">&lt;!-- POSTGRESQL — драйвер БД --&gt;</span>
+<span class="pk">&lt;dependency&gt;</span>
+    <span class="pk">&lt;groupId&gt;</span><span class="cl">org.postgresql</span><span class="pk">&lt;/groupId&gt;</span>
+    <span class="pk">&lt;artifactId&gt;</span><span class="cl">postgresql</span><span class="pk">&lt;/artifactId&gt;</span>
+    <span class="pk">&lt;scope&gt;</span><span class="kw">runtime</span><span class="pk">&lt;/scope&gt;</span>
+<span class="pk">&lt;/dependency&gt;</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 2: application.yml -->
+                <div class="section" id="config">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">⚙️</span> Шаг 2: Конфигурация (application.yml)</h2>
+                    <div class="box box-green">
+                        <div class="box-label">💡 Безопасность секрета</div>
+                        <code>${JWT_SECRET:...}</code> берёт значение из переменной окружения. В продакшене <b>никогда</b> не храни секрет в коде.
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header">
+                            <span class="code-lang">application.yml</span>
+                            <button class="copy-btn">⎘ Копировать</button>
+                        </div>
+                        <pre><code><span class="cm"># =====================================================================</span>
+<span class="cm"># application.yml — КОНФИГУРАЦИЯ приложения</span>
+<span class="cm"># =====================================================================</span>
+
+<span class="kw">spring</span>:
+  <span class="kw">application</span>:
+    <span class="kw">name</span>: <span class="st">my_app</span>
+  
+  <span class="cm"># --- PostgreSQL Database ---</span>
+  <span class="kw">datasource</span>:
+    <span class="kw">url</span>: <span class="st">jdbc:postgresql://localhost:5432/my_db?currentSchema=public</span>
+    <span class="kw">username</span>: <span class="st">${DB_USER:postgres}</span>  <span class="cm"># Из переменной или дефолт</span>
+    <span class="kw">password</span>: <span class="st">${DB_PASSWORD:postgres}</span>
+    <span class="kw">driver-class-name</span>: <span class="cl">org.postgresql.Driver</span>
+
+  <span class="cm"># --- JPA / Hibernate ---</span>
+  <span class="kw">jpa</span>:
+    <span class="kw">hibernate</span>:
+      <span class="kw">ddl-auto</span>: <span class="st">validate</span>  <span class="cm"># Только проверка! Схема управляется Flyway</span>
+    <span class="kw">open-in-view</span>: <span class="kw">false</span>   <span class="cm"># Отключаем lazy-loading в слое View (антипаттерн)</span>
+    <span class="kw">show-sql</span>: <span class="kw">true</span>
+    <span class="kw">properties</span>:
+      <span class="kw">hibernate</span>:
+        <span class="kw">format_sql</span>: <span class="kw">true</span>
+
+  <span class="cm"># --- Flyway Migrations ---</span>
+  <span class="kw">flyway</span>:
+    <span class="kw">enabled</span>: <span class="kw">true</span>
+    <span class="kw">baseline-on-migrate</span>: <span class="kw">true</span>  <span class="cm"># Если БД не пустая, создать baseline</span>
+    <span class="kw">locations</span>: <span class="st">classpath:db/migration</span>  <span class="cm"># Где лежат .sql файлы</span>
+
+<span class="cm"># --- Server ---</span>
+<span class="kw">server</span>:
+  <span class="kw">port</span>: <span class="nu">8080</span>
+
+<span class="cm"># --- JWT Settings ---</span>
+<span class="kw">app</span>:
+  <span class="kw">jwt</span>:
+    <span class="cm"># Секрет минимум 256 бит для HS256</span>
+    <span class="kw">secret</span>: <span class="st">${JWT_SECRET:mySuperSecretKeyForJwtTokenThatShouldBeVeryLongAndSecureAtLeast256Bits1234567890abcdef}</span>
+    <span class="cm"># Время жизни токена: 86400000 мс = 24 часа</span>
+    <span class="kw">expiration-ms</span>: <span class="nu">86400000</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 3: Flyway Migrations -->
+                <div class="section" id="flyway">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">🗄️</span> Шаг 3: Миграции Flyway</h2>
+                    <div class="prose">
+                        <p>Создай файлы в папке <code>src/main/resources/db/migration/</code>. Flyway выполнит их в алфавитном порядке.</p>
+                    </div>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">V3__create_security_tables.sql</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">-- Создаём таблицу ролей</span>
+<span class="kw">CREATE TABLE</span> <span class="cl">roles</span> (
+    <span class="cl">id</span> <span class="ty">BIGSERIAL PRIMARY KEY</span>,
+    <span class="cl">name</span> <span class="ty">VARCHAR</span>(<span class="nu">50</span>) <span class="kw">NOT NULL UNIQUE</span>,
+    <span class="cl">created_at</span> <span class="ty">TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP</span>,
+    <span class="cl">updated_at</span> <span class="ty">TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="cm">-- Создаём таблицу пользователей</span>
+<span class="kw">CREATE TABLE</span> <span class="cl">users</span> (
+    <span class="cl">id</span> <span class="ty">BIGSERIAL PRIMARY KEY</span>,
+    <span class="cl">username</span> <span class="ty">VARCHAR</span>(<span class="nu">50</span>) <span class="kw">NOT NULL UNIQUE</span>,
+    <span class="cl">password</span> <span class="ty">VARCHAR</span>(<span class="nu">255</span>) <span class="kw">NOT NULL</span>,  <span class="cm">-- Хранит BCrypt хеш</span>
+    <span class="cl">email</span> <span class="ty">VARCHAR</span>(<span class="nu">150</span>) <span class="kw">NOT NULL UNIQUE</span>,
+    <span class="cl">first_name</span> <span class="ty">VARCHAR</span>(<span class="nu">100</span>) <span class="kw">NOT NULL</span>,
+    <span class="cl">last_name</span> <span class="ty">VARCHAR</span>(<span class="nu">100</span>) <span class="kw">NOT NULL</span>,
+    <span class="cl">enabled</span> <span class="ty">BOOLEAN NOT NULL DEFAULT TRUE</span>,
+    <span class="cl">created_at</span> <span class="ty">TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP</span>,
+    <span class="cl">updated_at</span> <span class="ty">TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="cm">-- Промежуточная таблица ManyToMany (User ↔ Role)</span>
+<span class="kw">CREATE TABLE</span> <span class="cl">user_roles</span> (
+    <span class="cl">user_id</span> <span class="ty">BIGINT NOT NULL</span>,
+    <span class="cl">role_id</span> <span class="ty">BIGINT NOT NULL</span>,
+    <span class="kw">CONSTRAINT</span> <span class="cl">pk_user_roles</span> <span class="kw">PRIMARY KEY</span> (<span class="cl">user_id</span>, <span class="cl">role_id</span>),
+    <span class="kw">CONSTRAINT</span> <span class="cl">fk_user_roles_user</span> <span class="kw">FOREIGN KEY</span> (<span class="cl">user_id</span>) 
+        <span class="kw">REFERENCES</span> <span class="cl">users</span> (<span class="cl">id</span>) <span class="kw">ON DELETE CASCADE</span>,
+    <span class="kw">CONSTRAINT</span> <span class="cl">fk_user_roles_role</span> <span class="kw">FOREIGN KEY</span> (<span class="cl">role_id</span>) 
+        <span class="kw">REFERENCES</span> <span class="cl">roles</span> (<span class="cl">id</span>) <span class="kw">ON DELETE CASCADE</span>
+);</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">V4__insert_security_data.sql</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="cm">-- Вставляем роли</span>
+<span class="kw">INSERT INTO</span> <span class="cl">roles</span> (<span class="cl">name</span>) <span class="kw">VALUES</span> (<span class="st">'ROLE_ADMIN'</span>), (<span class="st">'ROLE_MANAGER'</span>), (<span class="st">'ROLE_USER'</span>);
+
+<span class="cm">-- Вставляем тестовых пользователей (пароль: admin123 для всех)</span>
+<span class="cm">-- Хеш сгенерирован через BCryptPasswordEncoder</span>
+<span class="kw">INSERT INTO</span> <span class="cl">users</span> (<span class="cl">username</span>, <span class="cl">password</span>, <span class="cl">email</span>, <span class="cl">first_name</span>, <span class="cl">last_name</span>) <span class="kw">VALUES</span> 
+    (<span class="st">'admin'</span>, <span class="st">'$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqQzBZN0UfGNEKjA9L3xzu7OQK1yC'</span>, <span class="st">'admin@company.ru'</span>, <span class="st">'Админ'</span>, <span class="st">'Админов'</span>),
+    (<span class="st">'manager'</span>, <span class="st">'$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqQzBZN0UfGNEKjA9L3xzu7OQK1yC'</span>, <span class="st">'manager@company.ru'</span>, <span class="st">'Менеджер'</span>, <span class="st">'Менеджеров'</span>),
+    (<span class="st">'user'</span>, <span class="st">'$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqQzBZN0UfGNEKjA9L3xzu7OQK1yC'</span>, <span class="st">'user@company.ru'</span>, <span class="st">'Пользователь'</span>, <span class="st">'Пользователев'</span>);
+
+<span class="cm">-- Привязываем роли к пользователям</span>
+<span class="kw">INSERT INTO</span> <span class="cl">user_roles</span> (<span class="cl">user_id</span>, <span class="cl">role_id</span>) <span class="kw">VALUES</span>
+    ((<span class="kw">SELECT</span> <span class="cl">id</span> <span class="kw">FROM</span> <span class="cl">users</span> <span class="kw">WHERE</span> <span class="cl">username</span> = <span class="st">'admin'</span>), (<span class="kw">SELECT</span> <span class="cl">id</span> <span class="kw">FROM</span> <span class="cl">roles</span> <span class="kw">WHERE</span> <span class="cl">name</span> = <span class="st">'ROLE_ADMIN'</span>)),
+    ((<span class="kw">SELECT</span> <span class="cl">id</span> <span class="kw">FROM</span> <span class="cl">users</span> <span class="kw">WHERE</span> <span class="cl">username</span> = <span class="st">'manager'</span>), (<span class="kw">SELECT</span> <span class="cl">id</span> <span class="kw">FROM</span> <span class="cl">roles</span> <span class="kw">WHERE</span> <span class="cl">name</span> = <span class="st">'ROLE_MANAGER'</span>)),
+    ((<span class="kw">SELECT</span> <span class="cl">id</span> <span class="kw">FROM</span> <span class="cl">users</span> <span class="kw">WHERE</span> <span class="cl">username</span> = <span class="st">'user'</span>), (<span class="kw">SELECT</span> <span class="cl">id</span> <span class="kw">FROM</span> <span class="cl">roles</span> <span class="kw">WHERE</span> <span class="cl">name</span> = <span class="st">'ROLE_USER'</span>));</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 4: Entity -->
+                <div class="section" id="entities">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">👤</span> Шаг 4: Entity (User / Role)</h2>
+                    
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">User.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.user.entity</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.common.entity.BaseEntity</span>;  <span class="cm">// Базовый класс с ID и датами</span>
+<span class="kw">import</span> <span class="cl">jakarta.persistence.*</span>;
+<span class="kw">import</span> <span class="cl">lombok.*</span>;
+<span class="kw">import</span> <span class="cl">java.util.HashSet</span>;
+<span class="kw">import</span> <span class="cl">java.util.Set</span>;
+
+<span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"users"</span>)
+<span class="an">@Setter</span> <span class="an">@Getter</span>
+<span class="an">@NoArgsConstructor</span> <span class="an">@AllArgsConstructor</span>
+<span class="an">@Builder</span>
+<span class="kw">public class</span> <span class="cl">User</span> <span class="kw">extends</span> <span class="cl">BaseEntity</span> {  <span class="cm">/* Наследуем id, createdAt, updatedAt */</span>
+
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">unique</span> = <span class="kw">true</span>, <span class="fn">length</span> = <span class="nu">50</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+
+    <span class="cm">// Пароль хранится в захешированном виде (BCrypt)</span>
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">length</span> = <span class="nu">255</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">password</span>;
+
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">unique</span> = <span class="kw">true</span>, <span class="fn">length</span> = <span class="nu">150</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">email</span>;
+
+    <span class="an">@Column</span>(<span class="fn">name</span> = <span class="st">"first_name"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">length</span> = <span class="nu">100</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">firstName</span>;
+
+    <span class="an">@Column</span>(<span class="fn">name</span> = <span class="st">"last_name"</span>, <span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">length</span> = <span class="nu">100</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">lastName</span>;
+
+    <span class="an">@Builder.Default</span>
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="kw">boolean</span> <span class="fn">enabled</span> = <span class="kw">true</span>;
+
+    <span class="cm">// ManyToMany связь с ролями через промежуточную таблицу user_roles</span>
+    <span class="an">@ManyToMany</span>(<span class="fn">fetch</span> = <span class="cl">FetchType</span>.<span class="cl">EAGER</span>)  <span class="cm">/* EAGER нужен для Security */</span>
+    <span class="an">@JoinTable</span>(
+        <span class="fn">name</span> = <span class="st">"user_roles"</span>,
+        <span class="fn">joinColumns</span> = <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"user_id"</span>),
+        <span class="fn">inverseJoinColumns</span> = <span class="an">@JoinColumn</span>(<span class="fn">name</span> = <span class="st">"role_id"</span>)
+    )
+    <span class="an">@Builder.Default</span>
+    <span class="kw">private</span> <span class="cl">Set</span>&lt;<span class="cl">Role</span>&gt; <span class="fn">roles</span> = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;();
+}</code></pre>
+                    </div>
+
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">Role.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.user.entity</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.common.entity.BaseEntity</span>;
+<span class="kw">import</span> <span class="cl">jakarta.persistence.*</span>;
+<span class="kw">import</span> <span class="cl">lombok.*</span>;
+
+<span class="an">@Entity</span>
+<span class="an">@Table</span>(<span class="fn">name</span> = <span class="st">"roles"</span>)
+<span class="an">@Setter</span> <span class="an">@Getter</span>
+<span class="an">@NoArgsConstructor</span> <span class="an">@AllArgsConstructor</span>
+<span class="an">@Builder</span>
+<span class="kw">public class</span> <span class="cl">Role</span> <span class="kw">extends</span> <span class="cl">BaseEntity</span> {
+
+    <span class="an">@Column</span>(<span class="fn">nullable</span> = <span class="kw">false</span>, <span class="fn">unique</span> = <span class="kw">true</span>, <span class="fn">length</span> = <span class="nu">50</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">name</span>;  <span class="cm">// Например: ROLE_ADMIN, ROLE_USER</span>
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 5: Repository -->
+                <div class="section" id="repository">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(91,206,250,0.12);color:var(--cyan)">📊</span> Шаг 5: Repository</h2>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">UserRepository.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.user.repository</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.user.entity.User</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.data.jpa.repository.JpaRepository</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.stereotype.Repository</span>;
+<span class="kw">import</span> <span class="cl">java.util.Optional</span>;
+
+<span class="an">@Repository</span>
+<span class="kw">public interface</span> <span class="cl">UserRepository</span> <span class="kw">extends</span> <span class="cl">JpaRepository</span>&lt;<span class="cl">User</span>, <span class="ty">Long</span>&gt; {
+    
+    <span class="cm">// Ищет пользователя по логину (нужно для входа в систему)</span>
+    <span class="cl">Optional</span>&lt;<span class="cl">User</span>&gt; <span class="fn">findByUsername</span>(<span class="ty">String</span> <span class="fn">username</span>);
+
+    <span class="cm">// Проверяет, занят ли логин (для регистрации)</span>
+    <span class="kw">boolean</span> <span class="fn">existsByUsername</span>(<span class="ty">String</span> <span class="fn">username</span>);
+
+    <span class="cm">// Проверяет, занят ли email</span>
+    <span class="kw">boolean</span> <span class="fn">existsByEmail</span>(<span class="ty">String</span> <span class="fn">email</span>);
+}</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">RoleRepository.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.user.repository</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.user.entity.Role</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.data.jpa.repository.JpaRepository</span>;
+<span class="kw">import</span> <span class="cl">java.util.Optional</span>;
+
+<span class="kw">public interface</span> <span class="cl">RoleRepository</span> <span class="kw">extends</span> <span class="cl">JpaRepository</span>&lt;<span class="cl">Role</span>, <span class="ty">Long</span>&gt; {
+    
+    <span class="cm">// Ищет роль по имени (например, ROLE_ADMIN)</span>
+    <span class="cl">Optional</span>&lt;<span class="cl">Role</span>&gt; <span class="fn">findByName</span>(<span class="ty">String</span> <span class="fn">name</span>);
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 6: DTO -->
+                <div class="section" id="dto">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">🔄</span> Шаг 6: DTO (Login / Signup / JwtResponse)</h2>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">LoginRequest.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.dto</span>;
+
+<span class="kw">import</span> <span class="cl">jakarta.validation.constraints.NotBlank</span>;
+<span class="kw">import</span> <span class="cl">lombok.Data</span>;
+
+<span class="an">@Data</span>
+<span class="kw">public class</span> <span class="cl">LoginRequest</span> {
+    
+    <span class="cm">// @NotBlank: поле не может быть пустым или содержать только пробелы</span>
+    <span class="an">@NotBlank</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+
+    <span class="an">@NotBlank</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">password</span>;
+}</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">SignupRequest.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.dto</span>;
+
+<span class="kw">import</span> <span class="cl">jakarta.validation.constraints.Email</span>;
+<span class="kw">import</span> <span class="cl">jakarta.validation.constraints.NotBlank</span>;
+<span class="kw">import</span> <span class="cl">jakarta.validation.constraints.Size</span>;
+<span class="kw">import</span> <span class="cl">lombok.Data</span>;
+<span class="kw">import</span> <span class="cl">java.util.Set</span>;
+
+<span class="an">@Data</span>
+<span class="kw">public class</span> <span class="cl">SignupRequest</span> {
+    
+    <span class="an">@NotBlank</span>
+    <span class="an">@Size</span>(<span class="fn">min</span> = <span class="nu">3</span>, <span class="fn">max</span> = <span class="nu">50</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+
+    <span class="an">@NotBlank</span>
+    <span class="an">@Size</span>(<span class="fn">min</span> = <span class="nu">6</span>, <span class="fn">max</span> = <span class="nu">120</span>)  <span class="cm">// Пароль минимум 6 символов</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">password</span>;
+
+    <span class="an">@NotBlank</span>
+    <span class="an">@Email</span>  <span class="cm">// Валидация формата email</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">email</span>;
+
+    <span class="an">@NotBlank</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">firstName</span>;
+
+    <span class="an">@NotBlank</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">lastName</span>;
+
+    <span class="cm">// Опционально: клиент может запросить конкретные роли</span>
+    <span class="kw">private</span> <span class="cl">Set</span>&lt;<span class="ty">String</span>&gt; <span class="fn">roles</span>;
+}</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">JwtResponse.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.dto</span>;
+
+<span class="kw">import</span> <span class="cl">lombok.AllArgsConstructor</span>;
+<span class="kw">import</span> <span class="cl">lombok.Data</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+
+<span class="an">@Data</span>
+<span class="an">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">JwtResponse</span> {
+    
+    <span class="cm">// Тип токена (Bearer)</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">type</span>;
+    
+    <span class="cm">// Сам JWT токен</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">accessToken</span>;
+    
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">email</span>;
+    
+    <span class="cm">// Список ролей: ["ROLE_USER", "ROLE_ADMIN"]</span>
+    <span class="kw">private</span> <span class="cl">List</span>&lt;<span class="ty">String</span>&gt; <span class="fn">roles</span>;
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 7: JwtService -->
+                <div class="section" id="jwt-service">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">🔐</span> Шаг 7: JwtService (генерация и валидация токенов)</h2>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">JwtService.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.service</span>;
+
+<span class="kw">import</span> <span class="cl">io.jsonwebtoken.*</span>;
+<span class="kw">import</span> <span class="cl">io.jsonwebtoken.io.Decoders</span>;
+<span class="kw">import</span> <span class="cl">io.jsonwebtoken.security.Keys</span>;
+<span class="kw">import</span> <span class="cl">lombok.extern.slf4j.Slf4j</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.beans.factory.annotation.Value</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.Authentication</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.GrantedAuthority</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.stereotype.Service</span>;
+<span class="kw">import</span> <span class="cl">javax.crypto.SecretKey</span>;
+<span class="kw">import</span> <span class="cl">java.nio.charset.StandardCharsets</span>;  <span class="cm">/* Явная кодировка UTF-8 */</span>
+<span class="kw">import</span> <span class="cl">java.util.Base64</span>;
+<span class="kw">import</span> <span class="cl">java.util.Date</span>;
+<span class="kw">import</span> <span class="cl">java.util.stream.Collectors</span>;
+
+<span class="an">@Service</span>
+<span class="an">@Slf4j</span>
+<span class="kw">public class</span> <span class="cl">JwtService</span> {
+    
+    <span class="cm">// Читаем секрет из application.yml</span>
+    <span class="an">@Value</span>(<span class="st">"${app.jwt.secret}"</span>)
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">jwtSecret</span>;
+
+    <span class="cm">// Читаем время жизни из application.yml</span>
+    <span class="an">@Value</span>(<span class="st">"${app.jwt.expiration-ms}"</span>)
+    <span class="kw">private</span> <span class="ty">long</span> <span class="fn">jwtExpirationMs</span>;
+
+    <span class="cm">// Создаём SecretKey для подписи (HMAC-SHA)</span>
+    <span class="kw">private</span> <span class="cl">SecretKey</span> <span class="fn">key</span>() {
+        <span class="kw">return</span> <span class="cl">Keys</span>.<span class="fn">hmacShaKeyFor</span>(
+            <span class="cl">Decoders</span>.<span class="cl">BASE64</span>.<span class="fn">decode</span>(
+                <span class="cl">Base64</span>.<span class="fn">getEncoder</span>().<span class="fn">encodeToString</span>(<span class="fn">jwtSecret</span>.<span class="fn">getBytes</span>(<span class="cl">StandardCharsets</span>.<span class="cl">UTF_8</span>))
+            )
+        );
+    }
+
+    <span class="cm">// Генерация токена после успешного логина</span>
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">generateToken</span>(<span class="cl">Authentication</span> <span class="fn">authentication</span>) {
+        <span class="ty">String</span> <span class="fn">username</span> = <span class="fn">authentication</span>.<span class="fn">getName</span>();
+        
+        <span class="cm">// Собираем роли в строку через запятую</span>
+        <span class="ty">String</span> <span class="fn">authorities</span> = <span class="fn">authentication</span>.<span class="fn">getAuthorities</span>().<span class="fn">stream</span>()
+            .<span class="fn">map</span>(<span class="cl">GrantedAuthority</span>::<span class="fn">getAuthority</span>)
+            .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">joining</span>(<span class="st">","</span>));
+
+        <span class="cl">Date</span> <span class="fn">now</span> = <span class="kw">new</span> <span class="cl">Date</span>();
+        <span class="cl">Date</span> <span class="fn">expiryDate</span> = <span class="kw">new</span> <span class="cl">Date</span>(<span class="fn">now</span>.<span class="fn">getTime</span>() + <span class="fn">jwtExpirationMs</span>);
+
+        <span class="kw">return</span> <span class="cl">Jwts</span>.<span class="fn">builder</span>()
+            .<span class="fn">subject</span>(<span class="fn">username</span>)       <span class="cm">// Поле sub: username</span>
+            .<span class="fn">claim</span>(<span class="st">"roles"</span>, <span class="fn">authorities</span>) <span class="cm">// Кастомное поле roles</span>
+            .<span class="fn">issuedAt</span>(<span class="fn">now</span>)          <span class="cm">// Время создания</span>
+            .<span class="fn">expiration</span>(<span class="fn">expiryDate</span>) <span class="cm">// Время истечения</span>
+            .<span class="fn">signWith</span>(<span class="fn">key</span>())        <span class="cm">// Подпись секретным ключом</span>
+            .<span class="fn">compact</span>();              <span class="cm">// Сериализация в строку</span>
+    }
+
+    <span class="cm">// Извлечение username из токена</span>
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getUsernameFromToken</span>(<span class="ty">String</span> <span class="fn">token</span>) {
+        <span class="kw">return</span> <span class="fn">parseToken</span>(<span class="fn">token</span>).<span class="fn">getSubject</span>();
+    }
+
+    <span class="cm">// Парсинг и верификация токена</span>
+    <span class="kw">private</span> <span class="cl">Claims</span> <span class="fn">parseToken</span>(<span class="ty">String</span> <span class="fn">token</span>) {
+        <span class="kw">return</span> <span class="cl">Jwts</span>.<span class="fn">parser</span>()
+            .<span class="fn">verifyWith</span>(<span class="fn">key</span>())      <span class="cm">// Проверяем подпись</span>
+            .<span class="fn">build</span>()
+            .<span class="fn">parseSignedClaims</span>(<span class="fn">token</span>) <span class="cm">// Парсим payload</span>
+            .<span class="fn">getPayload</span>();
+    }
+
+    <span class="cm">// Валидация: true если токен корректен и не просрочен</span>
+    <span class="kw">public</span> <span class="kw">boolean</span> <span class="fn">validateToken</span>(<span class="ty">String</span> <span class="fn">token</span>) {
+        <span class="kw">try</span> {
+            <span class="fn">parseToken</span>(<span class="fn">token</span>);
+            <span class="kw">return</span> <span class="kw">true</span>;
+        } <span class="kw">catch</span> (<span class="cl">ExpiredJwtException</span> <span class="fn">e</span>) {
+            <span class="cl">log</span>.<span class="fn">error</span>(<span class="st">"JWT expired: {}"</span>, <span class="fn">e</span>.<span class="fn">getMessage</span>());
+        } <span class="kw">catch</span> (<span class="cl">SecurityException</span> <span class="fn">e</span>) {
+            <span class="cl">log</span>.<span class="fn">error</span>(<span class="st">"JWT invalid signature: {}"</span>, <span class="fn">e</span>.<span class="fn">getMessage</span>());
+        } <span class="kw">catch</span> (<span class="cl">Exception</span> <span class="fn">e</span>) {
+            <span class="cl">log</span>.<span class="fn">error</span>(<span class="st">"JWT validation error: {}"</span>, <span class="fn">e</span>.<span class="fn">getMessage</span>());
+        }
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 8: UserDetails -->
+                <div class="section" id="user-details">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">👤</span> Шаг 8: UserDetails (адаптер для Spring Security)</h2>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">UserDetailsImpl.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.service</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.user.entity.User</span>;
+<span class="kw">import</span> <span class="cl">com.fasterxml.jackson.annotation.JsonIgnore</span>;
+<span class="kw">import</span> <span class="cl">lombok.AllArgsConstructor</span>;
+<span class="kw">import</span> <span class="cl">lombok.Data</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.GrantedAuthority</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.authority.SimpleGrantedAuthority</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.userdetails.UserDetails</span>;
+<span class="kw">import</span> <span class="cl">java.util.Collection</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.stream.Collectors</span>;
+
+<span class="an">@Data</span>
+<span class="an">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">UserDetailsImpl</span> <span class="kw">implements</span> <span class="cl">UserDetails</span> {
+    
+    <span class="kw">private static final long</span> <span class="fn">serialVersionUID</span> = <span class="nu">1L</span>;
+
+    <span class="kw">private</span> <span class="ty">Long</span> <span class="fn">id</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">username</span>;
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">email</span>;
+
+    <span class="cm">// @JsonIgnore: не сериализовать пароль в JSON-ответах</span>
+    <span class="an">@JsonIgnore</span>
+    <span class="kw">private</span> <span class="ty">String</span> <span class="fn">password</span>;
+
+    <span class="kw">private</span> <span class="cl">Collection</span>&lt;? <span class="kw">extends</span> <span class="cl">GrantedAuthority</span>&gt; <span class="fn">authorities</span>;
+    <span class="kw">private</span> <span class="kw">boolean</span> <span class="fn">enabled</span>;
+
+    <span class="cm">// Фабричный метод: конвертация Entity → UserDetails</span>
+    <span class="kw">public static</span> <span class="cl">UserDetailsImpl</span> <span class="fn">build</span>(<span class="cl">User</span> <span class="fn">user</span>) {
+        <span class="cl">List</span>&lt;<span class="cl">GrantedAuthority</span>&gt; <span class="fn">authorities</span> = <span class="fn">user</span>.<span class="fn">getRoles</span>().<span class="fn">stream</span>()
+            .<span class="fn">map</span>(<span class="fn">role</span> -> <span class="kw">new</span> <span class="cl">SimpleGrantedAuthority</span>(<span class="fn">role</span>.<span class="fn">getName</span>()))
+            .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">toList</span>());
+
+        <span class="kw">return new</span> <span class="cl">UserDetailsImpl</span>(
+            <span class="fn">user</span>.<span class="fn">getId</span>(),
+            <span class="fn">user</span>.<span class="fn">getUsername</span>(),
+            <span class="fn">user</span>.<span class="fn">getEmail</span>(),
+            <span class="fn">user</span>.<span class="fn">getPassword</span>(),
+            <span class="fn">authorities</span>,
+            <span class="fn">user</span>.<span class="fn">isEnabled</span>()
+        );
+    }
+
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="cl">Collection</span>&lt;? <span class="kw">extends</span> <span class="cl">GrantedAuthority</span>&gt; <span class="fn">getAuthorities</span>() { <span class="kw">return</span> <span class="fn">authorities</span>; }
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getPassword</span>() { <span class="kw">return</span> <span class="fn">password</span>; }
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getUsername</span>() { <span class="kw">return</span> <span class="fn">username</span>; }
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="kw">boolean</span> <span class="fn">isAccountNonExpired</span>() { <span class="kw">return</span> <span class="kw">true</span>; }
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="kw">boolean</span> <span class="fn">isAccountNonLocked</span>() { <span class="kw">return</span> <span class="kw">true</span>; }
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="kw">boolean</span> <span class="fn">isCredentialsNonExpired</span>() { <span class="kw">return</span> <span class="kw">true</span>; }
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="kw">boolean</span> <span class="fn">isEnabled</span>() { <span class="kw">return</span> <span class="fn">enabled</span>; }
+}</code></pre>
+                    </div>
+                    <div class="code-wrap" style="margin-top:14px">
+                        <div class="code-header"><span class="code-lang">UserDetailsServiceImpl.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.service</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.user.entity.User</span>;
+<span class="kw">import</span> <span class="cl">com.example.user.repository.UserRepository</span>;
+<span class="kw">import</span> <span class="cl">lombok.RequiredArgsConstructor</span>;
+<span class="kw">import</span> <span class="cl">lombok.extern.slf4j.Slf4j</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.userdetails.UserDetails</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.userdetails.UserDetailsService</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.userdetails.UsernameNotFoundException</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.stereotype.Service</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.transaction.annotation.Transactional</span>;
+
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="an">@Slf4j</span>
+<span class="kw">public class</span> <span class="cl">UserDetailsServiceImpl</span> <span class="kw">implements</span> <span class="cl">UserDetailsService</span> {
+    
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> <span class="fn">userRepository</span>;
+
+    <span class="cm">// Вызывается Spring Security при логине для загрузки пользователя</span>
+    <span class="an">@Override</span>
+    <span class="an">@Transactional</span>(<span class="fn">readOnly</span> = <span class="kw">true</span>)
+    <span class="kw">public</span> <span class="cl">UserDetails</span> <span class="fn">loadUserByUsername</span>(<span class="ty">String</span> <span class="fn">username</span>) <span class="kw">throws</span> <span class="cl">UsernameNotFoundException</span> {
+        <span class="cl">User</span> <span class="fn">user</span> = <span class="fn">userRepository</span>.<span class="fn">findByUsername</span>(<span class="fn">username</span>)
+            .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">UsernameNotFoundException</span>(
+                <span class="st">"User not found: "</span> + <span class="fn">username</span>
+            ));
+        <span class="kw">return</span> <span class="cl">UserDetailsImpl</span>.<span class="fn">build</span>(<span class="fn">user</span>);
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 9: AuthService -->
+                <div class="section" id="auth-service">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">⚙️</span> Шаг 9: AuthService (бизнес-логика)</h2>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">AuthService.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.service</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.security.dto.JwtResponse</span>;
+<span class="kw">import</span> <span class="cl">com.example.security.dto.LoginRequest</span>;
+<span class="kw">import</span> <span class="cl">com.example.security.dto.SignupRequest</span>;
+<span class="kw">import</span> <span class="cl">com.example.user.entity.Role</span>;
+<span class="kw">import</span> <span class="cl">com.example.user.entity.User</span>;
+<span class="kw">import</span> <span class="cl">com.example.user.repository.RoleRepository</span>;
+<span class="kw">import</span> <span class="cl">com.example.user.repository.UserRepository</span>;
+<span class="kw">import</span> <span class="cl">lombok.RequiredArgsConstructor</span>;
+<span class="kw">import</span> <span class="cl">lombok.extern.slf4j.Slf4j</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.authentication.AuthenticationManager</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.authentication.UsernamePasswordAuthenticationToken</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.Authentication</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.GrantedAuthority</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.context.SecurityContextHolder</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.crypto.password.PasswordEncoder</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.stereotype.Service</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.transaction.annotation.Transactional</span>;
+<span class="kw">import</span> <span class="cl">java.util.HashSet</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.Set</span>;
+<span class="kw">import</span> <span class="cl">java.util.stream.Collectors</span>;
+
+<span class="an">@Service</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="an">@Slf4j</span>
+<span class="kw">public class</span> <span class="cl">AuthService</span> {
+    
+    <span class="kw">private final</span> <span class="cl">AuthenticationManager</span> <span class="fn">authenticationManager</span>;
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> <span class="fn">userRepository</span>;
+    <span class="kw">private final</span> <span class="cl">RoleRepository</span> <span class="fn">roleRepository</span>;
+    <span class="kw">private final</span> <span class="cl">PasswordEncoder</span> <span class="fn">passwordEncoder</span>;
+    <span class="kw">private final</span> <span class="cl">JwtService</span> <span class="fn">jwtService</span>;
+
+    <span class="cm">// АУТЕНТИФИКАЦИЯ (ЛОГИН)</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> <span class="cl">JwtResponse</span> <span class="fn">authenticate</span>(<span class="cl">LoginRequest</span> <span class="fn">request</span>) {
+        <span class="cm">// 1. Проверяем логин/пароль через AuthenticationManager</span>
+        <span class="cl">Authentication</span> <span class="fn">authentication</span> = <span class="fn">authenticationManager</span>.<span class="fn">authenticate</span>(
+            <span class="kw">new</span> <span class="cl">UsernamePasswordAuthenticationToken</span>(
+                <span class="fn">request</span>.<span class="fn">getUsername</span>(), 
+                <span class="fn">request</span>.<span class="fn">getPassword</span>()
+            )
+        );
+
+        <span class="cm">// 2. Сохраняем аутентификацию в контекст</span>
+        <span class="cl">SecurityContextHolder</span>.<span class="fn">getContext</span>().<span class="fn">setAuthentication</span>(<span class="fn">authentication</span>);
+
+        <span class="cm">// 3. Генерируем JWT</span>
+        <span class="ty">String</span> <span class="fn">jwt</span> = <span class="fn">jwtService</span>.<span class="fn">generateToken</span>(<span class="fn">authentication</span>);
+
+        <span class="cm">// 4. Формируем ответ</span>
+        <span class="cl">UserDetailsImpl</span> <span class="fn">userDetails</span> = (<span class="cl">UserDetailsImpl</span>) <span class="fn">authentication</span>.<span class="fn">getPrincipal</span>();
+        <span class="cl">List</span>&lt;<span class="ty">String</span>&gt; <span class="fn">roles</span> = <span class="fn">userDetails</span>.<span class="fn">getAuthorities</span>().<span class="fn">stream</span>()
+            .<span class="fn">map</span>(<span class="cl">GrantedAuthority</span>::<span class="fn">getAuthority</span>)
+            .<span class="fn">collect</span>(<span class="cl">Collectors</span>.<span class="fn">toList</span>());
+
+        <span class="kw">return new</span> <span class="cl">JwtResponse</span>(
+            <span class="st">"Bearer"</span>, <span class="fn">jwt</span>, <span class="fn">userDetails</span>.<span class="fn">getId</span>(),
+            <span class="fn">userDetails</span>.<span class="fn">getUsername</span>(), <span class="fn">userDetails</span>.<span class="fn">getEmail</span>(), <span class="fn">roles</span>
+        );
+    }
+
+    <span class="cm">// РЕГИСТРАЦИЯ</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public void</span> <span class="fn">register</span>(<span class="cl">SignupRequest</span> <span class="fn">request</span>) {
+        <span class="cm">// Проверка уникальности</span>
+        <span class="kw">if</span> (<span class="fn">userRepository</span>.<span class="fn">existsByUsername</span>(<span class="fn">request</span>.<span class="fn">getUsername</span>())) {
+            <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Username already taken"</span>);
+        }
+        <span class="kw">if</span> (<span class="fn">userRepository</span>.<span class="fn">existsByEmail</span>(<span class="fn">request</span>.<span class="fn">getEmail</span>())) {
+            <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Email already taken"</span>);
+        }
+
+        <span class="cm">// Хешируем пароль перед сохранением</span>
+        <span class="cl">User</span> <span class="fn">user</span> = <span class="cl">User</span>.<span class="fn">builder</span>()
+            .<span class="fn">username</span>(<span class="fn">request</span>.<span class="fn">getUsername</span>())
+            .<span class="fn">password</span>(<span class="fn">passwordEncoder</span>.<span class="fn">encode</span>(<span class="fn">request</span>.<span class="fn">getPassword</span>()))
+            .<span class="fn">email</span>(<span class="fn">request</span>.<span class="fn">getEmail</span>())
+            .<span class="fn">firstName</span>(<span class="fn">request</span>.<span class="fn">getFirstName</span>())
+            .<span class="fn">lastName</span>(<span class="fn">request</span>.<span class="fn">getLastName</span>())
+            .<span class="fn">enabled</span>(<span class="kw">true</span>)
+            .<span class="fn">build</span>();
+
+        <span class="cm">// Назначаем роли</span>
+        <span class="cl">Set</span>&lt;<span class="cl">Role</span>&gt; <span class="fn">roles</span> = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;();
+        <span class="kw">if</span> (<span class="fn">request</span>.<span class="fn">getRoles</span>() == <span class="kw">null</span> || <span class="fn">request</span>.<span class="fn">getRoles</span>().<span class="fn">isEmpty</span>()) {
+            <span class="cm">// Если роли не указаны → даём ROLE_USER</span>
+            <span class="cl">Role</span> <span class="fn">userRole</span> = <span class="fn">roleRepository</span>.<span class="fn">findByName</span>(<span class="st">"ROLE_USER"</span>)
+                .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">RuntimeException</span>(<span class="st">"ROLE_USER not found"</span>));
+            <span class="fn">roles</span>.<span class="fn">add</span>(<span class="fn">userRole</span>);
+        } <span class="kw">else</span> {
+            <span class="cm">// Иначе ищем запрошенные роли</span>
+            <span class="fn">request</span>.<span class="fn">getRoles</span>().<span class="fn">forEach</span>(<span class="fn">roleStr</span> -> {
+                <span class="ty">String</span> <span class="fn">roleName</span> = <span class="fn">roleStr</span>.<span class="fn">startsWith</span>(<span class="st">"ROLE_"</span>) ? <span class="fn">roleStr</span> : <span class="st">"ROLE_"</span> + <span class="fn">roleStr</span>.<span class="fn">toUpperCase</span>();
+                <span class="cl">Role</span> <span class="fn">role</span> = <span class="fn">roleRepository</span>.<span class="fn">findByName</span>(<span class="fn">roleName</span>)
+                    .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cl">RuntimeException</span>(<span class="st">"Role not found: "</span> + <span class="fn">roleName</span>));
+                <span class="fn">roles</span>.<span class="fn">add</span>(<span class="fn">role</span>);
+            });
+        }
+
+        <span class="fn">user</span>.<span class="fn">setRoles</span>(<span class="fn">roles</span>);
+        <span class="fn">userRepository</span>.<span class="fn">save</span>(<span class="fn">user</span>);
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 10: JwtFilter -->
+                <div class="section" id="filter">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(240,96,96,0.12);color:var(--error)">🛡️</span> Шаг 10: JwtAuthenticationFilter</h2>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">JwtAuthenticationFilter.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.filter</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.security.service.JwtService</span>;
+<span class="kw">import</span> <span class="cl">com.example.security.service.UserDetailsServiceImpl</span>;
+<span class="kw">import</span> <span class="cl">jakarta.servlet.FilterChain</span>;
+<span class="kw">import</span> <span class="cl">jakarta.servlet.ServletException</span>;
+<span class="kw">import</span> <span class="cl">jakarta.servlet.http.HttpServletRequest</span>;
+<span class="kw">import</span> <span class="cl">jakarta.servlet.http.HttpServletResponse</span>;
+<span class="kw">import</span> <span class="cl">lombok.RequiredArgsConstructor</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.authentication.UsernamePasswordAuthenticationToken</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.context.SecurityContextHolder</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.core.userdetails.UserDetails</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.web.authentication.WebAuthenticationDetailsSource</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.stereotype.Component</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.web.filter.OncePerRequestFilter</span>;
+<span class="kw">import</span> <span class="cl">java.io.IOException</span>;
+
+<span class="an">@Component</span>
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">JwtAuthenticationFilter</span> <span class="kw">extends</span> <span class="cl">OncePerRequestFilter</span> {
+    
+    <span class="kw">private final</span> <span class="cl">JwtService</span> <span class="fn">jwtService</span>;
+    <span class="kw">private final</span> <span class="cl">UserDetailsServiceImpl</span> <span class="fn">userDetailsService</span>;
+
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> <span class="fn">doFilterInternal</span>(<span class="cl">HttpServletRequest</span> <span class="fn">request</span>, 
+                                    <span class="cl">HttpServletResponse</span> <span class="fn">response</span>, 
+                                    <span class="cl">FilterChain</span> <span class="fn">filterChain</span>) <span class="kw">throws</span> <span class="cl">ServletException</span>, <span class="cl">IOException</span> {
+        
+        <span class="ty">String</span> <span class="fn">authHeader</span> = <span class="fn">request</span>.<span class="fn">getHeader</span>(<span class="st">"Authorization"</span>);
+
+        <span class="cm">// Если нет заголовка или он не начинается с "Bearer " — пропускаем</span>
+        <span class="kw">if</span> (<span class="fn">authHeader</span> == <span class="kw">null</span> || !<span class="fn">authHeader</span>.<span class="fn">startsWith</span>(<span class="st">"Bearer "</span>)) {
+            <span class="fn">filterChain</span>.<span class="fn">doFilter</span>(<span class="fn">request</span>, <span class="fn">response</span>);
+            <span class="kw">return</span>;
+        }
+
+        <span class="cm">// Извлекаем токен (убираем префикс "Bearer ")</span>
+        <span class="ty">String</span> <span class="fn">jwt</span> = <span class="fn">authHeader</span>.<span class="fn">substring</span>(<span class="nu">7</span>);
+
+        <span class="cm">// Если токен невалиден — пропускаем</span>
+        <span class="kw">if</span> (!<span class="fn">jwtService</span>.<span class="fn">validateToken</span>(<span class="fn">jwt</span>)) {
+            <span class="fn">filterChain</span>.<span class="fn">doFilter</span>(<span class="fn">request</span>, <span class="fn">response</span>);
+            <span class="kw">return</span>;
+        }
+
+        <span class="cm">// Извлекаем username из токена</span>
+        <span class="ty">String</span> <span class="fn">username</span> = <span class="fn">jwtService</span>.<span class="fn">getUsernameFromToken</span>(<span class="fn">jwt</span>);
+
+        <span class="cm">// Если пользователь найден и ещё не аутентифицирован в текущем запросе</span>
+        <span class="kw">if</span> (<span class="fn">username</span> != <span class="kw">null</span> && <span class="cl">SecurityContextHolder</span>.<span class="fn">getContext</span>().<span class="fn">getAuthentication</span>() == <span class="kw">null</span>) {
+            <span class="cl">UserDetails</span> <span class="fn">userDetails</span> = <span class="fn">userDetailsService</span>.<span class="fn">loadUserByUsername</span>(<span class="fn">username</span>);
+            
+            <span class="cm">// Создаём объект аутентификации</span>
+            <span class="cl">UsernamePasswordAuthenticationToken</span> <span class="fn">authToken</span> = 
+                <span class="kw">new</span> <span class="cl">UsernamePasswordAuthenticationToken</span>(
+                    <span class="fn">userDetails</span>, 
+                    <span class="kw">null</span>,  <span class="cm">// Credentials не нужны, токен уже проверен</span>
+                    <span class="fn">userDetails</span>.<span class="fn">getAuthorities</span>()
+                );
+            
+            <span class="cm">// Устанавливаем детали запроса (IP, SessionID и т.д.)</span>
+            <span class="fn">authToken</span>.<span class="fn">setDetails</span>(<span class="kw">new</span> <span class="cl">WebAuthenticationDetailsSource</span>().<span class="fn">buildDetails</span>(<span class="fn">request</span>));
+            
+            <span class="cm">// Сохраняем аутентификацию в контекст безопасности</span>
+            <span class="cl">SecurityContextHolder</span>.<span class="fn">getContext</span>().<span class="fn">setAuthentication</span>(<span class="fn">authToken</span>);
+        }
+
+        <span class="cm">// Продолжаем цепочку фильтров</span>
+        <span class="fn">filterChain</span>.<span class="fn">doFilter</span>(<span class="fn">request</span>, <span class="fn">response</span>);
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 11: SecurityConfig -->
+                <div class="section" id="security-config">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(240,96,96,0.12);color:var(--error)">🛡️</span> Шаг 11: SecurityConfig</h2>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">SecurityConfig.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.config</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.security.filter.JwtAuthenticationFilter</span>;
+<span class="kw">import</span> <span class="cl">com.example.security.service.UserDetailsServiceImpl</span>;
+<span class="kw">import</span> <span class="cl">lombok.RequiredArgsConstructor</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.context.annotation.Bean</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.context.annotation.Configuration</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.http.HttpMethod</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.authentication.AuthenticationManager</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.authentication.AuthenticationProvider</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.authentication.dao.DaoAuthenticationProvider</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.config.annotation.web.builders.HttpSecurity</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.config.annotation.web.configuration.EnableWebSecurity</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.config.http.SessionCreationPolicy</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.crypto.password.PasswordEncoder</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.web.SecurityFilterChain</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter</span>;
+
+<span class="an">@Configuration</span>
+<span class="an">@EnableWebSecurity</span>
+<span class="an">@EnableMethodSecurity</span>(<span class="fn">prePostEnabled</span> = <span class="kw">true</span>, <span class="fn">securedEnabled</span> = <span class="kw">true</span>, <span class="fn">jsr250Enabled</span> = <span class="kw">true</span>)
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">SecurityConfig</span> {
+    
+    <span class="kw">private final</span> <span class="cl">JwtAuthenticationFilter</span> <span class="fn">jwtAuthFilter</span>;
+    <span class="kw">private final</span> <span class="cl">UserDetailsServiceImpl</span> <span class="fn">userDetailsService</span>;
+
+    <span class="cm">// Настройка цепочки фильтров безопасности</span>
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">SecurityFilterChain</span> <span class="fn">filterChain</span>(<span class="cl">HttpSecurity</span> <span class="fn">http</span>) <span class="kw">throws</span> <span class="cl">Exception</span> {
+        <span class="fn">http</span>
+            <span class="cm">// 1. Отключаем CSRF (не нужен для JWT)</span>
+            .<span class="fn">csrf</span>(<span class="cl">AbstractHttpConfigurer</span>::<span class="fn">disable</span>)
+            <span class="cm">// 2. Отключаем форму логина и Basic Auth (используем JWT)</span>
+            .<span class="fn">formLogin</span>(<span class="cl">AbstractHttpConfigurer</span>::<span class="fn">disable</span>)
+            .<span class="fn">httpBasic</span>(<span class="cl">AbstractHttpConfigurer</span>::<span class="fn">disable</span>)
+            <span class="cm">// 3. Stateless сессии (сервер не хранит состояние)</span>
+            .<span class="fn">sessionManagement</span>(<span class="fn">session</span> -> 
+                <span class="fn">session</span>.<span class="fn">sessionCreationPolicy</span>(<span class="cl">SessionCreationPolicy</span>.<span class="cl">STATELESS</span>)
+            )
+            <span class="cm">// 4. Провайдер аутентификации</span>
+            .<span class="fn">authenticationProvider</span>(<span class="fn">authenticationProvider</span>())
+            <span class="cm">// 5. Добавляем JWT-фильтр ПЕРЕД стандартным фильтром логина</span>
+            .<span class="fn">addFilterBefore</span>(<span class="fn">jwtAuthFilter</span>, <span class="cl">UsernamePasswordAuthenticationFilter</span>.<span class="kw">class</span>)
+            <span class="cm">// 6. Правила доступа к URL</span>
+            .<span class="fn">authorizeHttpRequests</span>(<span class="fn">auth</span> -> <span class="fn">auth</span>
+                .<span class="fn">requestMatchers</span>(<span class="st">"/api/v1/auth/**"</span>).<span class="fn">permitAll</span>()  <span class="cm">// Логин/регистрация открыты</span>
+                .<span class="fn">requestMatchers</span>(<span class="st">"/swagger-ui/**"</span>, <span class="st">"/v3/api-docs/**"</span>).<span class="fn">permitAll</span>() <span class="cm">// Swagger открыт</span>
+                
+                <span class="cm">// Примеры ролей (раскомментируй при необходимости):</span>
+                <span class="cm">// .requestMatchers(HttpMethod.GET, "/api/v1/cheatsheets/**").permitAll()</span>
+                <span class="cm">// .requestMatchers("/api/v1/manager/**").hasAnyRole("MANAGER", "ADMIN")</span>
+                <span class="cm">// .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")</span>
+                
+                <span class="cm">// Всё остальное требует аутентификации</span>
+                .<span class="fn">anyRequest</span>().<span class="fn">authenticated</span>()
+            );
+        
+        <span class="kw">return</span> <span class="fn">http</span>.<span class="fn">build</span>();
+    }
+
+    <span class="cm">// Провайдер: связывает UserDetailsService и PasswordEncoder</span>
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">AuthenticationProvider</span> <span class="fn">authenticationProvider</span>() {
+        <span class="cl">DaoAuthenticationProvider</span> <span class="fn">authProvider</span> = <span class="kw">new</span> <span class="cl">DaoAuthenticationProvider</span>();
+        <span class="fn">authProvider</span>.<span class="fn">setUserDetailsService</span>(<span class="fn">userDetailsService</span>);
+        <span class="fn">authProvider</span>.<span class="fn">setPasswordEncoder</span>(<span class="fn">passwordEncoder</span>());
+        <span class="kw">return</span> <span class="fn">authProvider</span>;
+    }
+
+    <span class="cm">// Менеджер аутентификации (нужен для AuthService)</span>
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">AuthenticationManager</span> <span class="fn">authenticationManager</span>(<span class="cl">AuthenticationConfiguration</span> <span class="fn">config</span>) <span class="kw">throws</span> <span class="cl">Exception</span> {
+        <span class="kw">return</span> <span class="fn">config</span>.<span class="fn">getAuthenticationManager</span>();
+    }
+
+    <span class="cm">// Кодировщик паролей BCrypt</span>
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">PasswordEncoder</span> <span class="fn">passwordEncoder</span>() {
+        <span class="kw">return new</span> <span class="cl">BCryptPasswordEncoder</span>();
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Step 12: AuthController -->
+                <div class="section" id="controller">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(79,142,247,0.12);color:var(--primary)">🌐</span> Шаг 12: AuthController</h2>
+                    <div class="code-wrap">
+                        <div class="code-header"><span class="code-lang">AuthController.java</span><button class="copy-btn">⎘ Копировать</button></div>
+                        <pre><code><span class="kw">package</span> <span class="cl">com.example.security.controller</span>;
+
+<span class="kw">import</span> <span class="cl">com.example.security.dto.JwtResponse</span>;
+<span class="kw">import</span> <span class="cl">com.example.security.dto.LoginRequest</span>;
+<span class="kw">import</span> <span class="cl">com.example.security.dto.SignupRequest</span>;
+<span class="kw">import</span> <span class="cl">com.example.security.service.AuthService</span>;
+<span class="kw">import</span> <span class="cl">jakarta.validation.Valid</span>;
+<span class="kw">import</span> <span class="cl">lombok.RequiredArgsConstructor</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.http.ResponseEntity</span>;
+<span class="kw">import</span> <span class="cl">org.springframework.web.bind.annotation.*</span>;
+
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/v1/auth"</span>)
+<span class="an">@RequiredArgsConstructor</span>
+<span class="kw">public class</span> <span class="cl">AuthController</span> {
+    
+    <span class="kw">private final</span> <span class="cl">AuthService</span> <span class="fn">authService</span>;
+
+    <span class="cm">// POST /api/v1/auth/login</span>
+    <span class="an">@PostMapping</span>(<span class="st">"/login"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">JwtResponse</span>&gt; <span class="fn">login</span>(<span class="an">@Valid</span> <span class="an">@RequestBody</span> <span class="cl">LoginRequest</span> <span class="fn">request</span>) {
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">ok</span>(<span class="fn">authService</span>.<span class="fn">authenticate</span>(<span class="fn">request</span>));
+    }
+
+    <span class="cm">// POST /api/v1/auth/register</span>
+    <span class="an">@PostMapping</span>(<span class="st">"/register"</span>)
+    <span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;?&gt; <span class="fn">register</span>(<span class="an">@Valid</span> <span class="an">@RequestBody</span> <span class="cl">SignupRequest</span> <span class="fn">request</span>) {
+        <span class="fn">authService</span>.<span class="fn">register</span>(<span class="fn">request</span>);
+        <span class="kw">return</span> <span class="cl">ResponseEntity</span>.<span class="fn">ok</span>(<span class="st">"User registered successfully"</span>);
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Best Practices -->
+                <div class="section" id="practices">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(34,211,160,0.12);color:var(--accent)">✅</span> Best & ⚠️ Anti Practices</h2>
+                    <div class="compare-grid">
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--accent)">✅ Best Practices</div>
+                            <ul class="compare-list">
+                                <li>Храни <code>JWT_SECRET</code> в переменных окружения, не в коде</li>
+                                <li>Используй Flyway для версионирования схемы БД</li>
+                                <li>Настраивай <code>ddl-auto: validate</code> (не update/create)</li>
+                                <li>Используй <code>@Transactional(readOnly = true)</code> для SELECT</li>
+                                <li>Хэшируй пароли через <code>BCryptPasswordEncoder</code></li>
+                                <li>Проверяй уникальность username/email <em>до</em> сохранения</li>
+                                <li>Отключай CSRF для JWT-аутентификации</li>
+                            </ul>
+                        </div>
+                        <div class="compare-card">
+                            <div class="compare-title" style="color:var(--error)">⚠️ Anti Patterns</div>
+                            <ul class="compare-list">
+                                <li>❌ Хранить пароли в открытом виде в БД</li>
+                                <li>❌ Использовать слабый секрет (&lt;32 байт) для JWT</li>
+                                <li>❌ Возвращать UserDetails/Entity напрямую в JSON</li>
+                                <li>❌ Игнорировать валидацию (@Valid) на входящих DTO</li>
+                                <li>❌ Писать бизнес-логику в контроллере</li>
+                                <li>❌ Включать <code>open-in-view</code> в JPA (антипаттерн)</li>
+                                <li>❌ Отключать <code>@PrePersist</code> для createdAt/updatedAt</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Q&A -->
+                <div class="section" id="interview">
+                    <h2 class="section-title"><span class="s-icon" style="background:rgba(184,139,250,0.12);color:var(--purple)">❓</span> Вопросы для собеседования</h2>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Как работает аутентификация с JWT в Spring Security?</div>
+                                <div class="qa-q-en">How does JWT authentication work in Spring Security?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">1) Клиент отправляет username/password на <code>/api/auth/login</code>. 2) <code>AuthenticationManager</code> проверяет учётные данные через <code>UserDetailsService</code> + <code>PasswordEncoder</code>. 3) При успехе <code>JwtService</code> генерирует подписанный токен с username и ролями. 4) Клиент сохраняет токен и отправляет его в заголовке <code>Authorization: Bearer &lt;token&gt;</code>. 5) <code>JwtAuthenticationFilter</code> перехватывает каждый запрос, валидирует токен и устанавливает аутентификацию в <code>SecurityContext</code>. 6) Spring Security проверяет права доступа через <code>@PreAuthorize</code> или конфигурацию <code>SecurityFilterChain</code>.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jwt-1">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Зачем нужен UserDetails и почему нельзя использовать User-Entity напрямую?</div>
+                                <div class="qa-q-en">Why do we need UserDetails? Why not use User entity directly?</div>
+                            </div>
+                            <span class="qa-badge easy">Easy</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text"><code>UserDetails</code> — это интерфейс Spring Security, который определяет контракт для аутентификации: методы <code>getUsername()</code>, <code>getPassword()</code>, <code>getAuthorities()</code>, <code>isEnabled()</code> и т.д. Наша <code>User</code>-entity содержит бизнес-поля (email, firstName, createdAt), которые не нужны для аутентификации. <code>UserDetailsImpl</code> выступает адаптером: преобразует <code>Set&lt;Role&gt;</code> в <code>Collection&lt;GrantedAuthority&gt;</code>, скрывает пароль через <code>@JsonIgnore</code>, предоставляет стандартный интерфейс для Security.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jwt-2">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Почему мы отключаем CSRF в SecurityConfig для JWT?</div>
+                                <div class="qa-q-en">Why disable CSRF in SecurityConfig for JWT?</div>
+                            </div>
+                            <span class="qa-badge medium">Medium</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">CSRF (Cross-Site Request Forgery) защищает от атак, когда злоумышленник заставляет браузер жертвы отправить запрос на доверенный сайт. Защита основана на токенах в cookie. Но при JWT-аутентификации мы используем <b>stateless</b> сессии и передаём токен в заголовке <code>Authorization</code>, а не в cookie. Браузер не отправляет заголовки автоматически при переходе по ссылке, поэтому атаки CSRF невозможны. Отключение CSRF безопасно для API, но <b>обязательно</b> включай его для веб-приложений с cookie-сессиями.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jwt-3">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                    <div class="qa-block">
+                        <div class="qa-header">
+                            <div>
+                                <div class="qa-q">Как обеспечить безопасность JWT-секрета в продакшене?</div>
+                                <div class="qa-q-en">How to secure JWT secret in production?</div>
+                            </div>
+                            <span class="qa-badge hard">Hard</span>
+                            <span class="qa-arrow">▼</span>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-label ru">✅ Ответ</div>
+                            <div class="qa-text">1) Никогда не храни секрет в коде — используй переменные окружения: <code>${JWT_SECRET:...}</code>. 2) В Kubernetes используй <code>Secrets</code>, в Docker — <code>.env</code> файлы (добавь в <code>.gitignore</code>). 3) Используй менеджеры секретов: HashiCorp Vault, AWS Secrets Manager. 4) Регулярно ротируй секреты (раз в 90 дней). 5) Используй минимум 256-битный ключ для HS256. 6) В CI/CD передавай секреты через защищённые переменные (GitHub Actions Secrets, GitLab CI Variables). 7) Логируй попытки использования невалидных токенов для мониторинга атак.</div>
+                            <div class="qa-fav-row"><button class="qa-fav-btn" data-qid="jwt-4">☆ В избранное</button></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <button id="scrollTop" title="Наверх">↑</button>
+</body>
+</html>
